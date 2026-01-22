@@ -3,219 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOGIN - 3DNP CONSTRUCTION</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>3DNP | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        /* --- 🌑 CORE THEME --- */
-        body { 
-            margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; 
-            display: flex; overflow: hidden; background: #0f1014;
-            
-            /* 🚫 ป้องกันการลากคลุมดำ (แก้ตรงนี้ครับลูกพี่) */
-            -webkit-user-select: none; /* Safari */
-            -moz-user-select: none;    /* Firefox */
-            -ms-user-select: none;     /* IE/Edge */
-            user-select: none;         /* Chrome/Standard */
+        body {
+            margin: 0; padding: 0; font-family: 'Prompt', sans-serif;
+            background: #000; color: white; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; -webkit-user-select: none; user-select: none;
         }
+
+        .login-container {
+            text-align: center; width: 100%; max-width: 400px; padding: 40px;
+            background: rgba(255, 255, 255, 0.05); border-radius: 30px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        h1 { font-weight: 600; margin-bottom: 30px; letter-spacing: 1px; }
         
-        .hero-section {
-            flex: 1.2;
-            background: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
-            position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px;
+        input {
+            width: 100%; padding: 15px; margin-bottom: 15px;
+            background: #111; border: 1px solid #333; color: white;
+            border-radius: 12px; font-size: 1rem; box-sizing: border-box; outline: none;
+            text-align: center; transition: 0.3s;
         }
-        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(15,16,20,0.9) 0%, rgba(15,16,20,0.3) 100%); }
-        .hero-content { position: relative; z-index: 2; color: white; max-width: 80%; }
-        .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; cursor: default; }
-        
-        .login-section { flex: 0.8; background: #0f1014; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; }
-        .login-container { width: 100%; max-width: 400px; }
+        input:focus { border-color: #0071e3; }
 
-        .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: default; }
-        .brand-logo img { height: 50px; pointer-events: none; /* ห้ามลากรูป */ }
-        .brand-text { font-size: 2rem; font-weight: 700; color: white; }
-        .brand-text span { color: #7d828c; }
-        .welcome-text { color: #888; margin-bottom: 30px; font-size: 0.95rem; cursor: default; }
-
-        .input-group { margin-bottom: 20px; position: relative; }
-        .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none; }
-        
-        /* 👁️ สไตล์ปุ่มลูกตา */
-        .toggle-password {
-            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
-            color: #666; cursor: pointer; transition: 0.3s; z-index: 10;
+        .btn-login {
+            width: 100%; padding: 15px; background: #0071e3;
+            border: none; border-radius: 12px; color: white; font-size: 1rem;
+            font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px;
         }
-        .toggle-password:hover { color: #fff; }
+        .btn-login:hover { background: #0077ed; transform: scale(1.02); }
 
-        .form-input {
-            width: 100%; padding: 15px 50px 15px 50px; background: #1a1c24; border: 1px solid #333;
-            border-radius: 50px; color: white; font-size: 1rem; box-sizing: border-box; outline: none; transition: 0.3s;
-            
-            /* ✅ ยกเว้นช่องกรอกข้อความ ให้พิมพ์และลากได้ปกติ */
-            -webkit-user-select: text;
-            -moz-user-select: text;
-            -ms-user-select: text;
-            user-select: text;
+        .links { margin-top: 20px; font-size: 0.9rem; }
+        .links a { color: #888; text-decoration: none; margin: 0 10px; }
+        .links a:hover { color: white; }
+
+        /* ปุ่มลับสำหรับ Admin */
+        .admin-trigger {
+            position: fixed; bottom: 20px; left: 20px; color: #333; 
+            font-size: 1.5rem; cursor: pointer; transition: 0.3s;
         }
-        .form-input:focus { border-color: #4facfe; box-shadow: 0 0 15px rgba(79, 172, 254, 0.1); }
+        .admin-trigger:hover { color: #555; }
 
-        .btn-main {
-            width: 100%; padding: 15px; border: none; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 10px;
-            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%); color: white;
-            border-top: 1px solid rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.3s;
+        /* ปุ่ม Home ทางลัด */
+        .btn-home {
+            position: fixed; top: 25px; right: 25px; width: 45px; height: 45px;
+            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .btn-main:hover { transform: translateY(-2px); background: linear-gradient(to bottom, #9ea4b0 0%, #4b5259 100%); }
-        
-        .footer-links { margin-top: 30px; display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; }
-        .link { color: #888; text-decoration: none; cursor: pointer; transition: 0.3s; }
-        .link:hover { color: white; text-decoration: underline; }
-
-        @media (max-width: 768px) { .hero-section { display: none; } .login-section { flex: 1; padding: 20px; } }
     </style>
 </head>
 <body>
 
-    <div class="hero-section">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <div class="hero-title">ENGINEERING<br>THE FUTURE.</div>
-            <p style="color:#ccc;">Welcome back to 3DNP Workspace.</p>
-        </div>
+    <a href="index.html" class="btn-home"><i class="fas fa-home"></i></a>
+
+    <div class="admin-trigger" onclick="window.location.href='admin_keygen.html'">
+        <i class="fas fa-user-shield"></i>
     </div>
 
-    <div class="login-section">
-        <div class="login-container">
-            <div class="brand-logo">
-                <img src="logo.png" alt="Logo">
-                <div class="brand-text">3DNP <span>CONS.</span></div>
-            </div>
-            <div class="welcome-text">Login to access your workspace</div>
+    <div class="login-container">
+        <div style="font-size: 3rem; margin-bottom: 20px;"><i class="fab fa-apple"></i></div>
+        <h1>3DNP ID</h1>
+        
+        <input type="text" id="email" placeholder="Email / Apple ID">
+        <input type="password" id="password" placeholder="Password">
+        
+        <button class="btn-login" onclick="login()">Sign In</button>
 
-            <div class="input-group">
-                <i class="fas fa-envelope input-icon"></i>
-                <input type="email" id="loginEmail" class="form-input" placeholder="Email Address">
-            </div>
-
-            <div class="input-group">
-                <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="loginPass" class="form-input" placeholder="Password">
-                <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
-            </div>
-
-            <button class="btn-main" onclick="handleLogin()">SECURE LOGIN</button>
-
-            <div class="footer-links">
-                <a href="activate.html" class="link">Activate New Key</a>
-                <span class="link" onclick="alert('ระบบส่งลิงก์รีเซ็ตรหัสไปที่อีเมลแล้วครับ')">Forgot Password?</span>
-            </div>
+        <div class="links">
+            <a href="activate.html">Activate New Key</a>
+            <a href="#">Forgot Password?</a>
         </div>
     </div>
 
     <script>
-        // ฟังก์ชันสลับลูกตา (Show/Hide Password)
-        function togglePassword() {
-            const passField = document.getElementById('loginPass');
-            const icon = document.querySelector('.toggle-password');
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // 1. ตรวจสอบว่าเป็น Admin หรือไม่? (ทางลับ)
+            if(email === "admin" && password === "admin1234") {
+                localStorage.setItem("3dnp_user_role", "admin");
+                window.location.href = "admin_keygen.html"; // หรือไปหน้า system ก็ได้
+                return;
+            }
+
+            // 2. ตรวจสอบฐานข้อมูลลูกค้า (Local Storage)
+            // ดึงข้อมูลผู้ใช้ทั้งหมดที่เคย Activate ไว้ในเครื่องนี้
+            const storedUsers = JSON.parse(localStorage.getItem('3dnp_users')) || [];
             
-            if (passField.type === "password") {
-                passField.type = "text"; 
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
+            // ค้นหาว่ามีอีเมลและรหัสผ่านตรงกันไหม
+            const validUser = storedUsers.find(user => user.email === email && user.password === password);
+
+            if(validUser) {
+                // ✅ เจอข้อมูลถูกต้อง
+                localStorage.setItem("3dnp_current_user", JSON.stringify(validUser)); // บันทึกว่าใครล็อกอินอยู่
+                alert("Welcome back, " + validUser.email);
+                window.location.href = "system.html"; // พาไปหน้าทำงาน
             } else {
-                passField.type = "password"; 
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+                // ❌ ไม่เจอข้อมูล
+                alert("Login Failed!\nอีเมลหรือรหัสผ่านไม่ถูกต้อง หรือคุณยังไม่ได้ Activate บนเครื่องนี้");
             }
         }
-
-        // ฟังก์ชัน Login
-        function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-
-            // ดึงข้อมูลที่ลงทะเบียนไว้ในเครื่อง
-            const registeredEmail = localStorage.getItem('registeredEmail');
-            const registeredPass = localStorage.getItem('registeredPass');
-
-            // เงื่อนไข: ถ้าตรงกับที่สมัครไว้ หรือ ใช้รหัส Admin (1234)
-            if((email === registeredEmail && pass === registeredPass) || pass === '1234') {
-                window.location.href = 'system.html';
-            } else {
-                alert("❌ อีเมลหรือรหัสผ่านไม่ถูกต้องครับ\n(หรือลองไปหน้า Activate เพื่อลงทะเบียนก่อนนะครับ)");
-            }
-        }
-        
-        // กด Enter เพื่อ Login
-        document.getElementById('loginPass').addEventListener("keypress", function(e) {
-            if (e.key === "Enter") handleLogin();
-        });
     </script>
-    
-    <a href="index.html" class="floating-home-top" title="Back to Home">
-        <i class="fas fa-home"></i>
-    </a>
 
-    <style>
-        .floating-home-top {
-            position: fixed;
-            top: 25px; 
-            right: 25px;
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 1.1rem;
-            text-decoration: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.4);
-            border-bottom: 2px solid #000000;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            z-index: 10001;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        .floating-home-top:hover {
-            background: linear-gradient(to bottom, #9ea4b0 0%, #4b5259 100%);
-            transform: scale(1.1);
-        }
-    </style>
-    
-    <a href="admin_keygen.html" class="admin-secret-btn" title="Admin Portal">
-        <i class="fas fa-shield-halved"></i>
-    </a>
-
-    <style>
-        .admin-secret-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 35px;
-            height: 35px;
-            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
-            opacity: 0.3;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: rgba(255,255,255,0.5);
-            text-decoration: none;
-            border: 1px solid rgba(255,255,255,0.1);
-            z-index: 10001;
-            transition: all 0.4s ease;
-            cursor: pointer;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        .admin-secret-btn:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-    </style>
 </body>
 </html>
