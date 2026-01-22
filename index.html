@@ -3,45 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3DNP Construction</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500&display=swap" rel="stylesheet">
+    <title>ระบบผู้ช่วยกฎหมาย AI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+        h1 { text-align: center; color: #333; }
+        
+        /* สถานะระบบ */
+        #status-bar { text-align: center; margin-bottom: 20px; font-size: 0.9em; color: #666; }
+        .status-dot { height: 10px; width: 10px; background-color: #bbb; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .online { background-color: #28a745; } /* สีเขียว */
+        .offline { background-color: #dc3545; } /* สีแดง */
+
+        #chat-box { background: white; border: 1px solid #ddd; height: 400px; overflow-y: scroll; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .message { margin-bottom: 15px; padding: 10px 15px; border-radius: 20px; max-width: 70%; line-height: 1.5; }
+        .bot { background-color: #e9ecef; color: #333; align-self: flex-start; }
+        .user { background-color: #007bff; color: white; margin-left: auto; text-align: right; }
+        .input-group { display: flex; gap: 10px; }
+        input { flex: 1; padding: 15px; border: 1px solid #ddd; border-radius: 50px; outline: none; }
+        button { padding: 10px 25px; background-color: #007bff; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">3DNP CONSTRUCTION</div>
-            <ul>
-                <li><a href="#about">เกี่ยวกับเรา</a></li>
-                <li><a href="#services">บริการของเรา</a></li>
-                <li><a href="#contact">ติดต่อเรา</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <section class="hero">
-        <h1>รับเหมาก่อสร้างและออกแบบครบวงจร</h1>
-        <p>สร้างมาตรฐานใหม่ให้งานก่อสร้าง ด้วยทีมงานมืออาชีพ</p>
-        <a href="#contact" class="btn">ปรึกษาเรา</a>
-    </section>
+    <h1>⚖️ ผู้ช่วยทนายความ AI</h1>
+    
+    <div id="status-bar">
+        <span id="conn-dot" class="status-dot"></span> 
+        <span id="conn-text">กำลังเชื่อมต่อฐานข้อมูล...</span>
+    </div>
+    
+    <div id="chat-box">
+        <div class="message bot">สวัสดีครับ ระบบกำลังทดสอบการเชื่อมต่อกับ Supabase...</div>
+    </div>
 
-    <section id="services" class="content">
-        <h2>บริการของเรา</h2>
-        <div class="card-container">
-            <div class="card">
-                <h3>งานก่อสร้างทั่วไป</h3>
-                <p>บ้าน อาคารพาณิชย์ และโรงงาน</p>
-            </div>
-            <div class="card">
-                <h3>งานออกแบบ 3D</h3>
-                <p>เห็นภาพจริงก่อนเริ่มงานก่อสร้าง</p>
-            </div>
-        </div>
-    </section>
+    <div class="input-group">
+        <input type="text" id="user-input" placeholder="พิมพ์คำถามกฎหมายที่นี่..." onkeypress="handleEnter(event)">
+        <button onclick="sendMessage()">ส่งข้อความ</button>
+    </div>
 
-    <footer>
-        <p>&copy; 2026 3DNP Construction. All Rights Reserved.</p>
-        <p>Email: NP_1994@3dnpcons.com</p>
-    </footer>
+    <script>
+        // --- ⚠️ ส่วนตั้งค่า (แก้ตรงนี้!) ---
+        const SUPABASE_URL = 'วาง_PROJECT_URL_ที่นี่';
+        const SUPABASE_KEY = 'วาง_ANON_KEY_ที่นี่';
+        // ----------------------------------
+
+        // เริ่มต้นใช้งาน Supabase
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ฟังก์ชันทดสอบการเชื่อมต่อทันทีที่เปิดเว็บ
+        async function testConnection() {
+            const statusText = document.getElementById('conn-text');
+            const statusDot = document.getElementById('conn-dot');
+            const chatBox = document.getElementById('chat-box');
+
+            try {
+                // ลองดึงข้อมูลจากตาราง laws (แม้จะยังไม่มีข้อมูล) เพื่อเช็คว่ากุญแจถูกไหม
+                const { data, error } = await _supabase.from('laws').select('*');
+                
+                if (error) throw error;
+
+                // ถ้าสำเร็จ
+                statusDot.classList.add('online');
+                statusText.innerText = "ระบบออนไลน์: เชื่อมต่อฐานข้อมูลเรียบร้อย";
+                chatBox.innerHTML += `<div class="message bot">✅ เชื่อมต่อสำเร็จ! ตอนนี้เว็บของคุณรู้จักกับฐานข้อมูลแล้วครับ</div>`;
+
+            } catch (err) {
+                // ถ้ามีปัญหา
+                statusDot.classList.add('offline');
+                statusText.innerText = "การเชื่อมต่อล้มเหลว";
+                chatBox.innerHTML += `<div class="message bot" style="color:red;">❌ เชื่อมต่อไม่ได้: ${err.message}<br>ลองเช็ค URL หรือ Key ในโค้ดอีกทีนะครับ</div>`;
+            }
+        }
+
+        // เรียกใช้งานฟังก์ชันทดสอบ
+        testConnection();
+
+        // ฟังก์ชันส่งข้อความ
+        function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            const userText = inputField.value;
+            if (userText.trim() === "") return;
+            chatBox.innerHTML += `<div class="message user">${userText}</div>`;
+            inputField.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        function handleEnter(event) { if (event.key === 'Enter') sendMessage(); }
+    </script>
+
 </body>
 </html>
