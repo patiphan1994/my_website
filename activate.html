@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACTIVATE LICENSE - 3DNP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- 🌑 THEME (ดีไซน์เดิมเป๊ะ 100%) --- */
+        body { margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; display: flex; overflow: hidden; background: #0f1014; }
+        
+        /* ฝั่งซ้าย (รูปภาพ) */
+        .hero-section {
+            flex: 1.2;
+            /* รูปพื้นหลังตึกก่อสร้างสวยๆ */
+            background: url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+            position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px;
+        }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(15,16,20,0.95) 0%, rgba(15,16,20,0.4) 100%); }
+        .hero-content { position: relative; z-index: 2; color: white; max-width: 80%; }
+        .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; color: #4facfe; } /* หัวข้อสีฟ้า */
+        
+        /* ฝั่งขวา (ฟอร์ม) */
+        .form-section { flex: 0.8; background: #0f1014; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; }
+        .form-container { width: 100%; max-width: 400px; }
+
+        /* โลโก้ & หัวข้อ */
+        .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .brand-logo img { height: 50px; }
+        .brand-text { font-size: 2rem; font-weight: 700; color: white; }
+        .brand-text span { color: #7d828c; }
+        .subtitle { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+
+        /* ช่องกรอกข้อมูล */
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; }
+        .form-input {
+            width: 100%; padding: 15px 15px 15px 50px; background: #1a1c24; border: 1px solid #333;
+            border-radius: 50px; color: white; font-size: 0.95rem; box-sizing: border-box; outline: none; transition: 0.3s;
+        }
+        .form-input:focus { border-color: #4facfe; box-shadow: 0 0 10px rgba(79, 172, 254, 0.2); }
+
+        /* ปุ่ม Titanium */
+        .btn-titanium {
+            width: 100%; padding: 15px; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; margin-top: 20px;
+            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%); color: white;
+            border-top: 1px solid rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.3s;
+        }
+        .btn-titanium:hover { transform: translateY(-2px); background: linear-gradient(to bottom, #9ea4b0 0%, #4b5259 100%); }
+
+        .login-link { text-align: center; margin-top: 20px; color: #666; font-size: 0.9rem; }
+        .login-link a { color: #fff; text-decoration: none; font-weight: 600; }
+
+        /* Mobile */
+        @media (max-width: 768px) { .hero-section { display: none; } .form-section { flex: 1; padding: 20px; } }
+    </style>
+</head>
+<body>
+
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-title">ACTIVATE<br>YOUR LICENSE.</div>
+            <p style="color:#ccc;">เริ่มต้นใช้งานระบบ 3DNP Workspace<br>ด้วย License Key ของคุณ</p>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-container">
+            <div class="brand-logo">
+                <img src="logo.png" alt="Logo"> <div class="brand-text">3DNP <span>CONS.</span></div>
+            </div>
+            
+            <div class="subtitle">กรอกข้อมูลเพื่อเปิดใช้งานคีย์ (Activate)</div>
+
+            <div class="input-group">
+                <i class="fas fa-key input-icon"></i>
+                <input type="text" id="licenseKey" class="form-input" placeholder="License Key (เช่น YEAR-2026)">
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="userEmail" class="form-input" placeholder="Email Address">
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="newPassword" class="form-input" placeholder="Create Password">
+            </div>
+
+            <button class="btn-titanium" onclick="activateAccount()">ACTIVATE NOW</button>
+
+            <div class="login-link">
+                เปิดใช้งานแล้ว? <a href="login.html">กลับไปหน้า Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function activateAccount() {
+            const key = document.getElementById('licenseKey').value;
+            const email = document.getElementById('userEmail').value;
+            const pass = document.getElementById('newPassword').value;
+
+            if(!key || !email || !pass) { alert("กรุณากรอกข้อมูลให้ครบทุกช่องครับ"); return; }
+
+            // 👇 คีย์ที่พี่ขายให้ลูกค้า (เพิ่มตรงนี้ได้)
+            const validKeys = ['YEAR-2026', 'MONTH-01', 'ADMIN-VIP'];
+
+            if(validKeys.includes(key)) {
+                // บันทึกข้อมูลจำลอง Database
+                localStorage.setItem('registeredEmail', email);
+                localStorage.setItem('registeredPass', pass);
+                
+                alert("✅ Activation Successful!\nระบบเปิดใช้งานเรียบร้อยแล้ว\nกำลังพาไปหน้า Login เพื่อเข้าสู่ระบบ...");
+                window.location.href = 'login.html'; // ส่งไปหน้า Login
+            } else {
+                alert("❌ License Key ไม่ถูกต้อง หรือหมดอายุ");
+            }
+        }
+    </script>
+</body>
+</html>
