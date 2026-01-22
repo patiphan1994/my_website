@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3DNP | SALES & KEYGEN SYSTEM</title>
+    <title>3DNP | SALES & RECEIPT SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
-        /* --- 🌑 ล็อคธีม Titanium & Apple Minimal --- */
+        /* --- 🌑 ล็อคธีม Titanium & Apple Minimal & ห้ามลากคลุม --- */
         body { 
             margin: 0; padding: 0; font-family: 'Prompt', sans-serif; min-height: 100vh; 
             background: #000; color: white; display: flex; justify-content: center; align-items: center;
-            -webkit-user-select: none; user-select: none; 
+            -webkit-user-select: none; user-select: none; /* ห้ามลากคลุมดำตามสั่ง */
         }
 
+        /* --- 🔒 หน้าล็อกรหัส Admin --- */
         #admin-lock {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -33,9 +34,10 @@
         input, select {
             width: 100%; padding: 15px; background: #111; border: 1px solid #333; 
             color: white; border-radius: 50px; font-size: 1rem; box-sizing: border-box; outline: none;
-            -webkit-user-select: text; user-select: text;
+            -webkit-user-select: text; user-select: text; /* ยกเว้นช่องกรอกให้พิมพ์ได้ */
         }
 
+        /* ปุ่มสไตล์ Titanium */
         .btn-titanium {
             width: 100%; padding: 15px; border: none; border-radius: 50px; font-weight: 700;
             background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%); color: white;
@@ -43,18 +45,20 @@
             transition: 0.3s; margin-top: 10px;
         }
 
+        /* ปุ่มทางลัดไปหน้าทำงาน (Blue Apple Style) */
         .btn-workspace {
             background: linear-gradient(to right, #0071e3, #4facfe);
             margin-top: 20px;
         }
 
-        #status-log { margin-top: 20px; font-size: 0.8rem; text-align: center; color: #4facfe; }
+        #status-log { margin-top: 20px; font-size: 0.85rem; text-align: center; color: #4facfe; line-height: 1.6; }
 
-        /* 🏠 ปุ่ม Home */
+        /* 🏠 ปุ่ม Home ขวาบน */
         .btn-home {
             position: fixed; top: 25px; right: 25px; width: 45px; height: 45px;
-            background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; 
-            justify-content: center; align-items: center; color: white; text-decoration: none;
+            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.4);
         }
     </style>
 </head>
@@ -73,16 +77,16 @@
         <div style="font-size: 1.8rem; font-weight: 700; text-align: center; margin-bottom: 30px;">3DNP <span>SALES TOOL</span></div>
         
         <div class="input-group">
-            <label>CUSTOMER EMAIL</label>
+            <label>CUSTOMER EMAIL (อีเมลลูกค้า)</label>
             <input type="email" id="custEmail" placeholder="customer@email.com">
         </div>
 
         <div class="input-group">
-            <label>LICENSE PLAN</label>
+            <label>LICENSE PLAN (เลือกแผน)</label>
             <select id="keyType">
-                <option value="MONTHLY">Monthly Plan (รายเดือน)</option>
-                <option value="YEARLY">Yearly Plan (รายปี)</option>
-                <option value="VIP">Lifetime VIP (ตลอดชีพ)</option>
+                <option value="MONTHLY">Monthly Plan (รายเดือน - 590 THB)</option>
+                <option value="YEARLY">Yearly Plan (รายปี - 5,900 THB)</option>
+                <option value="VIP">Lifetime VIP (ตลอดชีพ - 15,000 THB)</option>
             </select>
         </div>
 
@@ -96,15 +100,16 @@
     </div>
 
     <script>
-        // 1. ปลดล็อกหน้าแอดมิน
+        // 1. เริ่มต้น EmailJS (ลูกพี่ต้องเอา Public Key มาใส่ตรงนี้นะครับ)
+        emailjs.init("YOUR_PUBLIC_KEY_HERE"); 
+
         function unlockAdmin() {
             const pass = document.getElementById('masterPassword').value;
-            if(pass === "admin1234") { // รหัสผ่านของลูกพี่
+            if(pass === "admin1234") { // รหัสผ่านแอดมิน
                 document.getElementById('admin-lock').style.display = 'none';
             } else { alert("❌ Access Denied!"); }
         }
 
-        // 2. ระบบ Gen Key + ส่งเมล + ทำใบเสร็จ
         async function processSale() {
             const email = document.getElementById('custEmail').value;
             const plan = document.getElementById('keyType').value;
@@ -112,33 +117,35 @@
 
             if(!email) { alert("กรุณากรอกอีเมลลูกค้าครับ"); return; }
 
-            // สุ่ม Key
+            // 2. ระบบ Gen Key อัตโนมัติ
             const random = Math.random().toString(36).substring(2, 10).toUpperCase();
-            const generatedKey = `3DNP-${plan}-${random}`;
-
-            log.innerText = "⏳ กำลังดำเนินการส่งใบเสร็จ...";
-
-            // รายละเอียดใบเสร็จ (Receipt Data)
+            const generatedKey = `3DNP-${plan}-${random.substring(0,4)}-${random.substring(4,8)}`;
+            
+            // 3. เตรียมข้อมูลใบเสร็จ (Receipt ID & Price)
             const receiptID = "REC-" + Date.now().toString().slice(-6);
-            const price = plan === "MONTHLY" ? "590 THB" : (plan === "YEARLY" ? "5,900 THB" : "15,000 THB");
+            let price = "590 THB";
+            if(plan === "YEARLY") price = "5,900 THB";
+            if(plan === "VIP") price = "15,000 THB";
 
-            // --- ส่วนส่งเมล (EmailJS) ---
-            // ลูกพี่ต้องเอา Public Key, Service ID, Template ID จาก EmailJS มาใส่นะครับ
-            // emailjs.init("YOUR_PUBLIC_KEY");
-            // emailjs.send("SERVICE_ID", "TEMPLATE_ID", {
-            //     to_email: email,
-            //     key: generatedKey,
-            //     plan: plan,
-            //     receipt_id: receiptID,
-            //     price: price,
-            //     date: new Date().toLocaleDateString()
-            // }).then(...)
+            log.innerHTML = "⏳ กำลังสร้างคีย์และส่งใบเสร็จจาก np_1994@3dnpcons.com...";
 
-            // จำลองการทำงาน (เนื่องจากต้องใช้ Key จริงของลูกพี่)
-            setTimeout(() => {
-                log.innerHTML = `✅ ส่งเมลเรียบร้อย!<br><b>Key:</b> ${generatedKey}<br><b>Receipt:</b> ${receiptID}`;
-                alert(`SUCCESS!\nสร้างคีย์: ${generatedKey}\nส่งใบเสร็จไปที่: ${email} เรียบร้อยแล้ว`);
-            }, 1500);
+            // 4. ส่งเมลผ่าน EmailJS
+            emailjs.send("service_0oj1gyf", "YOUR_TEMPLATE_ID_HERE", {
+                from_name: "3DNP CONSTRUCTION",
+                reply_to: "np_1994@3dnpcons.com", // เมลบริษัทจากรูป
+                to_email: email,
+                key: generatedKey,
+                plan: plan,
+                receipt_id: receiptID,
+                price: price,
+                date: new Date().toLocaleDateString()
+            }).then(function() {
+                log.innerHTML = `<span style="color:#2ed573;">✅ ส่งเมลเรียบร้อย!</span><br><b>Key:</b> ${generatedKey}<br><b>Receipt:</b> ${receiptID}`;
+                alert("SUCCESS!\nสร้างคีย์และส่งใบเสร็จไปที่ " + email + " เรียบร้อยแล้วครับ");
+            }, function(error) {
+                log.innerHTML = `<span style="color:#ff4757;">❌ ส่งเมลไม่สำเร็จ: ${JSON.stringify(error)}</span>`;
+                alert("เกิดข้อผิดพลาดในการส่งเมล!");
+            });
         }
     </script>
 </body>
