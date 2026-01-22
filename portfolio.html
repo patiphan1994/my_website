@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผลงานรวม - 3DNP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ก๊อปปี้สไตล์มาเหมือนหน้าแรกเป๊ะๆ เพื่อความเนียน */
+        body { 
+            margin: 0; font-family: 'Prompt', sans-serif; background: #ffffff; color: #333;
+            -webkit-user-select: none; -moz-user-select: none; user-select: none;
+            cursor: default;
+        }
+        nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 5%; background: white; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; 
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: #333; }
+        .logo span { color: #0056b3; } 
+        
+        .btn-back { text-decoration: none; color: #555; font-weight: 600; cursor: pointer; }
+        .btn-back:hover { color: #0056b3; }
+
+        .header-bg { background: #f4f4f4; padding: 40px 20px; text-align: center; }
+        h1 { margin: 0; color: #333; }
+
+        .section { padding: 50px 10%; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        
+        .card { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #eee; }
+        .card img { width: 100%; height: 250px; object-fit: cover; pointer-events: none; }
+        .content { padding: 20px; }
+        .title { font-size: 1.2rem; font-weight: 600; margin-bottom: 5px; }
+        .desc { color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body oncontextmenu="return false">
+
+    <nav>
+        <div class="logo">3DNP <span>PORTFOLIO</span></div>
+        <a href="index.html" class="btn-back">🡠 กลับหน้าหลัก</a>
+    </nav>
+
+    <div class="header-bg">
+        <h1>ผลงานก่อสร้างและออกแบบ</h1>
+        <p>รวบรวมผลงานคุณภาพที่เราภูมิใจ</p>
+    </div>
+
+    <div class="section">
+        <div class="grid">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="House">
+                <div class="content">
+                    <div class="title">บ้านพักอาศัย Minimal Style</div>
+                    <div class="desc">บ้านเดี่ยว 2 ชั้น พื้นที่ใช้สอย 150 ตร.ม.</div>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f" alt="Kitchen">
+                <div class="content">
+                    <div class="title">ตกแต่งภายในห้องครัว</div>
+                    <div class="desc">งานบิวท์อินครัวปูน สไตล์ลอฟท์</div>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1497366216548-37526070297c" alt="Office">
+                <div class="content">
+                    <div class="title">Renovate Office</div>
+                    <div class="desc">รีโนเวทออฟฟิศย่านสาทร</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's'))) return false; }
+    </script>
+</body>
+</html>
