@@ -3,109 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>3DNP WORKSPACE SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { margin: 0; font-family: 'Prompt', sans-serif; background: #eef1f5; height: 100vh; display: flex; justify-content: center; }
-        
-        .chat-container {
-            width: 100%; max-width: 800px; background: white; display: flex; flex-direction: column;
-            box-shadow: 0 0 30px rgba(0,0,0,0.05); height: 100%;
-        }
-        
-        /* หัวด้านบน */
-        .header {
-            padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: white;
-        }
-        .header h3 { margin: 0; color: #333; }
-        .status { font-size: 0.8rem; color: #28a745; } /* สีเขียว */
-        
-        .btn-logout { background: none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px; cursor: pointer; color: #666; }
-        .btn-logout:hover { background: #f5f5f5; color: red; }
+        /* --- 🌑 CORE THEME --- */
+        body { margin: 0; font-family: 'Prompt', sans-serif; background: #0f1014; color: #ffffff; display: flex; height: 100vh; overflow: hidden; }
 
-        /* พื้นที่แชท */
-        #chat-box {
-            flex: 1; padding: 20px; overflow-y: auto; background: #fff;
-            display: flex; flex-direction: column; gap: 15px;
+        /* --- ⬅️ SIDEBAR (เมนูซ้าย) --- */
+        .sidebar {
+            width: 250px; background: #1a1c24; border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .user-profile {
+            text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .user-avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #4facfe; margin-bottom: 10px; object-fit: cover; }
+        .user-name { font-weight: 700; font-size: 1.1rem; color: #fff; }
+        .user-role { font-size: 0.8rem; color: #4facfe; background: rgba(79, 172, 254, 0.1); padding: 2px 10px; border-radius: 10px; }
+        
+        .sidebar-menu { flex: 1; }
+        .menu-item {
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px; color: #aaa; text-decoration: none;
+            border-radius: 10px; margin-bottom: 5px; transition: 0.3s;
+        }
+        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.05); color: #fff; }
+        .menu-item i { width: 25px; text-align: center; }
+
+        .logout-btn {
+            background: #2f333a; color: #ff6b6b; padding: 12px; border-radius: 10px; text-align: center;
+            text-decoration: none; font-weight: 600; border: 1px solid #ff6b6b; transition: 0.3s;
+        }
+        .logout-btn:hover { background: #ff6b6b; color: white; }
+
+        /* --- 🖥️ MAIN CONTENT (พื้นที่ทำงาน) --- */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-title { font-size: 1.8rem; font-weight: 700; color: #fff; }
+        .date-display { color: #888; font-size: 0.9rem; }
+
+        /* --- 🧱 GRID SYSTEM (ตารางแอพ) --- */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* จัดออโต้ตามขนาดจอ */
+            gap: 20px;
         }
 
-        .msg { padding: 12px 18px; border-radius: 18px; max-width: 75%; font-size: 0.95rem; line-height: 1.5; }
-        
-        /* กล่องข้อความ AI (สีเทาอ่อน) */
-        .bot { background: #f0f2f5; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
-        
-        /* กล่องข้อความเรา (สีน้ำเงิน) */
-        .user { background: #0056b3; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        /* --- ⚙️ APP BUTTON CARD (ปุ่มกดแบบไทเทเนียม) --- */
+        .app-card {
+            background: linear-gradient(145deg, #1e2029, #16181e);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; padding: 25px 20px;
+            text-align: center; cursor: pointer; text-decoration: none;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 180px;
+        }
 
-        /* ช่องพิมพ์ */
-        .input-area {
-            padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white;
+        /* เอฟเฟกต์แสงไทเทเนียม */
+        .app-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
         }
-        input {
-            flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none; background: #f9f9f9;
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            border-color: #4facfe;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 15px rgba(79, 172, 254, 0.2);
         }
-        button {
-            background: #0056b3; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;
-        }
-        button:hover { background: #004494; }
+
+        .app-icon { font-size: 2.5rem; margin-bottom: 15px; color: #e0e0e0; text-shadow: 0 0 10px rgba(255,255,255,0.2); transition: 0.3s; }
+        .app-card:hover .app-icon { transform: scale(1.1); color: #fff; }
+        
+        .app-name { font-size: 1rem; font-weight: 600; color: #ddd; margin-bottom: 5px; }
+        .app-desc { font-size: 0.75rem; color: #666; }
+
+        /* สีพิเศษสำหรับปุ่มแต่ละประเภท */
+        .icon-admin { color: #ff4757; } /* สีแดงสำหรับแอดมิน */
+        .icon-ai { color: #2ed573; }    /* สีเขียวสำหรับ AI */
+        .icon-pdf { color: #ff6b81; }   /* สีชมพูสำหรับ PDF */
+        .icon-calc { color: #ffa502; }  /* สีส้มคำนวณ */
 
     </style>
 </head>
-<body>
-    
-    <script>
-        if (sessionStorage.getItem("isLoggedIn") !== "true") { window.location.href = "login.html"; }
-    </script>
+<body oncontextmenu="return false">
 
-    <div class="chat-container">
-        <div class="header">
-            <div>
-                <h3>ผู้ช่วยกฎหมาย AI</h3>
-                <span class="status">● ออนไลน์พร้อมทำงาน</span>
+    <div class="sidebar">
+        <div class="user-profile">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
+            <div class="user-name" id="display-name">Guest User</div>
+            <div class="user-role" id="display-role">Access Key: Active</div>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item active"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="#" class="menu-item"><i class="fas fa-bell"></i> แจ้งเตือน <span style="background:red; color:white; font-size:10px; padding:2px 5px; border-radius:50%; margin-left:auto;">3</span></a>
+            <a href="#" class="menu-item"><i class="fas fa-cog"></i> ตั้งค่าส่วนตัว</a>
+        </div>
+
+        <a href="login.html" class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> LOGOUT</a>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title">WORKSPACE <span style="font-weight:300; color:#4facfe;">SYSTEM</span></div>
+            <div class="date-display" id="current-date">Wed, 22 Jan 2026</div>
+        </div>
+
+        <div class="app-grid">
+
+            <a href="app_boq.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-clipboard-list app-icon icon-calc"></i>
+                <div class="app-name">ถอดปริมาณ BOQ Pro</div>
+                <div class="app-desc">คำนวณวัสดุและราคาอัตโนมัติ</div>
+            </a>
+
+            <a href="app_drawing.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-drafting-compass app-icon"></i>
+                <div class="app-name">เขียนแบบก่อสร้าง</div>
+                <div class="app-desc">Drafting & Design Tools</div>
+            </a>
+
+            <a href="app_ai.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-robot app-icon icon-ai"></i>
+                <div class="app-name">AI สถาปนิก</div>
+                <div class="app-desc">ปรึกษาการสร้างบ้าน & กฎหมาย</div>
+            </a>
+
+            <a href="app_structure.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-layer-group app-icon icon-calc"></i>
+                <div class="app-name">คำนวณโครงสร้าง</div>
+                <div class="app-desc">วิเคราะห์คาน เสา และรับน้ำหนัก</div>
+            </a>
+
+            <a href="app_pdf_merge.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-file-pdf app-icon icon-pdf"></i>
+                <div class="app-name">รวมไฟล์ PDF</div>
+                <div class="app-desc">Merge PDF Files</div>
+            </a>
+
+            <a href="app_img2pdf.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-image app-icon icon-pdf"></i>
+                <div class="app-name">รูปภาพ ➔ PDF</div>
+                <div class="app-desc">Convert Images to PDF</div>
+            </a>
+
+            <a href="app_pdf2img.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-file-image app-icon icon-pdf"></i>
+                <div class="app-name">PDF ➔ รูปภาพ</div>
+                <div class="app-desc">Convert PDF to Images</div>
+            </a>
+
+            <a href="app_converter.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-ruler-combined app-icon"></i>
+                <div class="app-name">แปลงหน่วยพื้นที่</div>
+                <div class="app-desc">ตร.วา ⇄ ตร.เมตร</div>
+            </a>
+
+            <a href="app_map.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-map-marked-alt app-icon"></i>
+                <div class="app-name">แผนที่ & โฉนด</div>
+                <div class="app-desc">เช็คตำแหน่งและระวางที่ดิน</div>
+            </a>
+
+            <a href="app_chat.html" class="app-card" onclick="checkAccess(event)">
+                <i class="fas fa-comments app-icon icon-ai"></i>
+                <div class="app-name">Meeting Room</div>
+                <div class="app-desc">แชทประชุมทีมงาน</div>
+            </a>
+
+            <a href="admin_dashboard.html" class="app-card" style="border-color: #ff4757;" onclick="checkAdmin(event)">
+                <i class="fas fa-user-shield app-icon icon-admin"></i>
+                <div class="app-name" style="color:#ff4757;">SUPER ADMIN</div>
+                <div class="app-desc">แก้ไขทุกอย่างในระบบ</div>
+            </a>
+
             </div>
-            <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
-        </div>
-
-        <div id="chat-box">
-            <div class="msg bot">สวัสดีครับ มีข้อมูลกฎหมายส่วนไหนให้ช่วยค้นหา พิมพ์บอกได้เลยครับ</div>
-        </div>
-
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="พิมพ์คำถามที่นี่..." onkeypress="handleEnter(event)">
-            <button onclick="sendMessage()">ส่ง</button>
-        </div>
     </div>
 
     <script>
-        // --- ⚠️ แก้ไขรหัส Supabase ตรงนี้ (สำคัญมาก!) ---
-        const SUPABASE_URL = 'วาง_PROJECT_URL_ที่นี่';
-        const SUPABASE_KEY = 'วาง_ANON_KEY_ที่นี่';
-        // ---------------------------------------------
-        const { createClient } = supabase;
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        // แสดงวันที่ปัจจุบัน
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', dateOptions);
 
+        // ฟังก์ชันจำลองการ Logout
         function logout() {
-            sessionStorage.removeItem("isLoggedIn");
-            window.location.href = "login.html";
+            // ล้างค่า Key ในเครื่อง
+            localStorage.removeItem('accessKey');
+            alert('ออกจากระบบเรียบร้อย');
         }
 
-        function sendMessage() {
-            const input = document.getElementById('user-input');
-            const chat = document.getElementById('chat-box');
-            const txt = input.value.trim();
-            if (!txt) return;
-
-            chat.innerHTML += `<div class="msg user">${txt}</div>`;
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-
-            setTimeout(() => {
-                chat.innerHTML += `<div class="msg bot">...กำลังค้นหาข้อมูล: "${txt}"</div>`;
-                chat.scrollTop = chat.scrollHeight;
-            }, 500);
+        // ฟังก์ชันเช็คสิทธิ์เบื้องต้น (เดี๋ยวเราจะเอาไปผูกกับ Firebase อีกที)
+        function checkAccess(e) {
+            // ตอนนี้ให้ผ่านไปก่อน แต่ในอนาคตจะเช็คว่า Key หมดอายุยัง
+            console.log("Access Granted");
         }
-        function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
+
+        function checkAdmin(e) {
+            // เช็คว่าเป็น Admin ตัวจริงไหม
+            e.preventDefault(); // หยุดการไปหน้าถัดไปก่อน
+            const password = prompt("กรุณาใส่รหัสลับ Super Admin:");
+            if(password === "admin999") { // รหัสสมมติ
+                window.location.href = "admin_dashboard.html";
+            } else {
+                alert("คุณไม่มีสิทธิ์เข้าถึงส่วนนี้!");
+            }
+        }
     </script>
 
 </body>
