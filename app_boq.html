@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOQ PRO - คำนวณวัสดุ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #0f1014; color: white; font-family: 'Prompt', sans-serif; padding: 20px; }
+        
+        /* หัวข้อ */
+        .header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+        .back-btn { text-decoration: none; color: #aaa; font-size: 1.2rem; transition: 0.3s; }
+        .back-btn:hover { color: white; transform: translateX(-5px); }
+        h1 { margin: 0; color: #ffa502; } /* สีส้ม */
+
+        /* กล่องคำนวณ */
+        .calc-box { background: #1a1c24; padding: 30px; border-radius: 15px; border: 1px solid #333; max-width: 600px; margin: 0 auto; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #ccc; }
+        input { width: 100%; padding: 12px; background: #0b0c0f; border: 1px solid #444; color: white; border-radius: 8px; font-family: 'Prompt'; font-size: 1rem; box-sizing: border-box; }
+        
+        .btn-calc { width: 100%; padding: 15px; background: #ffa502; border: none; border-radius: 50px; font-weight: bold; font-size: 1.1rem; cursor: pointer; color: black; transition: 0.2s; }
+        .btn-calc:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(255, 165, 2, 0.5); }
+
+        .result { margin-top: 20px; padding: 20px; background: #252830; border-radius: 10px; text-align: center; display: none; }
+        .result h3 { color: #2ecc71; margin: 0; font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="system.html" class="back-btn"><i class="fas fa-arrow-left"></i> กลับหน้าหลัก</a>
+        <h1><i class="fas fa-clipboard-list"></i> ถอดปริมาณวัสดุ (BOQ Basic)</h1>
+    </div>
+
+    <div class="calc-box">
+        <div class="input-group">
+            <label>พื้นที่ใช้สอย (ตารางเมตร)</label>
+            <input type="number" id="area" placeholder="เช่น 100">
+        </div>
+        
+        <button class="btn-calc" onclick="calculate()">คำนวณราคาประเมิน</button>
+
+        <div class="result" id="output">
+            ราคาประเมินเบื้องต้น
+            <h3 id="priceText">0 บาท</h3>
+            <p style="font-size:0.8rem; color:#888;">*ราคากลาง 15,000 บ./ตร.ม.</p>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const area = document.getElementById('area').value;
+            if(area) {
+                const price = area * 15000; // สมมติราคาต่อ ตร.ม.
+                // จัดรูปแบบตัวเลขให้มีลูกน้ำ (เช่น 1,500,000)
+                document.getElementById('priceText').innerText = price.toLocaleString() + " บาท";
+                document.getElementById('output').style.display = 'block';
+            } else {
+                alert("กรุณาใส่ขนาดพื้นที่ก่อนครับ");
+            }
+        }
+    </script>
+
+</body>
+</html>
