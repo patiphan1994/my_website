@@ -18,30 +18,32 @@
        👇 เริ่มวางทับตั้งแต่บรรทัดที่ 18 ได้เลย (รวมเมนูบาร์ให้แล้ว)
        ========================================================= */
 
-    /* 🟠 1. ปุ่ม Shop (สีส้ม - คริสตัล) */
+    /* 🟠 1. ปุ่ม Shop (สีส้ม) */
     .btn-shop { 
         text-decoration: none;
         color: white;             
-        padding: 10px 20px; 
+        padding: 10px 25px; 
         border-radius: 50px;        
-        font-weight: 700; 
-        font-size: 0.9rem;
-        cursor: pointer;
-        display: inline-block;
-        margin-left: 10px;
+        font-weight: 700; font-size: 0.9rem;
+        cursor: pointer; display: inline-block; margin-left: 10px;
         
         background: linear-gradient(to bottom, #ffae88 0%, #f57224 100%);
         border: 2px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 4px 10px rgba(245, 114, 36, 0.4), inset 0 5px 5px rgba(255, 255, 255, 0.7);
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 10px rgba(245, 114, 36, 0.4);
+        transition: all 0.3s ease; /* ปรับเวลาให้นุ่มนวล */
     }
+    
+    /* ตอนชี้: เรืองแสงสีส้มทอง 🔥 */
     .btn-shop:hover {
         background: linear-gradient(to bottom, #ffc4a6 0%, #ff8c49 100%);
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(245, 114, 36, 0.6), inset 0 5px 5px rgba(255, 255, 255, 0.9);
+        box-shadow: 
+            0 0 15px rgba(255, 140, 0, 0.8),   /* แสงชั้นใน */
+            0 0 30px rgba(255, 140, 0, 0.4),   /* แสงชั้นนอกฟุ้งๆ */
+            inset 0 0 10px rgba(255, 255, 255, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.9);
     }
-    .btn-shop:active { transform: scale(0.95); box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+    .btn-shop:active { transform: scale(0.95); }
 
 
     /* --- ส่วนเมนูบาร์ (ห้ามลบ) --- */
@@ -55,57 +57,60 @@
     .menu-group { display: flex; gap: 10px; align-items: center; }
 
 
-    /* 🟢 2. ปุ่มผลงานรวม (สีเขียว - คริสตัล) */
+    /* 🟢 2. ปุ่มผลงานรวม (สีเขียว) */
     .btn-link { 
         text-decoration: none;
         color: white; 
-        padding: 10px 20px;
+        padding: 10px 25px;
         border-radius: 50px;
-        font-weight: 700; 
-        font-size: 0.9rem;
-        cursor: pointer;
-        display: inline-block;
-        margin-left: 5px;
+        font-weight: 700; font-size: 0.9rem;
+        cursor: pointer; display: inline-block; margin-left: 5px;
 
         background: linear-gradient(to bottom, #88ffae 0%, #28a745 100%);
         border: 2px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4), inset 0 5px 5px rgba(255, 255, 255, 0.7);
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+        transition: all 0.3s ease;
     }
+
+    /* ตอนชี้: เรืองแสงสีเขียวนีออน 🟢 */
     .btn-link:hover { 
         background: linear-gradient(to bottom, #aaffc5 0%, #34ce57 100%);
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(40, 167, 69, 0.6), inset 0 5px 5px rgba(255, 255, 255, 0.9);
+        box-shadow: 
+            0 0 15px rgba(0, 255, 127, 0.8),   /* แสงสีเขียวสด */
+            0 0 30px rgba(0, 255, 127, 0.4),
+            inset 0 0 10px rgba(255, 255, 255, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.9);
     }
     .btn-link:active { transform: scale(0.95); }
 
 
-    /* 🔵 3. ปุ่ม Login (สีน้ำเงิน - คริสตัล) */
+    /* 🔵 3. ปุ่ม Login (สีน้ำเงิน) */
     .btn-login { 
         text-decoration: none;
         color: white;             
-        padding: 10px 20px; 
+        padding: 10px 25px; 
         border-radius: 50px;        
-        font-weight: 700; 
-        font-size: 0.9rem;
-        cursor: pointer;
-        display: inline-block;
-        margin-left: 5px;
+        font-weight: 700; font-size: 0.9rem;
+        cursor: pointer; display: inline-block; margin-left: 5px;
         
         background: linear-gradient(to bottom, #4facfe 0%, #0056b3 100%);
         border: 2px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 4px 10px rgba(0, 86, 179, 0.4), inset 0 5px 5px rgba(255, 255, 255, 0.7);
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 10px rgba(0, 86, 179, 0.4);
+        transition: all 0.3s ease;
     }
+
+    /* ตอนชี้: เรืองแสงสีฟ้าอ่อน ⚡ */
     .btn-login:hover {
-        background: linear-gradient(to bottom, #73b9ff 0%, #004494 100%);
+        background: linear-gradient(to bottom, #6ec1ff 0%, #004494 100%);
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 86, 179, 0.6), inset 0 5px 5px rgba(255, 255, 255, 0.9);
+        box-shadow: 
+            0 0 15px rgba(0, 200, 255, 0.8),   /* แสงสีฟ้า Cyberpunk */
+            0 0 30px rgba(0, 200, 255, 0.4),
+            inset 0 0 10px rgba(255, 255, 255, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.9);
     }
     .btn-login:active { transform: scale(0.95); }
-
     /* =========================================================
        👆 จบโค้ดตรงนี้ (เท่ากับจบที่บรรทัด 52 เดิมพอดีครับ)
        ========================================================= */
