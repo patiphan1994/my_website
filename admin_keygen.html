@@ -6,6 +6,9 @@
     <title>3DNP | SALES & RECEIPT SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
@@ -79,7 +82,20 @@
     </div>
 
     <script>
-        // 📍 รหัส Public Key ของคุณ
+        // 📍 2. ตั้งค่า Firebase Configuration (กุญแจเชื่อมต่อ Google Cloud)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEOYS5BIP08bQA-DVmM0iVcmx7Ll-0Y5Y",
+            authDomain: "dnp-database.firebaseapp.com",
+            projectId: "dnp-database",
+            storageBucket: "dnp-database.firebasestorage.app",
+            messagingSenderId: "760733533454",
+            appId: "1:760733533454:web:b627247a4652aab645835f",
+            measurementId: "G-BPC72476ZQ"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 📍 3. รหัส Public Key ของลูกพี่
         emailjs.init("wbq8qT3ryO_BG2qBv"); 
 
         function unlockAdmin() {
@@ -95,6 +111,7 @@
             const log = document.getElementById('status-log');
             if(!email) { alert("กรุณากรอกอีเมลลูกค้าครับ"); return; }
 
+            // 📍 4. สร้างข้อมูล License
             const random = Math.random().toString(36).substring(2, 10).toUpperCase();
             const generatedKey = `3DNP-${plan}-${random.substring(0,4)}-${random.substring(4,8)}`;
             const receiptID = "REC-" + Date.now().toString().slice(-6);
@@ -102,24 +119,35 @@
             if(plan === "YEARLY") price = "5,900 THB";
             if(plan === "VIP") price = "15,000 THB";
 
-            log.innerHTML = "⏳ กำลังส่งใบเสร็จจาก np_1994@3dnpcons.com...";
+            log.innerHTML = "⏳ กำลังบันทึกลง Cloud และส่งเมล...";
 
-            // 📍 รหัส Service ID และ Template ID ของคุณ
-            emailjs.send("service_9f944n5", "template_xzzodtr", {
-                reply_to: "np_1994@3dnpcons.com",
-                to_email: email,
-                key: generatedKey,
-                plan: plan,
-                receipt_id: receiptID,
-                price: price,
-                date: new Date().toLocaleDateString()
-            }).then(function() {
-                log.innerHTML = `<span style="color:#2ed573;">✅ ส่งใบเสร็จเรียบร้อย!</span><br><b>Key:</b> ${generatedKey}`;
-                alert("SUCCESS!\nส่งรหัสและใบเสร็จไปที่ " + email + " เรียบร้อยครับ");
-            }, function(error) {
-                log.innerHTML = `<span style="color:#ff4757;">❌ ส่งเมลไม่สำเร็จ: ${JSON.stringify(error)}</span>`;
-                alert("เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้งครับ");
-            });
+            try {
+                // 🚀 5. บันทึกคีย์ลง Firebase Firestore (เพื่อให้เครื่องเพื่อนเปิดใช้งานได้)
+                await db.collection("licenses").doc(generatedKey).set({
+                    customer_email: email,
+                    plan: plan,
+                    status: "active",
+                    created_at: new Date().toISOString()
+                });
+
+                // 📧 6. ส่งเมลใบเสร็จผ่าน EmailJS
+                await emailjs.send("service_9f944n5", "template_xzzodtr", {
+                    reply_to: "np_1994@3dnpcons.com",
+                    to_email: email,
+                    key: generatedKey,
+                    plan: plan,
+                    receipt_id: receiptID,
+                    price: price,
+                    date: new Date().toLocaleDateString()
+                });
+
+                log.innerHTML = `<span style="color:#2ed573;">✅ ออนไลน์และส่งใบเสร็จเรียบร้อย!</span><br><b>Key:</b> ${generatedKey}`;
+                alert("SUCCESS!\nคีย์ออนไลน์แล้ว และส่งเมลไปที่ " + email + " เรียบร้อยครับ");
+
+            } catch (error) {
+                log.innerHTML = `<span style="color:#ff4757;">❌ เกิดข้อผิดพลาด: ${error.message}</span>`;
+                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูลครับ!");
+            }
         }
     </script>
 </body>
