@@ -6,7 +6,19 @@
     <title>3DNP CONSTRUCTION</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; font-family: 'Prompt', sans-serif; background: #ffffff; color: #333; }
+        /* --- 🔒 ส่วนป้องกันการก๊อปปี้ (CSS) --- */
+        body { 
+            margin: 0; 
+            font-family: 'Prompt', sans-serif; 
+            background: #ffffff; 
+            color: #333;
+            
+            /* ห้ามคลุมดำเลือกตัวหนังสือ */
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none;    /* Firefox */
+            -ms-user-select: none;     /* IE */
+            user-select: none;         /* Chrome/Edge */
+        }
         
         /* เมนูบาร์ */
         nav { 
@@ -16,24 +28,23 @@
             position: sticky; top: 0; z-index: 100; 
         }
         .logo { font-size: 1.5rem; font-weight: 600; color: #000; letter-spacing: 1px; }
-        .logo span { color: #0056b3; } /* สีน้ำเงินเพิ่มจุดเด่น */
+        .logo span { color: #0056b3; } 
         
-        /* --- 👇 ปุ่มเช็คกฎหมาย (เพิ่มให้ตรงนี้) --- */
+        /* ปุ่มเช็คกฎหมาย */
         .btn-check-law { 
             text-decoration: none; 
-            color: #0056b3;             /* สีตัวหนังสือ */
-            border: 1px solid #0056b3;  /* ขอบสีน้ำเงิน */
+            color: #0056b3;             
+            border: 1px solid #0056b3;  
             padding: 8px 20px; 
-            border-radius: 50px;        /* ปุ่มมนๆ */
+            border-radius: 50px;        
             transition: 0.3s; 
             font-weight: 600;
             font-size: 0.95rem;
         }
         .btn-check-law:hover { 
-            background-color: #0056b3;  /* เอาเมาส์ชี้แล้วพื้นเป็นสีน้ำเงิน */
-            color: white;               /* ตัวหนังสือเปลี่ยนเป็นขาว */
+            background-color: #0056b3;  
+            color: white;               
         }
-        /* ------------------------------------- */
 
         /* ส่วนหัวข้อหลัก */
         .hero { 
@@ -55,14 +66,17 @@
         }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        .card img { width: 100%; height: 250px; object-fit: cover; }
+        .card img { 
+            width: 100%; height: 250px; object-fit: cover; 
+            pointer-events: none; /* ห้ามลากรูปภาพ */
+        }
         .content { padding: 25px; }
         .content h3 { margin: 0 0 10px 0; font-size: 1.2rem; color: #333; }
         .content p { color: #888; font-size: 0.9rem; margin-bottom: 15px; }
         .price { color: #0056b3; font-weight: 600; font-size: 1.1rem; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false">
 
     <nav>
         <div class="logo">3DNP <span>CONS.</span></div>
@@ -103,6 +117,18 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.onkeydown = function(e) {
+            // ห้ามกด Ctrl+C, Ctrl+U, Ctrl+S, F12
+            if(e.keyCode == 123) { return false; } // F12
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)){ return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)){ return false; }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)){ return false; } // Ctrl+U
+            if(e.ctrlKey && e.keyCode == 'C'.charCodeAt(0)){ return false; } // Ctrl+C
+            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)){ return false; } // Ctrl+S
+        }
+    </script>
 
 </body>
 </html>
