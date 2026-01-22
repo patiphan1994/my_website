@@ -8,8 +8,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- 🌑 THEME (ใช้ CSS ชุดเดิมเป๊ะๆ) --- */
-        body { margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; display: flex; overflow: hidden; background: #0f1014; }
+        /* --- 🌑 CORE THEME --- */
+        body { 
+            margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; 
+            display: flex; overflow: hidden; background: #0f1014;
+            
+            /* 🚫 ป้องกันการลากคลุมดำ (แก้ตรงนี้ครับลูกพี่) */
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none;    /* Firefox */
+            -ms-user-select: none;     /* IE/Edge */
+            user-select: none;         /* Chrome/Standard */
+        }
         
         .hero-section {
             flex: 1.2;
@@ -18,19 +27,19 @@
         }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(15,16,20,0.9) 0%, rgba(15,16,20,0.3) 100%); }
         .hero-content { position: relative; z-index: 2; color: white; max-width: 80%; }
-        .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
+        .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; cursor: default; }
         
         .login-section { flex: 0.8; background: #0f1014; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; }
         .login-container { width: 100%; max-width: 400px; }
 
-        .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-        .brand-logo img { height: 50px; }
+        .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: default; }
+        .brand-logo img { height: 50px; pointer-events: none; /* ห้ามลากรูป */ }
         .brand-text { font-size: 2rem; font-weight: 700; color: white; }
         .brand-text span { color: #7d828c; }
-        .welcome-text { color: #888; margin-bottom: 30px; font-size: 0.95rem; }
+        .welcome-text { color: #888; margin-bottom: 30px; font-size: 0.95rem; cursor: default; }
 
         .input-group { margin-bottom: 20px; position: relative; }
-        .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; }
+        .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none; }
         
         /* 👁️ สไตล์ปุ่มลูกตา */
         .toggle-password {
@@ -42,6 +51,12 @@
         .form-input {
             width: 100%; padding: 15px 50px 15px 50px; background: #1a1c24; border: 1px solid #333;
             border-radius: 50px; color: white; font-size: 1rem; box-sizing: border-box; outline: none; transition: 0.3s;
+            
+            /* ✅ ยกเว้นช่องกรอกข้อความ ให้พิมพ์และลากได้ปกติ */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
         .form-input:focus { border-color: #4facfe; box-shadow: 0 0 15px rgba(79, 172, 254, 0.1); }
 
@@ -104,11 +119,11 @@
             const icon = document.querySelector('.toggle-password');
             
             if (passField.type === "password") {
-                passField.type = "text"; // เปลี่ยนเป็นข้อความธรรมดา (เห็นรหัส)
+                passField.type = "text"; 
                 icon.classList.remove('fa-eye');
                 icon.classList.add('fa-eye-slash');
             } else {
-                passField.type = "password"; // เปลี่ยนกลับเป็นจุดๆ (ซ่อนรหัส)
+                passField.type = "password"; 
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
             }
@@ -125,7 +140,6 @@
 
             // เงื่อนไข: ถ้าตรงกับที่สมัครไว้ หรือ ใช้รหัส Admin (1234)
             if((email === registeredEmail && pass === registeredPass) || pass === '1234') {
-                // ผ่าน! ไปหน้าทำงาน
                 window.location.href = 'system.html';
             } else {
                 alert("❌ อีเมลหรือรหัสผ่านไม่ถูกต้องครับ\n(หรือลองไปหน้า Activate เพื่อลงทะเบียนก่อนนะครับ)");
