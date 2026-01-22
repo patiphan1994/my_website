@@ -9,36 +9,51 @@
     
     <style>
         /* --- 🌑 THEME (ดีไซน์เดิมเป๊ะ 100%) --- */
-        body { margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; display: flex; overflow: hidden; background: #0f1014; }
+        body { 
+            margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; 
+            display: flex; overflow: hidden; background: #0f1014;
+            
+            /* 🚫 ป้องกันการลากคลุมดำ (ใส่เพิ่มให้แล้วครับ) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
         
         /* ฝั่งซ้าย (รูปภาพ) */
         .hero-section {
             flex: 1.2;
-            /* รูปพื้นหลังตึกก่อสร้างสวยๆ */
             background: url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
             position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px;
         }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(15,16,20,0.95) 0%, rgba(15,16,20,0.4) 100%); }
         .hero-content { position: relative; z-index: 2; color: white; max-width: 80%; }
-        .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; color: #4facfe; } /* หัวข้อสีฟ้า */
+        .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; color: #4facfe; cursor: default; }
         
         /* ฝั่งขวา (ฟอร์ม) */
         .form-section { flex: 0.8; background: #0f1014; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; }
         .form-container { width: 100%; max-width: 400px; }
 
         /* โลโก้ & หัวข้อ */
-        .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-        .brand-logo img { height: 50px; }
+        .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: default; }
+        .brand-logo img { height: 50px; pointer-events: none; }
         .brand-text { font-size: 2rem; font-weight: 700; color: white; }
         .brand-text span { color: #7d828c; }
-        .subtitle { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+        .subtitle { color: #888; margin-bottom: 30px; font-size: 0.9rem; cursor: default; }
 
         /* ช่องกรอกข้อมูล */
         .input-group { margin-bottom: 15px; position: relative; }
-        .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; }
+        .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none; }
+        
         .form-input {
             width: 100%; padding: 15px 15px 15px 50px; background: #1a1c24; border: 1px solid #333;
             border-radius: 50px; color: white; font-size: 0.95rem; box-sizing: border-box; outline: none; transition: 0.3s;
+            
+            /* ✅ อนุญาตให้พิมพ์และลากเลือกข้อความในช่องนี้ได้ */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
         .form-input:focus { border-color: #4facfe; box-shadow: 0 0 10px rgba(79, 172, 254, 0.2); }
 
@@ -70,7 +85,8 @@
     <div class="form-section">
         <div class="form-container">
             <div class="brand-logo">
-                <img src="logo.png" alt="Logo"> <div class="brand-text">3DNP <span>CONS.</span></div>
+                <img src="logo.png" alt="Logo">
+                <div class="brand-text">3DNP <span>CONS.</span></div>
             </div>
             
             <div class="subtitle">กรอกข้อมูลเพื่อเปิดใช้งานคีย์ (Activate)</div>
@@ -106,7 +122,7 @@
 
             if(!key || !email || !pass) { alert("กรุณากรอกข้อมูลให้ครบทุกช่องครับ"); return; }
 
-            // 👇 คีย์ที่พี่ขายให้ลูกค้า (เพิ่มตรงนี้ได้)
+            // 👇 คีย์ที่พี่ขายให้ลูกค้า
             const validKeys = ['YEAR-2026', 'MONTH-01', 'ADMIN-VIP'];
 
             if(validKeys.includes(key)) {
