@@ -6,57 +6,31 @@
     <title>ACTIVATE LICENSE - 3DNP</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
     <style>
+        /* --- ดีไซน์เดิมของลูกพี่ (ห้ามเปลี่ยน) --- */
         body { margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; display: flex; overflow: hidden; background: #0f1014; -webkit-user-select: none; user-select: none; }
-        
-        /* ฝั่งซ้าย: รูปภาพระดับโลก */
-        .hero-section {
-            flex: 1.2;
-            background: url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
-            position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px;
-        }
+        .hero-section { flex: 1.2; background: url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(15,16,20,0.95) 0%, rgba(15,16,20,0.4) 100%); }
         .hero-content { position: relative; z-index: 2; color: white; max-width: 80%; }
         .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; color: #4facfe; }
-
-        /* ฝั่งขวา: ฟอร์ม Titanium */
         .form-section { flex: 0.8; background: #0f1014; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; overflow-y: auto; }
         .form-container { width: 100%; max-width: 400px; }
-
         .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
         .brand-text { font-size: 2rem; font-weight: 700; color: white; }
         .brand-text span { color: #7d828c; }
-
-        /* ปุ่มซื้อคีย์รายเดือน/รายปี */
         .purchase-options { display: flex; gap: 10px; margin-bottom: 25px; }
-        .btn-plan {
-            flex: 1; padding: 12px; border: 1px solid #333; border-radius: 12px; background: rgba(255,255,255,0.03);
-            color: #ccc; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; font-size: 0.8rem;
-        }
+        .btn-plan { flex: 1; padding: 12px; border: 1px solid #333; border-radius: 12px; background: rgba(255,255,255,0.03); color: #ccc; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; font-size: 0.8rem; }
         .btn-plan:hover { border-color: #4facfe; background: rgba(79, 172, 254, 0.05); color: #fff; }
         .btn-plan strong { display: block; font-size: 1rem; color: #fff; }
-
-        /* Input */
         .input-group { margin-bottom: 15px; position: relative; }
         .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; }
-        .form-input {
-            width: 100%; padding: 15px 15px 15px 50px; background: #1a1c24; border: 1px solid #333;
-            border-radius: 50px; color: white; font-size: 0.95rem; box-sizing: border-box; outline: none;
-        }
-
-        .btn-titanium {
-            width: 100%; padding: 15px; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; margin-top: 10px;
-            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%); color: white;
-            border-top: 1px solid rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-
-        /* ปุ่ม Home ขวาบน */
-        .floating-home-top {
-            position: fixed; top: 25px; right: 25px; width: 45px; height: 45px;
-            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.4); z-index: 1000;
-        }
+        .form-input { width: 100%; padding: 15px 15px 15px 50px; background: #1a1c24; border: 1px solid #333; border-radius: 50px; color: white; font-size: 0.95rem; box-sizing: border-box; outline: none; }
+        .btn-titanium { width: 100%; padding: 15px; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; margin-top: 10px; background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%); color: white; border-top: 1px solid rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .floating-home-top { position: fixed; top: 25px; right: 25px; width: 45px; height: 45px; background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.4); z-index: 1000; }
     </style>
 </head>
 <body>
@@ -92,7 +66,7 @@
                 <input type="password" id="newPassword" class="form-input" placeholder="Create Password">
             </div>
 
-            <button class="btn-titanium" onclick="activateAccount()">ACTIVATE NOW</button>
+            <button class="btn-titanium" id="btnActivate" onclick="activateAccount()">ACTIVATE NOW</button>
             <p style="text-align:center; color:#666; font-size:0.9rem; margin-top:20px;">
                 Already active? <a href="login.html" style="color:#fff; text-decoration:none;">Login here</a>
             </p>
@@ -100,13 +74,55 @@
     </div>
 
     <script>
-        function activateAccount() {
+        // 📍 2. ตั้งค่า Firebase Configuration (กุญแจเชื่อมต่อที่ลูกพี่ได้มา)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEOYS5BIP08bQA-DVmM0iVcmx7Ll-0Y5Y",
+            authDomain: "dnp-database.firebaseapp.com",
+            projectId: "dnp-database",
+            storageBucket: "dnp-database.firebasestorage.app",
+            messagingSenderId: "760733533454",
+            appId: "1:760733533454:web:b627247a4652aab645835f",
+            measurementId: "G-BPC72476ZQ"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 📍 3. ฟังก์ชันตรวจสอบคีย์ผ่านระบบ Cloud
+        async function activateAccount() {
             const key = document.getElementById('licenseKey').value;
-            if(key.includes("3DNP") || key === "1234") {
-                alert("✅ Success! พาท่านไปหน้า Login...");
-                window.location.href = "login.html";
-            } else {
-                alert("❌ คีย์ไม่ถูกต้อง");
+            const email = document.getElementById('userEmail').value;
+            const pass = document.getElementById('newPassword').value;
+            const btn = document.getElementById('btnActivate');
+
+            if(!key || !email || !pass) {
+                alert("กรุณากรอกข้อมูลให้ครบทุกช่องครับ");
+                return;
+            }
+
+            btn.innerText = "CHECKING CLOUD...";
+            btn.disabled = true;
+
+            try {
+                // 🚀 วิ่งไปตรวจสอบคีย์ในฐานข้อมูล Google Cloud
+                const docRef = db.collection("licenses").doc(key);
+                const doc = await docRef.get();
+
+                if (doc.exists() && doc.data().status === "active") {
+                    // ✅ ถ้าเจอคีย์! ให้ผ่านและเก็บเมลไว้ใช้หน้าถัดไป
+                    localStorage.setItem('userEmail', email);
+                    alert("✅ ยินดีด้วย! เปิดใช้งานระบบสำเร็จ\nระบบกำลังพาท่านไปหน้า Login...");
+                    window.location.href = "login.html";
+                } else {
+                    // ❌ ไม่เจอคีย์หรือคีย์ผิด
+                    alert("❌ คีย์ไม่ถูกต้อง หรือไม่ได้ลงทะเบียนในระบบออนไลน์ครับ");
+                    btn.innerText = "ACTIVATE NOW";
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Error activating account: ", error);
+                alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์!");
+                btn.innerText = "ACTIVATE NOW";
+                btn.disabled = false;
             }
         }
     </script>
