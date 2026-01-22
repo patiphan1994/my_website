@@ -14,6 +14,21 @@
             cursor: default; /* เมาส์เป็นลูกศรตลอด */
         }
 
+        /* สไตล์ปุ่มร้านค้า (สีส้ม) */
+    .btn-shop { 
+        text-decoration: none;
+        background-color: #f57224; /* สีส้ม */
+        color: white;             
+        padding: 8px 20px; 
+        border-radius: 50px;        
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-left: 10px; /* เว้นระยะห่างจากปุ่มข้างๆ */
+    }
+    .btn-shop:hover { background-color: #d0611f; }
+
         /* เมนูบาร์ */
         nav { 
             display: flex; justify-content: space-between; align-items: center; 
@@ -59,7 +74,8 @@
     <nav>
         <div class="logo">3DNP <span>CONS.</span></div>
         <div class="menu-group">
-            <a href="portfolio.html" class="btn-link">📁 ไปหน้าผลงานรวม ➤</a>
+            <a href="shop.html" class="btn-shop">🛍️ เลือกซื้อสินค้า</a>
+            <a href="portfolio.html" class="btn-link">📁 ผลงานรวม</a>
             <a href="login.html" class="btn-login">🔒 ลงชื่อเข้าใช้งาน</a>
         </div>
     </nav>
