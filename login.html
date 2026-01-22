@@ -3,54 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SECURE LOGIN - 3DNP CONSTRUCTION</title>
+    <title>LOGIN - 3DNP CONSTRUCTION</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- 🌑 CORE SETUP --- */
+        /* --- 🌑 THEME (ใช้ CSS ชุดเดิมเป๊ะๆ) --- */
         body { margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; display: flex; overflow: hidden; background: #0f1014; }
         
-        /* --- 🖼️ LEFT SIDE (IMAGE) --- */
         .hero-section {
             flex: 1.2;
             background: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
-            position: relative;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 60px;
+            position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px;
         }
-        .hero-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to right, rgba(15,16,20,0.9) 0%, rgba(15,16,20,0.3) 100%);
-        }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(15,16,20,0.9) 0%, rgba(15,16,20,0.3) 100%); }
         .hero-content { position: relative; z-index: 2; color: white; max-width: 80%; }
         .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
-        .hero-desc { font-size: 1.1rem; color: #ccc; font-weight: 300; }
-
-        /* --- 🔐 RIGHT SIDE (LOGIN FORM) --- */
-        .login-section {
-            flex: 0.8; background: #0f1014; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; padding: 40px; position: relative;
-        }
+        
+        .login-section { flex: 0.8; background: #0f1014; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; }
         .login-container { width: 100%; max-width: 400px; }
 
-        /* LOGO */
-        .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
         .brand-logo img { height: 50px; }
         .brand-text { font-size: 2rem; font-weight: 700; color: white; }
-        .brand-text span { color: #7d828c; } /* Titanium Color */
+        .brand-text span { color: #7d828c; }
+        .welcome-text { color: #888; margin-bottom: 30px; font-size: 0.95rem; }
 
-        .welcome-text { color: #888; margin-bottom: 40px; font-size: 0.95rem; }
-
-        /* INPUT FIELDS */
         .input-group { margin-bottom: 20px; position: relative; }
         .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; }
+        
+        /* 👁️ สไตล์ปุ่มลูกตา */
+        .toggle-password {
+            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+            color: #666; cursor: pointer; transition: 0.3s; z-index: 10;
+        }
+        .toggle-password:hover { color: #fff; }
+
         .form-input {
-            width: 100%; padding: 15px 15px 15px 50px; background: #1a1c24; border: 1px solid #333;
+            width: 100%; padding: 15px 50px 15px 50px; background: #1a1c24; border: 1px solid #333;
             border-radius: 50px; color: white; font-size: 1rem; box-sizing: border-box; outline: none; transition: 0.3s;
         }
         .form-input:focus { border-color: #4facfe; box-shadow: 0 0 15px rgba(79, 172, 254, 0.1); }
 
-        /* BUTTONS (TITANIUM STYLE) */
         .btn-main {
             width: 100%; padding: 15px; border: none; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 10px;
             background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%); color: white;
@@ -58,38 +52,11 @@
         }
         .btn-main:hover { transform: translateY(-2px); background: linear-gradient(to bottom, #9ea4b0 0%, #4b5259 100%); }
         
-        /* PURCHASE BUTTONS */
-        .purchase-options { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-outline {
-            flex: 1; padding: 10px; border: 1px solid #444; border-radius: 10px; background: transparent; color: #888;
-            font-size: 0.8rem; cursor: pointer; transition: 0.3s; text-align: center; text-decoration: none;
-        }
-        .btn-outline:hover { border-color: #4facfe; color: #4facfe; background: rgba(79, 172, 254, 0.05); }
-        .btn-outline strong { display: block; font-size: 1rem; color: white; margin-bottom: 2px; }
-
-        /* FOOTER LINKS */
         .footer-links { margin-top: 30px; display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; }
-        .link { color: #888; text-decoration: none; transition: 0.3s; cursor: pointer; }
+        .link { color: #888; text-decoration: none; cursor: pointer; transition: 0.3s; }
         .link:hover { color: white; text-decoration: underline; }
 
-        /* --- 🛑 MODAL (FORGOT PASSWORD) --- */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center;
-            backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: #1a1c24; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px;
-            text-align: center; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .close-modal { float: right; cursor: pointer; font-size: 1.5rem; color: #aaa; }
-
-        /* MOBILE RESPONSIVE */
-        @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; }
-            .hero-section { display: none; } /* ซ่อนรูปในมือถือเพื่อความเร็ว */
-            .login-section { flex: 1; padding: 20px; }
-        }
+        @media (max-width: 768px) { .hero-section { display: none; } .login-section { flex: 1; padding: 20px; } }
     </style>
 </head>
 <body>
@@ -98,104 +65,75 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="hero-title">ENGINEERING<br>THE FUTURE.</div>
-            <div class="hero-desc">Advanced Construction Management System (CMS)<br>Powered by 3DNP Technology.</div>
+            <p style="color:#ccc;">Welcome back to 3DNP Workspace.</p>
         </div>
     </div>
 
     <div class="login-section">
         <div class="login-container">
-            
             <div class="brand-logo">
                 <img src="logo.png" alt="Logo">
                 <div class="brand-text">3DNP <span>CONS.</span></div>
             </div>
-            <div class="welcome-text">Please enter your License Key to access the workspace.</div>
+            <div class="welcome-text">Login to access your workspace</div>
 
-            <div class="input-group">
-                <i class="fas fa-key input-icon"></i>
-                <input type="password" id="accessKey" class="form-input" placeholder="Enter License Key (e.g. YEAR-2026)">
-            </div>
-
-            <button class="btn-main" onclick="handleLogin()">ACCESS WORKSPACE</button>
-
-            <p style="text-align:center; color:#555; font-size:0.8rem; margin: 25px 0 10px;">DON'T HAVE A KEY? PURCHASE LICENSE</p>
-            <div class="purchase-options">
-                <a href="#" class="btn-outline" onclick="alert('ระบบชำระเงินกำลังปรับปรุงครับ ติดต่อ Admin ผ่าน Line แทนนะครับ')">
-                    <strong>Monthly</strong>
-                    990 THB / Month
-                </a>
-                <a href="#" class="btn-outline" style="border-color:#4facfe;" onclick="alert('ระบบชำระเงินกำลังปรับปรุงครับ ติดต่อ Admin ผ่าน Line แทนนะครับ')">
-                    <strong>Yearly</strong>
-                    9,900 THB / Year
-                </a>
-            </div>
-
-            <div class="footer-links">
-                <span class="link" onclick="openModal()">Staff Login</span>
-                <span class="link" onclick="openModal()">Forgot Password?</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="forgotModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <h3 style="color:white; margin-top:0;">🔐 RESET PASSWORD</h3>
-            <p style="color:#aaa; font-size:0.9rem;">Enter your registered email address.<br>We will send you a reset link.</p>
-            
             <div class="input-group">
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="email" id="resetEmail" class="form-input" placeholder="name@company.com">
+                <input type="email" id="loginEmail" class="form-input" placeholder="Email Address">
             </div>
-            
-            <button class="btn-main" onclick="sendResetLink()">SEND RESET LINK</button>
+
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="loginPass" class="form-input" placeholder="Password">
+                <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+            </div>
+
+            <button class="btn-main" onclick="handleLogin()">SECURE LOGIN</button>
+
+            <div class="footer-links">
+                <a href="activate.html" class="link">Activate New Key</a>
+                <span class="link" onclick="alert('ระบบส่งลิงก์รีเซ็ตรหัสไปที่อีเมลแล้วครับ')">Forgot Password?</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // ฟังก์ชัน Login (เบื้องต้นใช้เช็ค Key ในเครื่อง)
-        function handleLogin() {
-            const key = document.getElementById('accessKey').value.trim();
+        // ฟังก์ชันสลับลูกตา (Show/Hide Password)
+        function togglePassword() {
+            const passField = document.getElementById('loginPass');
+            const icon = document.querySelector('.toggle-password');
             
-            // 👇👇 ใส่รหัส Key ที่ขายลูกค้าตรงนี้ (ชั่วคราว) 👇👇
-            const validKeys = ['MONTH-01', 'YEAR-2026', 'ADMIN-VIP', '1234'];
-
-            if(validKeys.includes(key)) {
-                // เอฟเฟกต์ปุ่มโหลดนิดหน่อย
-                const btn = document.querySelector('.btn-main');
-                btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> VERIFYING...';
-                
-                setTimeout(() => {
-                    localStorage.setItem('userKey', key);
-                    window.location.href = 'system.html'; // 👉 ไปหน้าทำงาน
-                }, 1000);
+            if (passField.type === "password") {
+                passField.type = "text"; // เปลี่ยนเป็นข้อความธรรมดา (เห็นรหัส)
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
-                alert("❌ INVALID KEY\nThe license key is incorrect or expired.");
+                passField.type = "password"; // เปลี่ยนกลับเป็นจุดๆ (ซ่อนรหัส)
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
 
-        // ฟังก์ชันเปิด/ปิด Modal ลืมรหัสผ่าน
-        function openModal() { document.getElementById('forgotModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('forgotModal').style.display = 'none'; }
+        // ฟังก์ชัน Login
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
 
-        // ปิด Modal เมื่อกดพื้นที่ว่างๆ
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('forgotModal')) { closeModal(); }
-        }
+            // ดึงข้อมูลที่ลงทะเบียนไว้ในเครื่อง
+            const registeredEmail = localStorage.getItem('registeredEmail');
+            const registeredPass = localStorage.getItem('registeredPass');
 
-        // จำลองการส่งอีเมล Reset
-        function sendResetLink() {
-            const email = document.getElementById('resetEmail').value;
-            if(email.includes('@')) {
-                alert(`✅ SYSTEM SENT:\nA password reset link has been sent to ${email}.\nPlease check your inbox.`);
-                closeModal();
+            // เงื่อนไข: ถ้าตรงกับที่สมัครไว้ หรือ ใช้รหัส Admin (1234)
+            if((email === registeredEmail && pass === registeredPass) || pass === '1234') {
+                // ผ่าน! ไปหน้าทำงาน
+                window.location.href = 'system.html';
             } else {
-                alert("⚠️ Please enter a valid email address.");
+                alert("❌ อีเมลหรือรหัสผ่านไม่ถูกต้องครับ\n(หรือลองไปหน้า Activate เพื่อลงทะเบียนก่อนนะครับ)");
             }
         }
         
         // กด Enter เพื่อ Login
-        document.getElementById('accessKey').addEventListener("keypress", function(e) {
+        document.getElementById('loginPass').addEventListener("keypress", function(e) {
             if (e.key === "Enter") handleLogin();
         });
     </script>
