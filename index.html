@@ -36,43 +36,51 @@
 
         .menu-group { display: flex; gap: 10px; align-items: center; }
 
-        /* --- 💎 ปุ่ม BUTTONS (Neon Style) --- */
-        /* ปุ่ม Shop (ส้ม) */
-        .btn-shop { 
-            text-decoration: none; color: white; padding: 10px 25px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; margin-left: 10px;
-            background: linear-gradient(to bottom, #ffae88 0%, #f57224 100%);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 15px rgba(245, 114, 36, 0.4); transition: 0.3s;
-        }
-        .btn-shop:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px rgba(255, 140, 0, 0.8), inset 0 0 10px rgba(255,255,255,0.5);
-        }
+   /* =============================================================
+       ⚙️ ปุ่มไทเทเนียม (Titanium Series) - สำหรับ 3 ปุ่มบนขวา
+       ============================================================= */
 
-        /* ปุ่ม Portfolio (เขียว) */
-        .btn-link { 
-            text-decoration: none; color: white; padding: 10px 25px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; margin-left: 5px;
-            background: linear-gradient(to bottom, #88ffae 0%, #28a745 100%);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 15px rgba(40, 167, 69, 0.4); transition: 0.3s;
-        }
-        .btn-link:hover { 
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px rgba(0, 255, 127, 0.8), inset 0 0 10px rgba(255,255,255,0.5);
-        }
+    /* ตั้งค่ารวดเดียว 3 ปุ่ม (ให้เหมือนกันเป๊ะ) */
+    .btn-shop, .btn-link, .btn-login { 
+        text-decoration: none;
+        color: #f0f0f0;             /* ตัวหนังสือสีขาวควันบุหรี่ */
+        padding: 10px 25px; 
+        border-radius: 50px;        /* ทรงแคปซูล */
+        font-weight: 700; 
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: inline-block;
+        margin-left: 10px;
+        
+        /* 🎨 สีเทาไล่เฉด (แบบไทเทเนียม) */
+        background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
+        
+        /* ⛓️ ขอบโลหะ 3 มิติ (บนสว่าง-ล่างมืด) */
+        border-top: 1px solid rgba(255, 255, 255, 0.4);
+        border-bottom: 1px solid #000000;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
 
-        /* ปุ่ม Login (ฟ้า) */
-        .btn-login { 
-            text-decoration: none; color: white; padding: 10px 25px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; margin-left: 5px;
-            background: linear-gradient(to bottom, #4facfe 0%, #0056b3 100%);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 15px rgba(0, 86, 179, 0.4); transition: 0.3s;
-        }
-        .btn-login:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px rgba(0, 200, 255, 0.8), inset 0 0 10px rgba(255,255,255,0.5);
-        }
+        /* เงาใต้ปุ่ม */
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+        transition: all 0.2s ease;
+    }
 
+    /* ✨ ตอนเอาเมาส์ชี้ (สว่างขึ้นเหมือนโลหะโดนแสง) */
+    .btn-shop:hover, .btn-link:hover, .btn-login:hover {
+        background: linear-gradient(to bottom, #9ea4b0 0%, #4b5259 100%); /* เทาสว่างขึ้น */
+        transform: translateY(-2px); /* ลอยขึ้น */
+        box-shadow: 
+            0 7px 15px rgba(0, 0, 0, 0.6), 
+            0 0 15px rgba(255, 255, 255, 0.2); /* เรืองแสงสีขาวจางๆ */
+    }
+
+    /* 👊 ตอนกด (ยุบลง) */
+    .btn-shop:active, .btn-link:active, .btn-login:active {
+        transform: scale(0.95);
+        background: #222529; /* มืดลง */
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.7);
+    }
         /* --- 🚀 HERO SECTION (ล้ำสมัย) --- */
         .hero { 
             text-align: center; padding: 100px 20px; 
