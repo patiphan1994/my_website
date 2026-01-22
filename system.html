@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTERNAL AI SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        /* สไตล์หน้าแชทเดิม (Neon Cyberpunk) */
+        body { margin: 0; font-family: 'Prompt', sans-serif; height: 100vh; background: #000; color: white; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .glass-box { width: 90%; max-width: 600px; height: 85vh; background: rgba(20,20,20,0.8); border: 1px solid #333; border-radius: 20px; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 0 30px rgba(0,255,255,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
+        h1 { margin: 0; font-size: 1.2rem; color: #00ffff; }
+        .btn-logout { background: #333; border: none; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        .btn-logout:hover { background: #ff3333; }
+        
+        #chat-box { flex: 1; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 15px; border-radius: 10px; max-width: 80%; font-size: 0.9rem; line-height: 1.4; }
+        .bot { background: #222; border-left: 2px solid #00ffff; align-self: flex-start; color: #ccc; }
+        .user { background: #00ffff; color: black; align-self: flex-end; font-weight: 500; }
+        
+        .input-area { margin-top: 15px; display: flex; gap: 10px; }
+        input { flex: 1; padding: 15px; background: #111; border: 1px solid #333; color: white; border-radius: 50px; outline: none; }
+        button { width: 50px; height: 50px; border-radius: 50%; background: #00ffff; border: none; font-size: 1.2rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <script>
+        // ถ้าไม่ได้ Login ให้ดีดกลับไปหน้า Login ทันที
+        if (sessionStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <div class="glass-box">
+        <div class="header">
+            <div>
+                <h1>🤖 AI LEGAL ASSISTANT</h1>
+                <span style="font-size: 0.7rem; color: #666;">For internal use only</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">LOGOUT</button>
+        </div>
+
+        <div id="chat-box">
+            <div class="msg bot">สวัสดีครับ ระบบภายในพร้อมใช้งาน <br>มีข้อมูลทางกฎหมายส่วนไหนให้ช่วยครับ?</div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="พิมพ์คำสั่ง..." onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+        // --- ⚠️ แก้ไขรหัส Supabase ตรงนี้ ---
+        const SUPABASE_URL = 'วาง_PROJECT_URL_ที่นี่';
+        const SUPABASE_KEY = 'วาง_ANON_KEY_ที่นี่';
+        // ----------------------------------
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function logout() {
+            sessionStorage.removeItem("isLoggedIn");
+            window.location.href = "login.html";
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const chat = document.getElementById('chat-box');
+            const txt = input.value.trim();
+            if (!txt) return;
+
+            chat.innerHTML += `<div class="msg user">${txt}</div>`;
+            input.value = "";
+            chat.scrollTop = chat.scrollHeight;
+
+            // จำลอง AI
+            setTimeout(() => {
+                chat.innerHTML += `<div class="msg bot">กำลังประมวลผล: "${txt}"... (API Connected)</div>`;
+                chat.scrollTop = chat.scrollHeight;
+            }, 500);
+        }
+        function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
+    </script>
+
+</body>
+</html>
