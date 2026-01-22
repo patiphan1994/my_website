@@ -7,15 +7,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Prompt', sans-serif; background: #f5f5f5; margin: 0; }
+        /* --- 🔒 โซนป้องกัน (เพิ่มให้แล้วครับ) --- */
+        body { 
+            font-family: 'Prompt', sans-serif; 
+            background: #f5f5f5; 
+            margin: 0; 
+            
+            /* ห้ามคลุมดำ */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+
+            /* เมาส์เป็นลูกศรตลอดเวลา */
+            cursor: default;
+        }
         
         /* Navbar */
-        nav { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); sticky; top: 0; }
+        nav { 
+            background: white; padding: 15px 5%; 
+            display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; 
+        }
         .logo { font-size: 1.5rem; font-weight: bold; color: #f57224; }
         
         .cart-btn {
             text-decoration: none; color: #333; font-weight: bold;
             display: flex; align-items: center; gap: 5px;
+            cursor: pointer; /* ปุ่มกดต้องเป็นรูปมือ */
         }
         .cart-count { background: #f57224; color: white; border-radius: 50%; padding: 2px 8px; font-size: 0.8rem; }
 
@@ -23,21 +41,29 @@
         .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         
-        .product-card { background: white; border-radius: 8px; overflow: hidden; transition: 0.3s; cursor: pointer; }
+        .product-card { 
+            background: white; border-radius: 8px; overflow: hidden; transition: 0.3s; 
+            cursor: default; /* การ์ดสินค้าห้ามเมาส์เปลี่ยน */
+        }
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .product-card img { width: 100%; height: 200px; object-fit: cover; }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; pointer-events: none; /* ห้ามลากรูป */ }
+        
         .p-info { padding: 15px; }
-        .p-name { font-size: 1rem; margin-bottom: 5px; height: 40px; overflow: hidden; }
+        .p-name { font-size: 1rem; margin-bottom: 5px; height: 40px; overflow: hidden; font-weight: 600; }
         .p-price { color: #f57224; font-size: 1.2rem; font-weight: bold; }
         
         .btn-add {
             width: 100%; background: #f57224; color: white; border: none; padding: 10px;
-            margin-top: 10px; cursor: pointer; border-radius: 4px;
+            margin-top: 10px; border-radius: 4px; font-weight: 600;
+            cursor: pointer; /* เฉพาะปุ่มนี้ที่เมาส์เป็นรูปมือ */
         }
         .btn-add:hover { background: #d0611f; }
+        
+        .loading-text { text-align: center; color: #999; margin-top: 50px; }
     </style>
 </head>
-<body>
+
+<body oncontextmenu="return false">
 
     <nav>
         <div class="logo">3DNP SHOP</div>
@@ -47,25 +73,28 @@
     </nav>
 
     <div class="container">
-        <h3>สินค้าทั้งหมด</h3>
+        <h3 style="border-left: 5px solid #f57224; padding-left: 10px;">สินค้าทั้งหมด</h3>
         <div id="product-list" class="grid">
-            </div>
+            <div class="loading-text">กำลังโหลดสินค้า...</div>
+        </div>
     </div>
 
     <script>
-        // --- ⚠️ ใส่รหัส Supabase ของพี่ตรงนี้ ---
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; // F12
+            if(e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's')) return false;
+        }
+
+        // --- ⚠️ อย่าลืมใส่รหัส Supabase ของพี่ตรงนี้เหมือนเดิมนะครับ ---
         const SUPABASE_URL = 'ใส่_URL_ที่นี่';
         const SUPABASE_KEY = 'ใส่_KEY_ที่นี่';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // โหลดสินค้า
         async function loadProducts() {
             const list = document.getElementById('product-list');
-            list.innerHTML = "กำลังโหลด...";
-            
             const { data, error } = await _supabase.from('products').select('*');
             
-            if(data) {
+            if(data && data.length > 0) {
                 list.innerHTML = "";
                 data.forEach(p => {
                     list.innerHTML += `
@@ -79,16 +108,17 @@
                         </div>
                     `;
                 });
+            } else {
+                list.innerHTML = `<div class="loading-text">ยังไม่มีสินค้าในระบบ (ไปลงที่หน้า seller.html)</div>`;
             }
         }
 
-        // ระบบตะกร้า (เก็บในเครื่องลูกค้า)
         function addToCart(name, price) {
             let cart = JSON.parse(localStorage.getItem('myCart')) || [];
             cart.push({ name, price });
             localStorage.setItem('myCart', JSON.stringify(cart));
             updateCartCount();
-            alert("ใส่ตะกร้าแล้ว!");
+            alert("ใส่ตะกร้าเรียบร้อย!");
         }
 
         function updateCartCount() {
