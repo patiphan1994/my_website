@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ตะกร้าสินค้า</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; }
+        h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .cart-item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .total-box { text-align: right; margin-top: 20px; font-size: 1.2rem; font-weight: bold; color: #f57224; }
+        
+        .form-group { margin-top: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px; }
+        
+        .btn-confirm { width: 100%; background: #f57224; color: white; border: none; padding: 15px; font-size: 1.1rem; cursor: pointer; border-radius: 4px; }
+        .btn-confirm:hover { background: #d0611f; }
+        .btn-clear { background: #999; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🛒 ตะกร้าสินค้า <button class="btn-clear" onclick="clearCart()">ล้างตะกร้า</button></h2>
+        <div id="cart-items">ไม่มีสินค้าในตะกร้า</div>
+        
+        <div class="total-box">
+            ค่าส่ง: ฿50<br>
+            ยอดรวมทั้งหมด: <span id="grand-total">฿0</span>
+        </div>
+
+        <hr>
+        <h3>ที่อยู่จัดส่ง</h3>
+        <div class="form-group">
+            <label>ชื่อ-นามสกุล</label>
+            <input type="text" id="c-name" placeholder="ชื่อผู้รับ">
+        </div>
+        <div class="form-group">
+            <label>เบอร์โทร</label>
+            <input type="text" id="c-tel" placeholder="08x-xxxxxxx">
+        </div>
+        <div class="form-group">
+            <label>ที่อยู่จัดส่ง</label>
+            <textarea id="c-addr" rows="3" placeholder="บ้านเลขที่, ถนน, แขวง/เขต, จังหวัด..."></textarea>
+        </div>
+
+        <button class="btn-confirm" onclick="placeOrder()">ยืนยันการสั่งซื้อ</button>
+    </div>
+
+    <script>
+        // --- ⚠️ ใส่รหัส Supabase เดิม ---
+        const SUPABASE_URL = 'ใส่_URL_ที่นี่';
+        const SUPABASE_KEY = 'ใส่_KEY_ที่นี่';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let cart = JSON.parse(localStorage.getItem('myCart')) || [];
+        const shippingCost = 50;
+
+        function loadCart() {
+            const list = document.getElementById('cart-items');
+            const totalEl = document.getElementById('grand-total');
+            
+            if(cart.length === 0) {
+                list.innerHTML = "<p>ยังไม่ได้เลือกสินค้าครับ</p>";
+                totalEl.innerText = "฿0";
+                return;
+            }
+
+            list.innerHTML = "";
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                total += item.price;
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <span>${index+1}. ${item.name}</span>
+                        <span>฿${item.price.toLocaleString()}</span>
+                    </div>
+                `;
+            });
+
+            totalEl.innerText = "฿" + (total + shippingCost).toLocaleString();
+        }
+
+        async function placeOrder() {
+            const name = document.getElementById('c-name').value;
+            const tel = document.getElementById('c-tel').value;
+            const addr = document.getElementById('c-addr').value;
+
+            if(!name || !tel || !addr || cart.length === 0) {
+                alert("กรุณากรอกข้อมูลให้ครบ และต้องมีสินค้าในตะกร้า");
+                return;
+            }
+
+            // รวมชื่อสินค้าเป็นข้อความเดียว
+            const itemString = cart.map(i => i.name).join(", ");
+            const totalPrice = cart.reduce((sum, i) => sum + i.price, 0) + shippingCost;
+
+            // บันทึกลง Supabase
+            const { error } = await _supabase.from('orders').insert({
+                customer_name: name,
+                tel: tel,
+                address: addr,
+                total_price: totalPrice,
+                items: itemString
+            });
+
+            if(error) {
+                alert("เกิดข้อผิดพลาด: " + error.message);
+            } else {
+                alert("✅ สั่งซื้อสำเร็จ! ทางเราจะรีบจัดส่งให้ครับ");
+                localStorage.removeItem('myCart'); // ล้างตะกร้า
+                window.location.href = 'shop.html'; // กลับไปหน้าช้อป
+            }
+        }
+
+        function clearCart() {
+            localStorage.removeItem('myCart');
+            location.reload();
+        }
+
+        loadCart();
+    </script>
+</body>
+</html>
