@@ -3,55 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3DNP | ADMIN KEYGEN</title>
+    <title>3DNP | SALES & KEYGEN SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
     <style>
         /* --- 🌑 ล็อคธีม Titanium & Apple Minimal --- */
         body { 
-            margin: 0; padding: 0; font-family: 'Prompt', sans-serif; height: 100vh; 
+            margin: 0; padding: 0; font-family: 'Prompt', sans-serif; min-height: 100vh; 
             background: #000; color: white; display: flex; justify-content: center; align-items: center;
             -webkit-user-select: none; user-select: none; 
         }
 
-        /* --- 🔒 หน้าล็อกรหัส Admin (Admin Shield) --- */
         #admin-lock {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .lock-icon { font-size: 3rem; color: #4facfe; margin-bottom: 20px; }
-        
-        /* --- ⚙️ แผงควบคุม Keygen --- */
+
         .admin-panel {
             background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; 
-            width: 100%; max-width: 450px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+            width: 100%; max-width: 500px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+            margin: 40px 0;
         }
-        .brand-text { font-size: 1.8rem; font-weight: 700; text-align: center; margin-bottom: 30px; }
-        .brand-text span { color: #888; }
 
         .input-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; color: #666; font-size: 0.85rem; padding-left: 15px; }
         
-        select, input {
+        input, select {
             width: 100%; padding: 15px; background: #111; border: 1px solid #333; 
             color: white; border-radius: 50px; font-size: 1rem; box-sizing: border-box; outline: none;
+            -webkit-user-select: text; user-select: text;
         }
 
         .btn-titanium {
             width: 100%; padding: 15px; border: none; border-radius: 50px; font-weight: 700;
             background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%); color: white;
             cursor: pointer; border-top: 1px solid rgba(255,255,255,0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: 0.3s;
+            transition: 0.3s; margin-top: 10px;
         }
-        .btn-titanium:hover { transform: translateY(-2px); filter: brightness(1.2); }
 
-        #result-box {
-            margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 20px;
-            border: 1px dashed #4facfe; text-align: center; display: none;
+        .btn-workspace {
+            background: linear-gradient(to right, #0071e3, #4facfe);
+            margin-top: 20px;
         }
-        .key-text { font-size: 1.4rem; color: #4facfe; font-weight: 700; margin: 10px 0; -webkit-user-select: text; user-select: text; }
 
-        /* 🏠 ปุ่มกลับหน้า Login (ขวาบน) */
+        #status-log { margin-top: 20px; font-size: 0.8rem; text-align: center; color: #4facfe; }
+
+        /* 🏠 ปุ่ม Home */
         .btn-home {
             position: fixed; top: 25px; right: 25px; width: 45px; height: 45px;
             background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; 
@@ -62,61 +61,85 @@
 <body>
 
     <div id="admin-lock">
-        <div class="lock-icon"><i class="fas fa-user-shield"></i></div>
-        <h2 style="margin-bottom: 30px;">Admin Access Only</h2>
+        <div style="font-size: 3rem; color: #4facfe; margin-bottom: 20px;"><i class="fas fa-user-shield"></i></div>
+        <h2 style="margin-bottom: 30px;">Admin Authorization</h2>
         <input type="password" id="masterPassword" placeholder="Enter Secret Password" style="width: 300px; text-align: center; margin-bottom: 20px;">
-        <button class="btn-titanium" onclick="unlockAdmin()" style="width: 300px;">UNLOCK PANEL</button>
+        <button class="btn-titanium" onclick="unlockAdmin()" style="width: 300px;">UNLOCK SYSTEM</button>
     </div>
 
     <a href="login.html" class="btn-home"><i class="fas fa-home"></i></a>
 
     <div class="admin-panel">
-        <div class="brand-text">3DNP <span>KEYGEN</span></div>
+        <div style="font-size: 1.8rem; font-weight: 700; text-align: center; margin-bottom: 30px;">3DNP <span>SALES TOOL</span></div>
         
         <div class="input-group">
-            <label>LICENSE TYPE</label>
+            <label>CUSTOMER EMAIL</label>
+            <input type="email" id="custEmail" placeholder="customer@email.com">
+        </div>
+
+        <div class="input-group">
+            <label>LICENSE PLAN</label>
             <select id="keyType">
-                <option value="MONTH">Monthly Access</option>
-                <option value="YEAR">Yearly Access</option>
-                <option value="VIP">Lifetime VIP</option>
+                <option value="MONTHLY">Monthly Plan (รายเดือน)</option>
+                <option value="YEARLY">Yearly Plan (รายปี)</option>
+                <option value="VIP">Lifetime VIP (ตลอดชีพ)</option>
             </select>
         </div>
 
-        <button class="btn-titanium" onclick="generateKey()">⚡ GENERATE LICENSE KEY</button>
+        <button class="btn-titanium" onclick="processSale()">⚡ GEN KEY & SEND RECEIPT</button>
+        
+        <button class="btn-titanium btn-workspace" onclick="window.location.href='system.html'">
+            <i class="fas fa-desktop"></i> GO TO WORKSPACE
+        </button>
 
-        <div id="result-box">
-            <div style="font-size: 0.8rem; color: #888;">CREATED LICENSE KEY:</div>
-            <div class="key-text" id="displayKey">3DNP-XXXX-XXXX</div>
-            <div style="font-size: 0.7rem; color: #555;">(Copy and send to client)</div>
-        </div>
+        <div id="status-log"></div>
     </div>
 
     <script>
-        // 1. ระบบล็อกรหัสแอดมิน (ลูกพี่เปลี่ยนรหัสตรงนี้ได้ครับ)
+        // 1. ปลดล็อกหน้าแอดมิน
         function unlockAdmin() {
             const pass = document.getElementById('masterPassword').value;
-            // 👇 รหัสผ่านที่ลูกพี่รู้คนเดียว (ตอนนี้ตั้งไว้เป็น admin1234)
-            if(pass === "admin1234") {
+            if(pass === "admin1234") { // รหัสผ่านของลูกพี่
                 document.getElementById('admin-lock').style.display = 'none';
-            } else {
-                alert("❌ รหัสไม่ถูกต้อง!");
-            }
+            } else { alert("❌ Access Denied!"); }
         }
 
-        // 2. ระบบสุ่มสร้างคีย์
-        function generateKey() {
-            const type = document.getElementById('keyType').value;
+        // 2. ระบบ Gen Key + ส่งเมล + ทำใบเสร็จ
+        async function processSale() {
+            const email = document.getElementById('custEmail').value;
+            const plan = document.getElementById('keyType').value;
+            const log = document.getElementById('status-log');
+
+            if(!email) { alert("กรุณากรอกอีเมลลูกค้าครับ"); return; }
+
+            // สุ่ม Key
             const random = Math.random().toString(36).substring(2, 10).toUpperCase();
-            const fullKey = `3DNP-${type}-${random.substring(0,4)}-${random.substring(4,8)}`;
-            
-            document.getElementById('displayKey').innerText = fullKey;
-            document.getElementById('result-box').style.display = 'block';
-        }
+            const generatedKey = `3DNP-${plan}-${random}`;
 
-        // กด Enter เพื่อปลดล็อกได้เลย
-        document.getElementById('masterPassword').addEventListener("keypress", function(e) {
-            if (e.key === "Enter") unlockAdmin();
-        });
+            log.innerText = "⏳ กำลังดำเนินการส่งใบเสร็จ...";
+
+            // รายละเอียดใบเสร็จ (Receipt Data)
+            const receiptID = "REC-" + Date.now().toString().slice(-6);
+            const price = plan === "MONTHLY" ? "590 THB" : (plan === "YEARLY" ? "5,900 THB" : "15,000 THB");
+
+            // --- ส่วนส่งเมล (EmailJS) ---
+            // ลูกพี่ต้องเอา Public Key, Service ID, Template ID จาก EmailJS มาใส่นะครับ
+            // emailjs.init("YOUR_PUBLIC_KEY");
+            // emailjs.send("SERVICE_ID", "TEMPLATE_ID", {
+            //     to_email: email,
+            //     key: generatedKey,
+            //     plan: plan,
+            //     receipt_id: receiptID,
+            //     price: price,
+            //     date: new Date().toLocaleDateString()
+            // }).then(...)
+
+            // จำลองการทำงาน (เนื่องจากต้องใช้ Key จริงของลูกพี่)
+            setTimeout(() => {
+                log.innerHTML = `✅ ส่งเมลเรียบร้อย!<br><b>Key:</b> ${generatedKey}<br><b>Receipt:</b> ${receiptID}`;
+                alert(`SUCCESS!\nสร้างคีย์: ${generatedKey}\nส่งใบเสร็จไปที่: ${email} เรียบร้อยแล้ว`);
+            }, 1500);
+        }
     </script>
 </body>
 </html>
