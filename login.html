@@ -152,50 +152,47 @@
         });
     </script>
     
-    <a href="index.html" class="floating-home-btn" title="Back to Home">
+   <a href="index.html" class="floating-home-top" title="Back to Home">
     <i class="fas fa-home"></i>
 </a>
 
 <style>
-    .floating-home-btn {
+    .floating-home-top {
         position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 55px;
-        height: 55px;
-        /* ใช้ Gradient สีโลหะเหมือนปุ่มหลัก */
+        top: 25px; 
+        right: 25px;
+        width: 45px;
+        height: 45px;
+        /* ล็อคธีม Titanium ตามปุ่มหลัก */
         background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
         border-radius: 50%;
         display: flex;
         justify-content: center;
         align-items: center;
         color: white;
-        font-size: 1.3rem;
+        font-size: 1.1rem;
         text-decoration: none;
-        /* เส้นขอบบนเงาๆ แบบไทเทเนียม */
         border-top: 1px solid rgba(255, 255, 255, 0.4);
-        border-left: 1px solid rgba(255, 255, 255, 0.1);
-        border-right: 1px solid rgba(0, 0, 0, 0.2);
         border-bottom: 2px solid #000000;
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
-        z-index: 10000;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        z-index: 10001;
         transition: all 0.2s ease;
         cursor: pointer;
+        
+        /* 🚫 ห้ามลากคลุม ห้ามลากเคอร์เซอร์ (Apple App Feel) */
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-user-drag: none;
     }
 
-    /* เอฟเฟกต์ตอน Hover (สว่างขึ้นและขยายเล็กน้อย) */
-    .floating-home-btn:hover {
+    .floating-home-top:hover {
         background: linear-gradient(to bottom, #9ea4b0 0%, #4b5259 100%);
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255, 255, 255, 0.1);
-        color: #ffffff;
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     }
 
-    /* ตอนกด (ยุบลงไปนิดนึงให้ดูเหมือนกดปุ่มจริง) */
-    .floating-home-btn:active {
-        transform: translateY(1px) scale(0.95);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-        border-bottom: 1px solid #000;
+    .floating-home-top:active {
+        transform: scale(0.9);
     }
 </style>
 
