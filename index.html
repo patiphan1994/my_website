@@ -18,11 +18,22 @@
         .logo { font-size: 1.5rem; font-weight: 600; color: #000; letter-spacing: 1px; }
         .logo span { color: #0056b3; } /* สีน้ำเงินเพิ่มจุดเด่น */
         
-        .btn-login { 
-            text-decoration: none; color: #666; font-size: 0.9rem; border: 1px solid #ddd; 
-            padding: 8px 20px; border-radius: 4px; transition: 0.3s; 
+        /* --- 👇 ปุ่มเช็คกฎหมาย (เพิ่มให้ตรงนี้) --- */
+        .btn-check-law { 
+            text-decoration: none; 
+            color: #0056b3;             /* สีตัวหนังสือ */
+            border: 1px solid #0056b3;  /* ขอบสีน้ำเงิน */
+            padding: 8px 20px; 
+            border-radius: 50px;        /* ปุ่มมนๆ */
+            transition: 0.3s; 
+            font-weight: 600;
+            font-size: 0.95rem;
         }
-        .btn-login:hover { border-color: #0056b3; color: #0056b3; }
+        .btn-check-law:hover { 
+            background-color: #0056b3;  /* เอาเมาส์ชี้แล้วพื้นเป็นสีน้ำเงิน */
+            color: white;               /* ตัวหนังสือเปลี่ยนเป็นขาว */
+        }
+        /* ------------------------------------- */
 
         /* ส่วนหัวข้อหลัก */
         .hero { 
@@ -55,7 +66,7 @@
 
     <nav>
         <div class="logo">3DNP <span>CONS.</span></div>
-        <a href="login.html" class="btn-login">เข้าสู่ระบบพนักงาน</a>
+        <a href="login.html" class="btn-check-law">⚖️ เช็คกฎหมาย</a>
     </nav>
 
     <div class="hero">
