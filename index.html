@@ -3,176 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3DNP CONSTRUCTION - หน้าหลัก</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>3DNP CONSTRUCTION - The Future of Design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- 🔒 โซนป้องกันและเคอร์เซอร์ --- */
+        /* --- 🌑 DARK THEME & CORE SETUP --- */
         body { 
-            margin: 0; font-family: 'Prompt', sans-serif; background: #ffffff; color: #333;
+            margin: 0; font-family: 'Prompt', sans-serif; 
+            background: #0f1014; /* พื้นหลังสีดำด้าน */
+            color: #ffffff; 
             -webkit-user-select: none; -moz-user-select: none; user-select: none;
-            cursor: default; /* เมาส์เป็นลูกศรตลอด */
+            cursor: default; 
+            overflow-x: hidden;
         }
 
-       /* =========================================================
-       👇 เริ่มวางทับตั้งแต่บรรทัดที่ 18 ได้เลย (รวมเมนูบาร์ให้แล้ว)
-       ========================================================= */
+        /* --- 🧭 NAV BAR (Glass Effect) --- */
+        nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 5%; 
+            background: rgba(15, 16, 20, 0.85); /* สีดำโปร่งแสง */
+            backdrop-filter: blur(10px); /* เบลอพื้นหลัง */
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky; top: 0; z-index: 100; 
+        }
 
-    /*  1. ปุ่ม Shop (สีส้ม) */
-    .btn-shop { 
-        text-decoration: none;
-        color: white;             
-        padding: 10px 25px; 
-        border-radius: 50px;        
-        font-weight: 700; font-size: 0.9rem;
-        cursor: pointer; display: inline-block; margin-left: 10px;
+        .logo { 
+            font-size: 1.8rem; font-weight: 700; color: #ffffff; 
+            display: flex; align-items: center; gap: 10px;
+        }
+        .logo span { color: #4facfe; font-weight: 300; } /* สีฟ้าสว่าง */
+        .logo img { height: 50px; } /* ปรับขนาดโลโก้ */
+
+        .menu-group { display: flex; gap: 10px; align-items: center; }
+
+        /* --- 💎 ปุ่ม BUTTONS (Neon Style) --- */
+        /* ปุ่ม Shop (ส้ม) */
+        .btn-shop { 
+            text-decoration: none; color: white; padding: 10px 25px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; margin-left: 10px;
+            background: linear-gradient(to bottom, #ffae88 0%, #f57224 100%);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(245, 114, 36, 0.4); transition: 0.3s;
+        }
+        .btn-shop:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.8), inset 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* ปุ่ม Portfolio (เขียว) */
+        .btn-link { 
+            text-decoration: none; color: white; padding: 10px 25px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; margin-left: 5px;
+            background: linear-gradient(to bottom, #88ffae 0%, #28a745 100%);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.4); transition: 0.3s;
+        }
+        .btn-link:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(0, 255, 127, 0.8), inset 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* ปุ่ม Login (ฟ้า) */
+        .btn-login { 
+            text-decoration: none; color: white; padding: 10px 25px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; margin-left: 5px;
+            background: linear-gradient(to bottom, #4facfe 0%, #0056b3 100%);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 86, 179, 0.4); transition: 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.8), inset 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* --- 🚀 HERO SECTION (ล้ำสมัย) --- */
+        .hero { 
+            text-align: center; padding: 100px 20px; 
+            background: radial-gradient(circle at center, #1e222b 0%, #0f1014 100%);
+            position: relative; overflow: hidden;
+        }
+        /* แสงพื้นหลังฟุ้งๆ */
+        .hero::before {
+            content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+            width: 600px; height: 600px; background: rgba(0, 86, 179, 0.15); filter: blur(100px); border-radius: 50%; z-index: 0;
+        }
+        .hero-content { position: relative; z-index: 1; }
         
-        background: linear-gradient(to bottom, #4facfe 0%, #0056b3 100%);
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 4px 10px rgba(245, 114, 36, 0.4);
-        transition: all 0.3s ease; /* ปรับเวลาให้นุ่มนวล */
-    }
-    
-    /* ตอนชี้: เรืองแสงสีส้มทอง  */
-    .btn-shop:hover {
-       background: linear-gradient(to bottom, #6ec1ff 0%, #004494 100%);
-        transform: translateY(-3px);
-        box-shadow: 
-            0 0 15px rgba(255, 140, 0, 0.8),   /* แสงชั้นใน */
-            0 0 30px rgba(255, 140, 0, 0.4),   /* แสงชั้นนอกฟุ้งๆ */
-            inset 0 0 10px rgba(255, 255, 255, 0.5);
-        border: 2px solid rgba(255, 255, 255, 0.9);
-    }
-    .btn-shop:active { transform: scale(0.95); }
+        h1 { 
+            font-size: 4rem; margin: 0; font-weight: 800; 
+            background: linear-gradient(to right, #ffffff, #a5b4fc); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(165, 180, 252, 0.3);
+            letter-spacing: -1px;
+        }
+        p { color: #a0a0a0; font-size: 1.2rem; margin-top: 20px; font-weight: 300; }
+
+        /* --- 🏗️ PORTFOLIO SECTION (โชว์ผลงาน) --- */
+        .section-title { 
+            font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 50px; 
+            text-transform: uppercase; letter-spacing: 2px;
+            color: white; border-bottom: 2px solid #0056b3; display: inline-block; padding-bottom: 10px;
+        }
+        .center-box { text-align: center; margin-top: 60px; margin-bottom: 20px; }
+
+        .portfolio-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; padding: 0 10%; 
+        }
+        .port-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px; overflow: hidden;
+            transition: 0.4s; position: relative;
+        }
+        .port-card:hover { 
+            transform: translateY(-10px); 
+            border-color: #4facfe; 
+            box-shadow: 0 10px 30px rgba(0, 86, 179, 0.3);
+        }
+        .port-card img { width: 100%; height: 200px; object-fit: cover; opacity: 0.8; transition: 0.3s; }
+        .port-card:hover img { opacity: 1; transform: scale(1.05); }
+        .port-info { padding: 20px; }
+        .port-title { font-size: 1.1rem; font-weight: 600; color: white; margin-bottom: 5px; }
+        .port-desc { font-size: 0.85rem; color: #888; }
 
 
-    /* --- ส่วนเมนูบาร์ (ห้ามลบ) --- */
-    nav { 
-        display: flex; justify-content: space-between; align-items: center; 
-        padding: 15px 5%; background: white; 
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; 
-    }
-    .logo { font-size: 1.5rem; font-weight: 700; color: #333; }
-    .logo span { color: #0056b3; } 
-    .menu-group { display: flex; gap: 10px; align-items: center; }
-
-
-    /*  2. ปุ่มผลงานรวม (สีเขียว) */
-    .btn-link { 
-        text-decoration: none;
-        color: white; 
-        padding: 10px 25px;
-        border-radius: 50px;
-        font-weight: 700; font-size: 0.9rem;
-        cursor: pointer; display: inline-block; margin-left: 5px;
-
-        background: linear-gradient(to bottom, #4facfe 0%, #0056b3 100%);
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
-        transition: all 0.3s ease;
-    }
-
-    /* ตอนชี้: เรืองแสงสีเขียวนีออน  */
-    .btn-link:hover { 
-        background: linear-gradient(to bottom, #6ec1ff 0%, #004494 100%);
-        transform: translateY(-3px);
-        box-shadow: 
-            0 0 15px rgba(0, 255, 127, 0.8),   /* แสงสีเขียวสด */
-            0 0 30px rgba(0, 255, 127, 0.4),
-            inset 0 0 10px rgba(255, 255, 255, 0.5);
-        border: 2px solid rgba(255, 255, 255, 0.9);
-    }
-    .btn-link:active { transform: scale(0.95); }
-
-
-    /*  3. ปุ่ม Login (สีน้ำเงิน) */
-    .btn-login { 
-        text-decoration: none;
-        color: white;             
-        padding: 10px 25px; 
-        border-radius: 50px;        
-        font-weight: 700; font-size: 0.9rem;
-        cursor: pointer; display: inline-block; margin-left: 5px;
+        /* --- 🏆 PRODUCT SPOTLIGHT (สินค้าแนะนำ 2 ตัว) --- */
+        .spotlight-section { padding: 60px 10%; background: #0b0c0f; }
+        .spotlight-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+            gap: 40px; 
+        }
+        .product-card {
+            background: linear-gradient(145deg, #1a1c24, #131419);
+            border-radius: 20px; padding: 30px;
+            display: flex; align-items: center; gap: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .product-card:hover { border-color: #f57224; box-shadow: 0 0 25px rgba(245, 114, 36, 0.2); }
         
-        background: linear-gradient(to bottom, #4facfe 0%, #0056b3 100%);
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 4px 10px rgba(0, 86, 179, 0.4);
-        transition: all 0.3s ease;
-    }
-
-    /* ตอนชี้: เรืองแสงสีฟ้าอ่อน  */
-    .btn-login:hover {
-        background: linear-gradient(to bottom, #6ec1ff 0%, #004494 100%);
-        transform: translateY(-3px);
-        box-shadow: 
-            0 0 15px rgba(0, 200, 255, 0.8),   /* แสงสีฟ้า Cyberpunk */
-            0 0 30px rgba(0, 200, 255, 0.4),
-            inset 0 0 10px rgba(255, 255, 255, 0.5);
-        border: 2px solid rgba(255, 255, 255, 0.9);
-    }
-    .btn-login:active { transform: scale(0.95); }
-    /* =========================================================
-       👆 จบโค้ดตรงนี้ (เท่ากับจบที่บรรทัด 52 เดิมพอดีครับ)
-       ========================================================= */
-
-        /* เนื้อหา */
-        .hero { text-align: center; padding: 80px 20px; background: linear-gradient(to bottom, #f9f9f9, #ffffff); }
-        h1 { font-size: 3rem; margin: 0; color: #222; }
+        .product-img { width: 150px; height: 150px; border-radius: 10px; object-fit: cover; }
+        .product-info h3 { margin: 0 0 10px 0; font-size: 1.4rem; color: white; }
+        .product-info p { margin: 0 0 15px 0; color: #888; font-size: 0.9rem; }
+        .price-tag { color: #f57224; font-size: 1.3rem; font-weight: 700; display: block; margin-bottom: 15px; }
         
-        /* โซนสินค้า */
-        .section { padding: 50px 10%; }
-        .section-title { font-size: 1.8rem; font-weight: 600; margin-bottom: 30px; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; display: inline-block; }
-        .center-title { text-align: center; margin-bottom: 40px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        
-        .card { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-        .card img { width: 100%; height: 220px; object-fit: cover; pointer-events: none; }
-        .content { padding: 20px; }
-        .title { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
-        .price { color: #0056b3; font-weight: 700; font-size: 1.1rem; }
+        .btn-buy {
+            background: transparent; border: 1px solid #f57224; color: #f57224;
+            padding: 8px 20px; border-radius: 30px; cursor: pointer; text-decoration: none; font-size: 0.9rem; transition: 0.3s;
+        }
+        .btn-buy:hover { background: #f57224; color: white; box-shadow: 0 0 15px #f57224; }
+
     </style>
 </head>
 <body oncontextmenu="return false">
 
     <nav>
         <div class="logo">
-    <img src="logo.png" alt="Logo" style="height: 50px; vertical-align: middle; margin-right: 10px;">
-    
-    3DNP <span>CONS.</span>
-</div>
+            <img src="logo.png" alt="Logo"> 
+            3DNP <span>CONS.</span>
+        </div>
         <div class="menu-group">
-            <a href="shop.html" class="btn-shop">🛍️ เลือกซื้อสินค้า</a>
-            <a href="portfolio.html" class="btn-link">📁 ผลงานรวม</a>
-            <a href="login.html" class="btn-login">🔒 ลงชื่อเข้าใช้งาน</a>
+            <a href="shop.html" class="btn-shop">🛍️ ร้านค้า</a>
+            <a href="portfolio.html" class="btn-link">📁 ผลงาน</a>
+            <a href="login.html" class="btn-login">🔒 เข้าสู่ระบบ</a>
         </div>
     </nav>
 
     <div class="hero">
-        <h1>Welcome to 3DNP</h1>
-        <p>ศูนย์รวมวัสดุก่อสร้างและงานออกแบบครบวงจร</p>
+        <div class="hero-content">
+            <h1>FUTURE OF DESIGN</h1>
+            <p>นวัตกรรมการก่อสร้างและงานออกแบบ ที่เหนือกว่าจินตนาการ</p>
+        </div>
     </div>
 
-    <div class="section">
-        <div class="center-title"><div class="section-title">สินค้าแนะนำ</div></div>
-        <div class="grid">
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a" alt="Tile">
-                <div class="content"><div class="title">กระเบื้องปูพื้นลายหินอ่อน</div><div class="price">450 บาท/ตร.ม.</div></div>
+    <div class="center-box"><div class="section-title">ผลงานออกแบบล่าสุด</div></div>
+    
+    <div class="portfolio-grid">
+        <div class="port-card">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Project 1">
+            <div class="port-info">
+                <div class="port-title">Modern Luxury House</div>
+                <div class="port-desc">งานออกแบบบ้านหรูสไตล์โมเดิร์น ย่านเอกมัย</div>
             </div>
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f" alt="Lamp">
-                <div class="content"><div class="title">โคมไฟระย้า Modern Loft</div><div class="price">2,500 บาท</div></div>
+        </div>
+        <div class="port-card">
+            <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c" alt="Project 2">
+            <div class="port-info">
+                <div class="port-title">Loft Office Space</div>
+                <div class="port-desc">รีโนเวทออฟฟิศเก่า ให้เป็นสไตล์ลอฟท์ดิบเท่</div>
             </div>
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2" alt="Paint">
-                <div class="content"><div class="title">สีทาภายในเกรด A+</div><div class="price">1,200 บาท/ถัง</div></div>
+        </div>
+        <div class="port-card">
+            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" alt="Project 3">
+            <div class="port-info">
+                <div class="port-title">Minimal Cafe</div>
+                <div class="port-desc">งานตกแต่งภายในคาเฟ่ เน้นความมินิมอล</div>
             </div>
         </div>
     </div>
 
-    <script>
-        document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's'))) return false; }
-    </script>
+
+    <div class="spotlight-section">
+        <div class="center-box" style="margin-top:0;"><div class="section-title" style="border-color:#f57224;">สินค้าขายดีประจำเดือน</div></div>
+        
+        <div class="spotlight-grid">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a" class="product-img" alt="Product">
+                <div class="product-info">
+                    <h3>กระเบื้องหินอ่อน XL</h3>
+                    <p>กระเบื้องนำเข้า เกรดพรีเมียม ลายหินธรรมชาติ</p>
+                    <span class="price-tag">450.- / ตร.ม.</span>
+                    <a href="shop.html" class="btn-buy">ดูรายละเอียด</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f" class="product-img" alt="Product">
+                <div class="product-info">
+                    <h3>โคมไฟระย้า Crystal</h3>
+                    <p>เพิ่มความหรูหราให้ห้องโถง ด้วยคริสตัลแท้</p>
+                    <span class="price-tag">2,500.-</span>
+                    <a href="shop.html" class="btn-buy">ดูรายละเอียด</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
