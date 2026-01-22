@@ -3,240 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NP-AI SYSTEM</title>
+    <title>3DNP CONSTRUCTION</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
-        /* --- 1. พื้นหลัง Cyberpunk เคลื่อนไหว --- */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Prompt', sans-serif;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
-            /* แสงนีออนพื้นหลัง */
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(135, 50, 255, 0.4) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(0, 255, 255, 0.3) 0%, transparent 40%);
-            overflow: hidden;
-            color: white;
-        }
-
-        /* เอฟเฟกต์ Grid ตาราง */
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            z-index: -1;
-            animation: moveGrid 20s linear infinite;
-        }
-
-        @keyframes moveGrid {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(30px); }
-        }
-
-        /* --- 2. กล่องแชท Glass Neon --- */
-        .glass-box {
-            width: 90%;
-            max-width: 500px;
-            height: 80vh;
-            background: rgba(20, 20, 20, 0.6);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), 
-                        inset 0 0 20px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            position: relative;
-        }
-
-        /* หัวข้อ */
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-        h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-        }
-        .status { font-size: 0.8rem; color: #888; }
-        .status.online { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
-
-        /* --- 3. พื้นที่แชท --- */
-        #chat-box {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-right: 5px;
-            /* Scrollbar สีดำ */
-            scrollbar-width: thin;
-            scrollbar-color: #333 transparent;
-        }
+        body { margin: 0; font-family: 'Prompt', sans-serif; background: #0a0a0a; color: white; overflow-x: hidden; }
         
-        .msg {
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            max-width: 80%;
-            position: relative;
-            animation: slideIn 0.3s ease-out;
-        }
+        /* Navbar */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #00ffff; text-shadow: 0 0 10px #00ffff; letter-spacing: 2px; }
+        .btn-login { text-decoration: none; border: 1px solid #00ffff; padding: 8px 20px; color: #00ffff; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; }
+        .btn-login:hover { background: #00ffff; color: black; box-shadow: 0 0 15px #00ffff; }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Hero Section */
+        .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle, rgba(0,255,255,0.05) 0%, rgba(0,0,0,1) 70%); position: relative; }
+        h1 { font-size: 4rem; margin: 0; background: linear-gradient(90deg, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; }
+        p { color: #888; font-size: 1.2rem; max-width: 600px; margin-top: 20px; }
+        .scroll-down { margin-top: 50px; color: #00ffff; animation: bounce 2s infinite; }
 
-        .bot {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3px solid #00ffff;
-            color: #ddd;
-            align-self: flex-start;
-        }
+        /* Portfolio Grid */
+        .section { padding: 80px 5%; }
+        .section-title { font-size: 2rem; border-left: 5px solid #00ffff; padding-left: 20px; margin-bottom: 40px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        
+        .card { background: #111; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; position: relative; group; }
+        .card:hover { transform: translateY(-10px); border-color: #00ffff; }
+        .card img { width: 100%; height: 250px; object-fit: cover; filter: grayscale(50%); transition: 0.5s; }
+        .card:hover img { filter: grayscale(0%); }
+        .content { padding: 20px; }
+        .content h3 { margin: 0 0 10px 0; color: white; }
+        .content p { color: #aaa; font-size: 0.9rem; }
+        .price { color: #00ffff; font-weight: bold; margin-top: 10px; display: block; }
 
-        .user {
-            background: linear-gradient(135deg, #b000b9, #6a00ff);
-            color: white;
-            align-self: flex-end;
-            box-shadow: 0 4px 15px rgba(176, 0, 185, 0.4);
-            border-bottom-right-radius: 2px;
-        }
-
-        /* --- 4. ช่องพิมพ์ --- */
-        .input-area {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            position: relative;
-        }
-
-        input {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #333;
-            padding: 15px;
-            border-radius: 50px;
-            color: white;
-            font-family: 'Prompt';
-            outline: none;
-            transition: 0.3s;
-        }
-        input:focus {
-            border-color: #00ffff;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-        }
-
-        button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            background: #00ffff;
-            color: #000;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        button:hover {
-            background: #fff;
-            box-shadow: 0 0 15px #00ffff;
-            transform: scale(1.1);
-        }
-
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
     </style>
 </head>
 <body>
 
-    <div class="glass-box">
-        <div class="header">
-            <h1>3DNP AI HUB</h1>
-            <div id="status-text" class="status">Connecting to Database...</div>
-        </div>
-        
-        <div id="chat-box">
-            <div class="msg bot">
-                สวัสดีครับ ผมคือผู้ช่วยอัจฉริยะ (AI)<br>
-                มีข้อกฎหมายหรือข้อมูลอะไรให้ช่วยค้นหา บอกมาได้เลย! 🚀
-            </div>
-        </div>
+    <nav>
+        <div class="logo">3DNP CONS.</div>
+        <a href="login.html" class="btn-login">🔒 Staff Login</a>
+    </nav>
 
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="พิมพ์คำถาม..." onkeypress="handleEnter(event)">
-            <button onclick="sendMessage()">➤</button>
-        </div>
+    <div class="hero">
+        <h1>Future Construction</h1>
+        <p>รับออกแบบและก่อสร้าง ด้วยเทคโนโลยีทันสมัย ดีไซน์ล้ำยุค เพื่อคนรุ่นใหม่</p>
+        <div class="scroll-down">เลื่อนดูผลงาน ▼</div>
     </div>
 
-    <script>
-        // ==========================================
-        // ⚠️ แก้ไขรหัส Supabase ตรงนี้ก่อนใช้งาน! ⚠️
-        const SUPABASE_URL = 'วาง_PROJECT_URL_ที่นี่';
-        const SUPABASE_KEY = 'วาง_ANON_KEY_ที่นี่';
-        // ==========================================
-
-        const { createClient } = supabase;
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        async function init() {
-            const statusEl = document.getElementById('status-text');
-            try {
-                // เช็คการเชื่อมต่อ
-                const { data, error } = await _supabase.from('laws').select('*').limit(1);
-                if (error) throw error;
-                statusEl.innerHTML = "● SYSTEM ONLINE";
-                statusEl.classList.add('online');
-            } catch (err) {
-                statusEl.innerHTML = "🔴 OFFLINE (Check Keys)";
-                statusEl.style.color = "red";
-            }
-        }
-        init();
-
-        function sendMessage() {
-            const input = document.getElementById('user-input');
-            const chat = document.getElementById('chat-box');
-            const txt = input.value.trim();
-
-            if (!txt) return;
-
-            // 1. แสดงข้อความเรา
-            chat.innerHTML += `<div class="msg user">${txt}</div>`;
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-
-            // 2. จำลอง AI ตอบกลับ (Effect พิมพ์)
-            setTimeout(() => {
-                chat.innerHTML += `<div class="msg bot">กำลังประมวลผลคำสั่ง: "<b>${txt}</b>" <br><span style="color:#00ffff; font-size:0.8em;">...Processing API Request</span></div>`;
-                chat.scrollTop = chat.scrollHeight;
-            }, 800);
-        }
-
-        function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
-    </script>
+    <div class="section">
+        <div class="section-title">ผลงานของเรา</div>
+        <div class="grid">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c" alt="Modern House">
+                <div class="content">
+                    <h3>บ้านพักอาศัย 2 ชั้น (Cyber Style)</h3>
+                    <p>ออกแบบสไตล์โมเดิร์นลอฟท์ พร้อมระบบ Smart Home ทั้งหลัง</p>
+                    <span class="price">งบประมาณ: 3.5 ล้านบาท</span>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750" alt="Luxury Condo">
+                <div class="content">
+                    <h3>รีโนเวทคอนโดหรู</h3>
+                    <p>งานตกแต่งภายใน บิวท์อินครบวงจร วัสดุเกรดพรีเมียม</p>
+                    <span class="price">งบประมาณ: 1.2 ล้านบาท</span>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e" alt="Office">
+                <div class="content">
+                    <h3>Office Space Design</h3>
+                    <p>ออกแบบออฟฟิศเพื่อคนทำงานรุ่นใหม่ เน้นความโปร่งโล่ง</p>
+                    <span class="price">ติดต่อสอบถาม</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
