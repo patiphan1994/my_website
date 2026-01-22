@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบหลังบ้าน - ลงสินค้า</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; padding: 40px; max-width: 500px; margin: 0 auto; background: #eee; }
+        .box { background: white; padding: 30px; border-radius: 8px; }
+        input, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; cursor: pointer; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>📦 ลงสินค้าใหม่</h2>
+        <input type="text" id="p-name" placeholder="ชื่อสินค้า">
+        <input type="number" id="p-price" placeholder="ราคา (บาท)">
+        <input type="text" id="p-img" placeholder="ลิงก์รูปภาพ (URL)">
+        <textarea id="p-desc" placeholder="รายละเอียด"></textarea>
+        <button onclick="addProduct()">บันทึกสินค้า</button>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'ใส่_URL_ที่นี่';
+        const SUPABASE_KEY = 'ใส่_KEY_ที่นี่';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function addProduct() {
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const image = document.getElementById('p-img').value;
+            
+            const { error } = await _supabase.from('products').insert({ 
+                name, price: parseInt(price), image 
+            });
+
+            if(error) alert("ผิดพลาด: " + error.message);
+            else { alert("✅ ลงสินค้าแล้ว!"); location.reload(); }
+        }
+    </script>
+</body>
+</html>
