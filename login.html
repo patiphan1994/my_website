@@ -6,111 +6,198 @@
     <title>3DNP | Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        /* --- 🌑 MAIN THEME --- */
         body {
             margin: 0; padding: 0; font-family: 'Prompt', sans-serif;
-            background: #000; color: white; height: 100vh;
+            background-color: #000; color: white; height: 100vh;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden; -webkit-user-select: none; user-select: none;
         }
 
+        /* --- ✨ BACKGROUND ANIMATION --- */
+        #canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        }
+
+        /* --- 🔒 LOGIN BOX --- */
         .login-container {
-            text-align: center; width: 100%; max-width: 400px; padding: 40px;
-            background: rgba(255, 255, 255, 0.05); border-radius: 30px;
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+            text-align: center; width: 100%; max-width: 400px; padding: 50px 40px;
+            background: rgba(20, 20, 20, 0.6); /* สีดำใส */
+            border-radius: 24px;
+            backdrop-filter: blur(20px); /* เบลอพื้นหลังแบบ Apple */
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-out;
         }
 
-        h1 { font-weight: 600; margin-bottom: 30px; letter-spacing: 1px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-weight: 500; font-size: 2rem; margin-bottom: 5px; letter-spacing: -0.5px; }
+        p { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
         
-        input {
-            width: 100%; padding: 15px; margin-bottom: 15px;
-            background: #111; border: 1px solid #333; color: white;
-            border-radius: 12px; font-size: 1rem; box-sizing: border-box; outline: none;
-            text-align: center; transition: 0.3s;
+        /* --- ⌨️ INPUT FIELDS --- */
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i {
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            color: #555; font-size: 1.1rem;
         }
-        input:focus { border-color: #0071e3; }
+        input {
+            width: 100%; padding: 16px 20px 16px 50px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: white; border-radius: 14px; font-size: 1rem; box-sizing: border-box; outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            background: rgba(255,255,255,0.1); border-color: #0071e3;
+            box-shadow: 0 0 0 4px rgba(0,113,227,0.2);
+        }
 
+        /* --- 🔵 ACTION BUTTON --- */
         .btn-login {
-            width: 100%; padding: 15px; background: #0071e3;
-            border: none; border-radius: 12px; color: white; font-size: 1rem;
+            width: 100%; padding: 16px; background: #0071e3;
+            border: none; border-radius: 14px; color: white; font-size: 1rem;
             font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px;
         }
         .btn-login:hover { background: #0077ed; transform: scale(1.02); }
 
-        .links { margin-top: 20px; font-size: 0.9rem; }
-        .links a { color: #888; text-decoration: none; margin: 0 10px; }
-        .links a:hover { color: white; }
+        /* --- 🔗 LINKS --- */
+        .links { margin-top: 25px; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .links a { color: #888; text-decoration: none; transition: 0.3s; }
+        .links a:hover { color: white; text-decoration: underline; }
 
-        /* ปุ่มลับสำหรับ Admin */
+        /* --- 🛡️ ADMIN & HOME BUTTONS --- */
         .admin-trigger {
-            position: fixed; bottom: 20px; left: 20px; color: #333; 
-            font-size: 1.5rem; cursor: pointer; transition: 0.3s;
+            position: fixed; bottom: 20px; left: 20px; color: rgba(255,255,255,0.1); 
+            font-size: 1.5rem; cursor: pointer; transition: 0.3s; z-index: 10;
         }
-        .admin-trigger:hover { color: #555; }
+        .admin-trigger:hover { color: #0071e3; transform: scale(1.1); }
 
-        /* ปุ่ม Home ทางลัด */
         .btn-home {
-            position: fixed; top: 25px; right: 25px; width: 45px; height: 45px;
-            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
+            position: fixed; top: 30px; right: 30px; width: 50px; height: 50px;
+            background: linear-gradient(135deg, #444, #222);
             border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-            color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.4);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            color: white; text-decoration: none; border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.3s; z-index: 10;
         }
+        .btn-home:hover { transform: rotate(90deg); border-color: #0071e3; }
+
     </style>
 </head>
 <body>
 
+    <canvas id="canvas"></canvas>
+
     <a href="index.html" class="btn-home"><i class="fas fa-home"></i></a>
 
-    <div class="admin-trigger" onclick="window.location.href='admin_keygen.html'">
-        <i class="fas fa-user-shield"></i>
+    <div class="admin-trigger" onclick="window.location.href='admin_keygen.html'" title="Admin Access">
+        <i class="fas fa-shield-alt"></i>
     </div>
 
     <div class="login-container">
-        <div style="font-size: 3rem; margin-bottom: 20px;"><i class="fab fa-apple"></i></div>
+        <div style="font-size: 3.5rem; margin-bottom: 10px; background: linear-gradient(to bottom, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="fab fa-apple"></i>
+        </div>
         <h1>3DNP ID</h1>
+        <p>Sign in to access your workspace</p>
         
-        <input type="text" id="email" placeholder="Email / Apple ID">
-        <input type="password" id="password" placeholder="Password">
+        <div class="input-group">
+            <i class="fas fa-envelope"></i>
+            <input type="text" id="email" placeholder="Email / Apple ID">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="Password">
+        </div>
         
         <button class="btn-login" onclick="login()">Sign In</button>
 
         <div class="links">
-            <a href="activate.html">Activate New Key</a>
-            <a href="#">Forgot Password?</a>
+            <a href="activate.html">Create new ID</a>
+            <a href="#">Forgot password?</a>
         </div>
     </div>
 
     <script>
+        // --- 🌌 SCRIPT: Animation พื้นหลัง (Stars) ---
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+        const numberOfParticles = 100;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.005; 
+                if (this.size <= 0.2) this.size = Math.random() * 2; // กระพริบใหม่
+            }
+            draw() {
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animate);
+        }
+        init();
+        animate();
+
+        // --- 🔐 SCRIPT: ระบบ Login (Admin + User) ---
         function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // 1. ตรวจสอบว่าเป็น Admin หรือไม่? (ทางลับ)
+            // 1. ตรวจสอบ Admin (ทางลับ)
             if(email === "admin" && password === "admin1234") {
                 localStorage.setItem("3dnp_user_role", "admin");
-                window.location.href = "admin_keygen.html"; // หรือไปหน้า system ก็ได้
+                window.location.href = "admin_keygen.html";
                 return;
             }
 
-            // 2. ตรวจสอบฐานข้อมูลลูกค้า (Local Storage)
-            // ดึงข้อมูลผู้ใช้ทั้งหมดที่เคย Activate ไว้ในเครื่องนี้
+            // 2. ตรวจสอบ User (จาก Activate)
             const storedUsers = JSON.parse(localStorage.getItem('3dnp_users')) || [];
-            
-            // ค้นหาว่ามีอีเมลและรหัสผ่านตรงกันไหม
             const validUser = storedUsers.find(user => user.email === email && user.password === password);
 
             if(validUser) {
                 // ✅ เจอข้อมูลถูกต้อง
-                localStorage.setItem("3dnp_current_user", JSON.stringify(validUser)); // บันทึกว่าใครล็อกอินอยู่
-                alert("Welcome back, " + validUser.email);
-                window.location.href = "system.html"; // พาไปหน้าทำงาน
+                localStorage.setItem("3dnp_current_user", JSON.stringify(validUser));
+                //alert("Welcome back, " + validUser.email);
+                window.location.href = "system.html"; // ไปหน้าทำงาน
             } else {
-                // ❌ ไม่เจอข้อมูล
-                alert("Login Failed!\nอีเมลหรือรหัสผ่านไม่ถูกต้อง หรือคุณยังไม่ได้ Activate บนเครื่องนี้");
+                // ❌ ไม่เจอ
+                alert("Login Failed!\nอีเมลหรือรหัสผ่านไม่ถูกต้อง");
             }
         }
+        
+        // กด Enter เพื่อล็อกอินได้
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') login();
+        });
     </script>
-
 </body>
 </html>
