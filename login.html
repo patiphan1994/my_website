@@ -10,98 +10,54 @@
             margin: 0; padding: 0; font-family: 'Prompt', sans-serif;
             background: #0f1014; height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
         }
-
-        /* กล่อง Login ลอยกลางจอ */
         .login-card {
-            background: #1a1c24;
-            padding: 40px; width: 100%; max-width: 400px;
-            border-radius: 20px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            position: relative;
+            background: #1a1c24; padding: 40px; width: 100%; max-width: 400px;
+            border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
         }
-
-        /* โลโก้ */
-        .logo-text { font-size: 2rem; font-weight: 700; color: white; margin-bottom: 5px; }
-        .logo-text span { color: #4facfe; }
-        .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
-
-        /* ช่องกรอกรหัส */
-        .input-group { position: relative; margin-bottom: 20px; }
         .key-input {
-            width: 100%; padding: 15px; padding-left: 20px;
-            background: #0b0c0f; border: 1px solid #333; border-radius: 50px;
-            color: white; font-size: 1rem; outline: none; box-sizing: border-box;
-            transition: 0.3s; font-family: 'Prompt'; text-align: center; letter-spacing: 2px;
+            width: 100%; padding: 15px; margin: 20px 0; background: #0b0c0f; 
+            border: 1px solid #4facfe; color: white; border-radius: 50px; 
+            text-align: center; font-size: 1.2rem;
         }
-        .key-input:focus { border-color: #4facfe; box-shadow: 0 0 15px rgba(79, 172, 254, 0.2); }
-
-        /* ปุ่มเข้าใช้งาน (Titanium Style) */
         .btn-enter {
-            width: 100%; padding: 15px; border: none; border-radius: 50px;
-            background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
-            color: white; font-weight: 700; font-size: 1rem; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s;
-            border-top: 1px solid rgba(255,255,255,0.3);
+            width: 100%; padding: 15px; border-radius: 50px; border: none;
+            background: #4facfe; color: white; font-weight: bold; cursor: pointer;
+            font-size: 1rem;
         }
-        .btn-enter:hover {
-            transform: translateY(-3px);
-            background: linear-gradient(to bottom, #9ea4b0 0%, #4b5259 100%);
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
-
-        /* ลิงก์กลับ */
-        .back-link { display: block; margin-top: 20px; color: #555; text-decoration: none; font-size: 0.85rem; transition: 0.3s; }
-        .back-link:hover { color: #aaa; }
-
-        /* Error message */
-        .error-msg { color: #ff4757; font-size: 0.9rem; margin-top: 10px; display: none; }
+        .btn-enter:hover { background: #007bff; }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <div class="logo-text">3DNP <span>SYSTEM</span></div>
-        <div class="subtitle">กรุณากรอก Access Key เพื่อเข้าใช้งาน</div>
-
-        <div class="input-group">
-            <input type="password" id="accessKey" class="key-input" placeholder="ACCESS KEY">
-        </div>
-
-        <button class="btn-enter" onclick="login()">เข้าสู่พื้นที่ทำงาน</button>
-        <div class="error-msg" id="errorText">รหัสไม่ถูกต้อง กรุณาตรวจสอบใหม่</div>
-
-        <a href="index.html" class="back-link">← กลับไปหน้าหลัก</a>
+        <h2 style="color:white;">🔐 เข้าสู่ระบบ</h2>
+        
+        <input type="text" id="passInput" class="key-input" placeholder="ใส่รหัส 1234">
+        
+        <button class="btn-enter" onclick="tryLogin()">เข้าใช้งาน</button>
+        
+        <p style="color:#888; margin-top:20px; font-size:0.8rem;">รหัสผ่านคือ: 1234</p>
     </div>
 
     <script>
-        function login() {
-            const input = document.getElementById('accessKey').value;
-            const error = document.getElementById('errorText');
+        function tryLogin() {
+            // 1. ดึงค่าจากช่องกรอก
+            var input = document.getElementById('passInput').value;
+            
+            // ลบช่องว่างหัวท้ายออก (กันคนพิมพ์เว้นวรรคเผลอๆ)
+            input = input.trim(); 
 
-            // 👇👇 กำหนดรหัสผ่านตรงนี้ (เปลี่ยนได้ตามใจชอบ) 👇👇
-            // พี่สามารถเพิ่มรหัสหลายชุดได้ เช่น ['VIP2024', 'STAFF01', 'ADMIN99']
-            const validKeys = ['1234', 'ADMIN2024', '3DNP-VIP']; 
-
-            if (validKeys.includes(input)) {
-                // ถ้ารหัสถูกต้อง
-                localStorage.setItem('isLoggedIn', 'true'); // บันทึกว่าล็อคอินแล้ว
-                window.location.href = 'system.html'; // 👉 เด้งไปหน้าทำงาน
+            // 2. เช็กรหัส (ตั้งไว้เป็น 1234)
+            if (input === '1234') {
+                alert("✅ รหัสถูกต้อง! กำลังพาท่านไปที่โต๊ะทำงาน...");
+                // 3. สั่งให้กระโดดไปหน้า system.html
+                window.location.href = "system.html"; 
             } else {
-                // ถ้ารหัสผิด
-                error.style.display = 'block';
-                document.getElementById('accessKey').style.borderColor = '#ff4757';
+                // ถ้าผิด ให้เด้งเตือนว่าผิด
+                alert("❌ รหัสผิดครับ! คุณพิมพ์ว่า: " + input + "\n(ลองพิมพ์ 1234 ดูนะครับ)");
             }
         }
-
-        // กด Enter เพื่อล็อคอินได้เลย
-        document.getElementById('accessKey').addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                login();
-            }
-        });
     </script>
 
 </body>
