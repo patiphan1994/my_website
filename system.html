@@ -1,218 +1,245 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3DNP WORKSPACE SYSTEM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>3DNP OS | Workspace</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- 🌑 CORE THEME --- */
-        body { margin: 0; font-family: 'Prompt', sans-serif; background: #0f1014; color: #ffffff; display: flex; height: 100vh; overflow: hidden; }
+        :root {
+            --apple-glass: rgba(255, 255, 255, 0.03);
+            --apple-blur: blur(20px);
+            --accent-blue: #0071e3; /* Apple Blue */
+            --bg-dark: #000000;
+        }
 
-        /* --- ⬅️ SIDEBAR (เมนูซ้าย) --- */
+        body {
+            margin: 0; padding: 0;
+            background: #000;
+            /* พื้นหลังแบบไล่เฉดนุ่มนวลสไตล์ macOS Sonoma */
+            background-image: radial-gradient(circle at 0% 0%, #1a1a1a 0%, #000 50%),
+                              radial-gradient(circle at 100% 100%, #001f3f 0%, #000 50%);
+            color: #fff;
+            font-family: 'SF Pro Display', 'Prompt', sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            -webkit-user-select: none; user-select: none;
+        }
+
+        /* --- 🍏 SIDEBAR (Apple Sidebar Style) --- */
         .sidebar {
-            width: 250px; background: #1a1c24; border-right: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.3);
-            z-index: 10;
+            width: 260px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: var(--apple-blur);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
         }
-        .user-profile {
-            text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .user-avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #4facfe; margin-bottom: 10px; object-fit: cover; }
-        .user-name { font-weight: 700; font-size: 1.1rem; color: #fff; }
-        .user-role { font-size: 0.8rem; color: #4facfe; background: rgba(79, 172, 254, 0.1); padding: 2px 10px; border-radius: 10px; }
-        
-        .sidebar-menu { flex: 1; }
-        .menu-item {
-            display: flex; align-items: center; gap: 10px; padding: 12px 15px; color: #aaa; text-decoration: none;
-            border-radius: 10px; margin-bottom: 5px; transition: 0.3s;
-        }
-        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.05); color: #fff; }
-        .menu-item i { width: 25px; text-align: center; }
 
-        .logout-btn {
-            background: #2f333a; color: #ff6b6b; padding: 12px; border-radius: 10px; text-align: center;
-            text-decoration: none; font-weight: 600; border: 1px solid #ff6b6b; transition: 0.3s;
+        .brand-header {
+            padding: 0 15px 30px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
         }
-        .logout-btn:hover { background: #ff6b6b; color: white; }
+        .brand-header span { color: #888; font-weight: 300; }
 
-        /* --- 🖥️ MAIN CONTENT (พื้นที่ทำงาน) --- */
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .page-title { font-size: 1.8rem; font-weight: 700; color: #fff; }
-        .date-display { color: #888; font-size: 0.9rem; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #888;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+        .nav-item i { width: 25px; font-size: 1.1rem; }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
 
-        /* --- 🧱 GRID SYSTEM (ตารางแอพ) --- */
+        /* --- 🖥️ MAIN WORKSPACE --- */
+        .main-workspace {
+            flex: 1;
+            padding: 60px;
+            overflow-y: auto;
+        }
+
+        .welcome-header {
+            margin-bottom: 50px;
+        }
+        .welcome-header h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -1.5px;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- 📱 APP GRID (Apple Squircle Style) --- */
         .app-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* จัดออโต้ตามขนาดจอ */
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 30px;
         }
 
-        /* --- ⚙️ APP BUTTON CARD (ปุ่มกดแบบไทเทเนียม) --- */
-        .app-card {
-            background: linear-gradient(145deg, #1e2029, #16181e);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; padding: 25px 20px;
-            text-align: center; cursor: pointer; text-decoration: none;
-            transition: all 0.3s ease; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 180px;
+        .app-icon-wrapper {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        /* เอฟเฟกต์แสงไทเทเนียม */
-        .app-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 100%);
-            pointer-events: none;
+        /* ทรงมนแบบ Apple (Squircle) */
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--apple-glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 22px; /* Apple Squircle radius */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+            color: #fff;
+            position: relative;
+            transition: 0.3s;
         }
 
-        .app-card:hover {
-            transform: translateY(-5px);
-            border-color: #4facfe;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 15px rgba(79, 172, 254, 0.2);
+        .app-icon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
         }
 
-        .app-icon { font-size: 2.5rem; margin-bottom: 15px; color: #e0e0e0; text-shadow: 0 0 10px rgba(255,255,255,0.2); transition: 0.3s; }
-        .app-card:hover .app-icon { transform: scale(1.1); color: #fff; }
-        
-        .app-name { font-size: 1rem; font-weight: 600; color: #ddd; margin-bottom: 5px; }
-        .app-desc { font-size: 0.75rem; color: #666; }
+        .app-icon-wrapper:hover .app-icon {
+            transform: scale(1.05) translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
 
-        /* สีพิเศษสำหรับปุ่มแต่ละประเภท */
-        .icon-admin { color: #ff4757; } /* สีแดงสำหรับแอดมิน */
-        .icon-ai { color: #2ed573; }    /* สีเขียวสำหรับ AI */
-        .icon-pdf { color: #ff6b81; }   /* สีชมพูสำหรับ PDF */
-        .icon-calc { color: #ffa502; }  /* สีส้มคำนวณ */
+        .app-name {
+            font-size: 0.9rem;
+            color: #fff;
+            font-weight: 400;
+            text-align: center;
+        }
+        .app-status {
+            font-size: 0.7rem;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        /* --- 🏠 HOME BUTTON (Apple Home) --- */
+        .apple-home {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+        }
+        .apple-home:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.1);
+        }
 
     </style>
 </head>
-<body oncontextmenu="return false">
+<body>
 
     <div class="sidebar">
-        <div class="user-profile">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
-            <div class="user-name" id="display-name">Guest User</div>
-            <div class="user-role" id="display-role">Access Key: Active</div>
+        <div class="brand-header">3DNP <span>OS</span></div>
+        <div class="nav-item active"><i class="fas fa-home"></i> Home</div>
+        <div class="nav-item"><i class="fas fa-folder"></i> Projects</div>
+        <div class="nav-item"><i class="fas fa-user-circle"></i> Profile</div>
+        <div class="nav-item"><i class="fas fa-cog"></i> Settings</div>
+        
+        <div style="margin-top: auto;">
+            <a href="login.html" class="nav-item" style="color: #ff453a;"><i class="fas fa-power-off"></i> Sign Out</a>
         </div>
-
-        <div class="sidebar-menu">
-            <a href="#" class="menu-item active"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="#" class="menu-item"><i class="fas fa-bell"></i> แจ้งเตือน <span style="background:red; color:white; font-size:10px; padding:2px 5px; border-radius:50%; margin-left:auto;">3</span></a>
-            <a href="#" class="menu-item"><i class="fas fa-cog"></i> ตั้งค่าส่วนตัว</a>
-        </div>
-
-        <a href="login.html" class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> LOGOUT</a>
     </div>
 
-    <div class="main-content">
-        <div class="top-bar">
-            <div class="page-title">WORKSPACE <span style="font-weight:300; color:#4facfe;">SYSTEM</span></div>
-            <div class="date-display" id="current-date">Wed, 22 Jan 2026</div>
+    <div class="main-workspace">
+        <div class="welcome-header">
+            <div style="color: var(--accent-blue); font-weight: 600; margin-bottom: 10px;">FRIDAY, JANUARY 23</div>
+            <h1>Good Morning, Chief.</h1>
         </div>
 
         <div class="app-grid">
-
-            <a href="app_boq.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-clipboard-list app-icon icon-calc"></i>
-                <div class="app-name">ถอดปริมาณ BOQ Pro</div>
-                <div class="app-desc">คำนวณวัสดุและราคาอัตโนมัติ</div>
+            <a href="app_boq.html" class="app-icon-wrapper">
+                <div class="app-icon"><i class="fas fa-calculator" style="color: #ff9f0a;"></i></div>
+                <div class="app-name">BOQ Pro</div>
+                <div class="app-status">v2.4</div>
             </a>
 
-            <a href="app_drawing.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-drafting-compass app-icon"></i>
-                <div class="app-name">เขียนแบบก่อสร้าง</div>
-                <div class="app-desc">Drafting & Design Tools</div>
+            <a href="#" class="app-icon-wrapper">
+                <div class="app-icon"><i class="fas fa-pen-ruler" style="color: #64d2ff;"></i></div>
+                <div class="app-name">Drafting</div>
+                <div class="app-status">AutoSave On</div>
             </a>
 
-            <a href="app_ai.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-robot app-icon icon-ai"></i>
-                <div class="app-name">AI สถาปนิก</div>
-                <div class="app-desc">ปรึกษาการสร้างบ้าน & กฎหมาย</div>
+            <a href="#" class="app-icon-wrapper">
+                <div class="app-icon" style="background: linear-gradient(135deg, #5e5ce6 0%, #bf5af2 100%);">
+                    <i class="fas fa-shining"></i>
+                </div>
+                <div class="app-name">AI Architect</div>
+                <div class="app-status">Ready to chat</div>
             </a>
 
-            <a href="app_structure.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-layer-group app-icon icon-calc"></i>
-                <div class="app-name">คำนวณโครงสร้าง</div>
-                <div class="app-desc">วิเคราะห์คาน เสา และรับน้ำหนัก</div>
+            <a href="#" class="app-icon-wrapper">
+                <div class="app-icon"><i class="fas fa-cubic-bezier" style="color: #30d158;"></i></div>
+                <div class="app-name">Structural</div>
+                <div class="app-status">Ready</div>
             </a>
 
-            <a href="app_pdf_merge.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-file-pdf app-icon icon-pdf"></i>
-                <div class="app-name">รวมไฟล์ PDF</div>
-                <div class="app-desc">Merge PDF Files</div>
+            <a href="#" class="app-icon-wrapper">
+                <div class="app-icon"><i class="fas fa-file-pdf" style="color: #ff3b30;"></i></div>
+                <div class="app-name">PDF Suite</div>
+                <div class="app-status">12 Tools</div>
             </a>
 
-            <a href="app_img2pdf.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-image app-icon icon-pdf"></i>
-                <div class="app-name">รูปภาพ ➔ PDF</div>
-                <div class="app-desc">Convert Images to PDF</div>
+            <a href="#" class="app-icon-wrapper">
+                <div class="app-icon"><i class="fas fa-map-location-dot" style="color: #ffcc00;"></i></div>
+                <div class="app-name">GIS Land</div>
+                <div class="app-status">Connected</div>
             </a>
 
-            <a href="app_pdf2img.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-file-image app-icon icon-pdf"></i>
-                <div class="app-name">PDF ➔ รูปภาพ</div>
-                <div class="app-desc">Convert PDF to Images</div>
+            <a href="#" class="app-icon-wrapper">
+                <div class="app-icon"><i class="fas fa-shield-halved" style="color: #8e8e93;"></i></div>
+                <div class="app-name">Management</div>
+                <div class="app-status">Admin Only</div>
             </a>
-
-            <a href="app_converter.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-ruler-combined app-icon"></i>
-                <div class="app-name">แปลงหน่วยพื้นที่</div>
-                <div class="app-desc">ตร.วา ⇄ ตร.เมตร</div>
-            </a>
-
-            <a href="app_map.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-map-marked-alt app-icon"></i>
-                <div class="app-name">แผนที่ & โฉนด</div>
-                <div class="app-desc">เช็คตำแหน่งและระวางที่ดิน</div>
-            </a>
-
-            <a href="app_chat.html" class="app-card" onclick="checkAccess(event)">
-                <i class="fas fa-comments app-icon icon-ai"></i>
-                <div class="app-name">Meeting Room</div>
-                <div class="app-desc">แชทประชุมทีมงาน</div>
-            </a>
-
-            <a href="admin_dashboard.html" class="app-card" style="border-color: #ff4757;" onclick="checkAdmin(event)">
-                <i class="fas fa-user-shield app-icon icon-admin"></i>
-                <div class="app-name" style="color:#ff4757;">SUPER ADMIN</div>
-                <div class="app-desc">แก้ไขทุกอย่างในระบบ</div>
-            </a>
-
-            </div>
+        </div>
     </div>
 
-    <script>
-        // แสดงวันที่ปัจจุบัน
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', dateOptions);
-
-        // ฟังก์ชันจำลองการ Logout
-        function logout() {
-            // ล้างค่า Key ในเครื่อง
-            localStorage.removeItem('accessKey');
-            alert('ออกจากระบบเรียบร้อย');
-        }
-
-        // ฟังก์ชันเช็คสิทธิ์เบื้องต้น (เดี๋ยวเราจะเอาไปผูกกับ Firebase อีกที)
-        function checkAccess(e) {
-            // ตอนนี้ให้ผ่านไปก่อน แต่ในอนาคตจะเช็คว่า Key หมดอายุยัง
-            console.log("Access Granted");
-        }
-
-        function checkAdmin(e) {
-            // เช็คว่าเป็น Admin ตัวจริงไหม
-            e.preventDefault(); // หยุดการไปหน้าถัดไปก่อน
-            const password = prompt("กรุณาใส่รหัสลับ Super Admin:");
-            if(password === "admin999") { // รหัสสมมติ
-                window.location.href = "admin_dashboard.html";
-            } else {
-                alert("คุณไม่มีสิทธิ์เข้าถึงส่วนนี้!");
-            }
-        }
-    </script>
+    <a href="index.html" class="apple-home">
+        <i class="fas fa-house"></i>
+    </a>
 
 </body>
 </html>
