@@ -4,78 +4,330 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3DNP Drafting | Architecture Studio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Prompt:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+
+    <style>
+        /* 🎨 THEME & VARIABLES (Rayon Style) */
+        :root {
+            --bg-canvas: #E5E5E5; /* สีพื้นหลังกระดาษ */
+            --bg-panel: #FFFFFF;
+            --border-color: #E5E7EB;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --accent: #000000; /* Rayon เน้นความมินิมอล ใช้ดำ/ขาว/เทา */
+            --accent-bg: #F3F4F6;
+            --icon-size: 16px;
+            --panel-width: 280px;
+        }
+
+        body {
+            margin: 0; overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-canvas);
+            color: var(--text-main);
+            font-size: 12px; /* ฟอนต์เล็กแบบโปรแกรม Pro */
+            display: flex; flex-direction: column; height: 100vh;
+        }
+
+        /* --- 1. TOP NAVBAR --- */
+        .navbar {
+            height: 48px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 16px; }
+        .nav-left i.fa-home { font-size: 18px; color: var(--text-main); cursor: pointer; }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-weight: 500; }
+        .breadcrumb span.active { color: var(--text-main); font-weight: 600; }
+        .nav-center { display: flex; align-items: center; gap: 4px; }
+        .icon-btn { 
+            width: 32px; height: 32px; border: none; background: transparent; border-radius: 6px;
+            color: var(--text-muted); cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s;
+        }
+        .icon-btn:hover { background: var(--accent-bg); color: var(--text-main); }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .btn-primary { background: var(--text-main); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 500; cursor: pointer; }
+        .avatar { width: 28px; height: 28px; background: #D1D5DB; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 600; color: #fff; }
+
+        /* --- 2. MAIN WORKSPACE --- */
+        .workspace { display: flex; flex: 1; position: relative; overflow: hidden; }
+
+        /* --- 2.1 LEFT PANEL (Assets & Layers) --- */
+        .left-panel {
+            width: var(--panel-width); background: var(--bg-panel); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 10;
+        }
+        .panel-tabs { display: flex; border-bottom: 1px solid var(--border-color); }
+        .tab { flex: 1; padding: 12px 0; text-align: center; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab.active { color: var(--text-main); border-bottom-color: var(--text-main); }
+        .panel-content { padding: 16px; overflow-y: auto; flex: 1; }
+        .section-title { font-size: 10px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 12px; }
+        .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+        .asset-item { border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; text-align: center; cursor: pointer; transition: 0.1s; }
+        .asset-item:hover { border-color: var(--text-muted); background: #FAFAFA; }
+        .asset-item i { font-size: 20px; color: var(--text-muted); margin-bottom: 8px; }
+
+        /* --- 2.2 CANVAS AREA & FLOATING TOOLBAR --- */
+        .canvas-area { flex: 1; position: relative; background: var(--bg-canvas); }
+        #canvas-wrapper { width: 100%; height: 100%; position: absolute; top:0; left:0; }
+        
+        /* The Rayon Floating Toolbar (Top Center) */
+        .floating-toolbar {
+            position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            background: var(--bg-panel); padding: 4px; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 2px; z-index: 20;
+        }
+        .tool-btn {
+            width: 36px; height: 36px; border: none; background: transparent; border-radius: 6px;
+            color: var(--text-main); cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.1s; font-size: 14px;
+        }
+        .tool-btn:hover { background: var(--accent-bg); }
+        .tool-btn.active { background: var(--text-main); color: #fff; }
+        .tool-divider { width: 1px; height: 24px; background: var(--border-color); margin: 0 4px; }
+
+        /* --- 2.3 RIGHT PANEL (Properties Inspector) --- */
+        .right-panel {
+            width: var(--panel-width); background: var(--bg-panel); border-left: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 10; overflow-y: auto;
+        }
+        .props-header { padding: 16px; border-bottom: 1px solid var(--border-color); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Grid Input Settings */
+        .setting-row { display: flex; align-items: center; margin-bottom: 12px; padding: 0 16px; }
+        .setting-label { width: 60px; color: var(--text-muted); }
+        .setting-input-group { display: flex; gap: 8px; flex: 1; }
+        .input-box { display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 4px; padding: 4px 8px; flex: 1; transition: 0.1s; }
+        .input-box:focus-within { border-color: var(--text-main); }
+        .input-box span { color: var(--text-muted); font-size: 10px; margin-right: 6px; }
+        .input-box input { border: none; outline: none; width: 100%; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-main); }
+        
+        /* Fill & Stroke Settings */
+        .color-row { padding: 0 16px; margin-bottom: 16px; }
+        .color-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 500; }
+        .color-picker-box { display: flex; align-items: center; gap: 8px; border: 1px solid var(--border-color); padding: 4px; border-radius: 4px; }
+        .color-swatch { width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+        .color-hex { border: none; outline: none; font-family: monospace; font-size: 12px; flex: 1; text-transform: uppercase; }
+        .prop-divider { border-bottom: 1px solid var(--border-color); margin: 16px 0; }
+
+    </style>
 </head>
 <body>
 
-    <div class="grid-bg" id="gridBg"></div>
-    <div id="canvas-wrapper"><canvas id="draftCanvas"></canvas></div>
-
-    <header class="top-nav">
+    <nav class="navbar">
         <div class="nav-left">
-            <a href="../system.html" class="btn-back" title="Back to OS"><i class="fas fa-arrow-left"></i></a>
-            <div class="menu-dropdown"><i class="fas fa-bars"></i></div>
-            <div class="file-info">
-                <span class="file-name">Project_Villa_01</span>
-                <span class="file-status">Saved</span>
+            <a href="../system.html" style="text-decoration:none;"><i class="fas fa-home"></i></a>
+            <div class="breadcrumb">
+                <span>Workspace</span> / <span class="active">Modern_House_Plan</span>
             </div>
         </div>
         <div class="nav-center">
-            <button class="action-btn" title="Undo (Ctrl+Z)"><i class="fas fa-undo"></i></button>
-            <button class="action-btn" title="Redo (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+            <button class="icon-btn" title="Undo"><i class="fas fa-undo"></i></button>
+            <button class="icon-btn" title="Redo"><i class="fas fa-redo"></i></button>
+            <button class="icon-btn" title="History"><i class="fas fa-history"></i></button>
         </div>
         <div class="nav-right">
-            <button class="share-btn"><i class="fas fa-share-alt"></i> Share</button>
-            <button class="export-btn"><i class="fas fa-download"></i> Export PDF</button>
+            <span style="color: var(--text-muted);">Saved</span>
+            <div class="avatar">C</div>
+            <button class="btn-primary">Share</button>
         </div>
-    </header>
+    </nav>
 
-    <aside class="left-toolbar">
-        <div class="tool-group">
-            <button class="tool-btn active" data-tool="select" title="Select (V)"><i class="fas fa-mouse-pointer"></i></button>
-            <button class="tool-btn" data-tool="pan" title="Pan (H)"><i class="fas fa-hand-paper"></i></button>
-        </div>
-        <hr class="tool-divider">
-        <div class="tool-group">
-            <button class="tool-btn" data-tool="wall" title="Wall (W)"><i class="fas fa-slash"></i></button>
-            <button class="tool-btn" data-tool="room" title="Room / Zone (R)"><i class="far fa-square"></i></button>
-        </div>
-        <hr class="tool-divider">
-        <div class="tool-group">
-            <button class="tool-btn" data-tool="door" title="Door (D)"><i class="fas fa-door-open"></i></button>
-            <button class="tool-btn" data-tool="window" title="Window (O)"><i class="fas fa-border-all"></i></button>
-        </div>
-    </aside>
+    <div class="workspace">
+        
+        <aside class="left-panel">
+            <div class="panel-tabs">
+                <div class="tab active">Components</div>
+                <div class="tab">Layers</div>
+            </div>
+            <div class="panel-content">
+                <div class="section-title">Architecture</div>
+                <div class="asset-grid">
+                    <div class="asset-item"><i class="fas fa-border-all"></i><br>Window</div>
+                    <div class="asset-item"><i class="fas fa-door-open"></i><br>Door</div>
+                    <div class="asset-item"><i class="fas fa-columns"></i><br>Column</div>
+                    <div class="asset-item"><i class="fas fa-stairs"></i><br>Stairs</div>
+                </div>
 
-    <aside class="right-panel" id="propsPanel">
-        <div class="panel-header">Properties</div>
-        <div class="panel-content">
-            <div class="prop-section">
-                <div class="prop-title">Transform</div>
-                <div class="input-grid">
-                    <div class="input-wrap"><span class="label">X</span><input type="number" id="propX" value="0"></div>
-                    <div class="input-wrap"><span class="label">Y</span><input type="number" id="propY" value="0"></div>
-                    <div class="input-wrap"><span class="label">W</span><input type="number" id="propW" value="0"></div>
-                    <div class="input-wrap"><span class="label">H</span><input type="number" id="propH" value="0"></div>
-                    <div class="input-wrap"><span class="label"><i class="fas fa-sync-alt"></i></span><input type="number" id="propA" value="0"></div>
+                <div class="section-title">Furniture</div>
+                <div class="asset-grid">
+                    <div class="asset-item"><i class="fas fa-bed"></i><br>Bed</div>
+                    <div class="asset-item"><i class="fas fa-couch"></i><br>Sofa</div>
+                    <div class="asset-item"><i class="fas fa-bath"></i><br>Bath</div>
+                    <div class="asset-item"><i class="fas fa-sink"></i><br>Kitchen</div>
                 </div>
             </div>
-            <hr class="panel-divider">
-            <button class="btn-delete" id="btnDelete"><i class="fas fa-trash"></i> Delete Element</button>
-        </div>
-    </aside>
+        </aside>
 
-    <footer class="bottom-bar">
-        <div class="status-left"><span id="coordsDisplay">X: 0, Y: 0</span></div>
-        <div class="status-right">
-            <button class="status-btn"><i class="fas fa-magnet"></i> Snap to Grid</button>
-            <span class="zoom-level" id="zoomDisplay">100%</span>
-        </div>
-    </footer>
+        <main class="canvas-area">
+            <div class="floating-toolbar">
+                <button class="tool-btn active" data-tool="select" title="Select (V)"><i class="fas fa-mouse-pointer"></i></button>
+                <button class="tool-btn" data-tool="pan" title="Pan (H)"><i class="fas fa-hand-paper"></i></button>
+                <div class="tool-divider"></div>
+                <button class="tool-btn" data-tool="wall" title="Wall (W)"><i class="fas fa-slash"></i></button>
+                <button class="tool-btn" data-tool="space" title="Space/Room (R)"><i class="far fa-square"></i></button>
+                <button class="tool-btn" data-tool="line" title="Line (L)"><i class="fas fa-minus"></i></button>
+                <div class="tool-divider"></div>
+                <button class="tool-btn" data-tool="text" title="Text (T)"><i class="fas fa-font"></i></button>
+                <button class="tool-btn" data-tool="measure" title="Dimension (M)"><i class="fas fa-ruler-horizontal"></i></button>
+            </div>
 
-    <script src="app_logic.js"></script>
+            <div id="canvas-wrapper">
+                <canvas id="draftCanvas"></canvas>
+            </div>
+        </main>
+
+        <aside class="right-panel" id="inspectorPanel">
+            <div class="props-header">
+                Design <i class="fas fa-sliders-h" style="color: var(--text-muted);"></i>
+            </div>
+            
+            <div style="padding-top: 16px;">
+                <div class="setting-row" style="justify-content: space-between; color: var(--text-muted); font-size: 14px; padding: 0 24px 16px 24px;">
+                    <i class="fas fa-align-left cursor-pointer hover:text-black"></i>
+                    <i class="fas fa-align-center cursor-pointer hover:text-black"></i>
+                    <i class="fas fa-align-right cursor-pointer hover:text-black"></i>
+                    <i class="fas fa-align-justify cursor-pointer hover:text-black"></i>
+                </div>
+
+                <div class="prop-divider" style="margin-top: 0;"></div>
+
+                <div class="setting-row">
+                    <div class="setting-input-group">
+                        <div class="input-box"><span>X</span><input type="number" id="propX" value="0"></div>
+                        <div class="input-box"><span>Y</span><input type="number" id="propY" value="0"></div>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-input-group">
+                        <div class="input-box"><span>W</span><input type="number" id="propW" value="0"></div>
+                        <div class="input-box"><span>H</span><input type="number" id="propH" value="0"></div>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-input-group">
+                        <div class="input-box"><span><i class="fas fa-sync-alt"></i></span><input type="number" id="propA" value="0"></div>
+                        <div class="input-box"><span><i class="fas fa-crop-alt"></i></span><input type="number" value="0" disabled></div>
+                    </div>
+                </div>
+
+                <div class="prop-divider"></div>
+
+                <div class="color-row">
+                    <div class="color-header"><span>Fill</span> <i class="fas fa-plus" style="color: var(--text-muted); cursor: pointer;"></i></div>
+                    <div class="color-picker-box">
+                        <input type="color" id="propFill" value="#D1D5DB" style="opacity: 0; position: absolute; width: 24px; pointer-events: none;">
+                        <div class="color-swatch" id="fillSwatch" style="background: #D1D5DB;" onclick="document.getElementById('propFill').click()"></div>
+                        <input type="text" class="color-hex" id="fillHex" value="D1D5DB">
+                        <span style="color: var(--text-muted);">100%</span>
+                    </div>
+                </div>
+
+                <div class="color-row">
+                    <div class="color-header"><span>Stroke</span> <i class="fas fa-plus" style="color: var(--text-muted); cursor: pointer;"></i></div>
+                    <div class="color-picker-box" style="margin-bottom: 8px;">
+                        <input type="color" id="propStroke" value="#111827" style="opacity: 0; position: absolute; width: 24px; pointer-events: none;">
+                        <div class="color-swatch" id="strokeSwatch" style="background: #111827;" onclick="document.getElementById('propStroke').click()"></div>
+                        <input type="text" class="color-hex" id="strokeHex" value="111827">
+                        <span style="color: var(--text-muted);">100%</span>
+                    </div>
+                    <div class="setting-input-group">
+                        <div class="input-box"><span><i class="fas fa-bars"></i></span><input type="number" id="propWeight" value="1"></div>
+                        <select style="border: 1px solid var(--border-color); border-radius: 4px; outline: none; padding: 4px; font-size: 11px;">
+                            <option>Center</option><option>Inside</option><option>Outside</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // 1. สร้างกระดานแบบ Infinite Canvas
+        const canvas = new fabric.Canvas('draftCanvas', {
+            width: document.getElementById('canvas-wrapper').clientWidth,
+            height: document.getElementById('canvas-wrapper').clientHeight,
+            selection: true, preserveObjectStacking: true
+        });
+        
+        // จำลองพื้นหลังตารางแบบ Rayon (จุดตาราง)
+        const gridPattern = new fabric.Pattern({
+            source: function() {
+                const patCanvas = document.createElement('canvas');
+                patCanvas.width = 40; patCanvas.height = 40;
+                const ctx = patCanvas.getContext('2d');
+                ctx.fillStyle = '#D1D5DB';
+                ctx.beginPath(); ctx.arc(20, 20, 1.5, 0, Math.PI * 2); ctx.fill();
+                return patCanvas;
+            }(),
+            repeat: 'repeat'
+        });
+        canvas.backgroundColor = gridPattern;
+        canvas.renderAll();
+
+        // 2. จัดการ Toolbar สไตล์ Rayon
+        let currentTool = 'select';
+        const toolBtns = document.querySelectorAll('.floating-toolbar .tool-btn');
+        toolBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                toolBtns.forEach(b => b.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                currentTool = e.currentTarget.getAttribute('data-tool');
+                
+                canvas.isDrawingMode = false;
+                if(currentTool === 'pan') { canvas.selection = false; canvas.defaultCursor = 'grab'; }
+                else if(currentTool === 'select') { canvas.selection = true; canvas.defaultCursor = 'default'; }
+                else { canvas.selection = false; canvas.defaultCursor = 'crosshair'; canvas.discardActiveObject().renderAll(); }
+            });
+        });
+
+        // 3. ระบบวาดและแพนกล้อง (พื้นฐานให้ทดสอบ UI)
+        let isPanning = false; let lastPosX, lastPosY;
+        canvas.on('mouse:down', function(opt) {
+            if (currentTool === 'pan' || (opt.e && opt.e.button === 1)) { // กดลูกกลิ้งเมาส์ก็แพนได้
+                isPanning = true; lastPosX = opt.e.clientX; lastPosY = opt.e.clientY;
+                canvas.defaultCursor = 'grabbing';
+            }
+            // จำลองกดวาดกำแพง/กล่อง
+            if (currentTool === 'wall' || currentTool === 'space') {
+                const ptr = canvas.getPointer(opt.e);
+                const rect = new fabric.Rect({
+                    left: ptr.x, top: ptr.y, width: 200, height: (currentTool==='wall'? 20 : 150),
+                    fill: (currentTool==='wall'? '#111827' : 'rgba(79, 70, 229, 0.1)'),
+                    stroke: (currentTool==='wall'? null : '#4f46e5'),
+                    strokeWidth: 2, originX: 'center', originY: 'center'
+                });
+                canvas.add(rect);
+                canvas.setActiveObject(rect);
+                document.querySelector('[data-tool="select"]').click(); // วาดเสร็จเด้งกลับเมาส์
+            }
+        });
+        canvas.on('mouse:move', function(opt) {
+            if (isPanning) {
+                const vpt = this.viewportTransform;
+                vpt[4] += opt.e.clientX - lastPosX; vpt[5] += opt.e.clientY - lastPosY;
+                this.requestRenderAll(); lastPosX = opt.e.clientX; lastPosY = opt.e.clientY;
+            }
+        });
+        canvas.on('mouse:up', function() { isPanning = false; if(currentTool === 'pan') canvas.defaultCursor = 'grab'; });
+        
+        // 4. ระบบซูม
+        canvas.on('mouse:wheel', function(opt) {
+            let zoom = canvas.getZoom();
+            zoom *= 0.999 ** opt.e.deltaY;
+            if (zoom > 5) zoom = 5; if (zoom < 0.1) zoom = 0.1;
+            canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+            opt.e.preventDefault(); opt.e.stopPropagation();
+        });
+
+        // Resize
+        window.addEventListener('resize', () => {
+            canvas.setWidth(document.getElementById('canvas-wrapper').clientWidth);
+            canvas.setHeight(document.getElementById('canvas-wrapper').clientHeight);
+        });
+
+    </script>
 </body>
 </html>
