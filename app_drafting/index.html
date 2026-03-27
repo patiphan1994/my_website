@@ -40,27 +40,19 @@
         </div>
         <hr class="tool-divider">
         <div class="tool-group">
-            <button class="tool-btn" data-tool="line" title="Line (L)"><i class="fas fa-minus"></i></button>
-            <button class="tool-btn" data-tool="wall" title="Wall (W)"><i class="fas fa-bars" style="transform: rotate(90deg);"></i></button>
+            <button class="tool-btn" data-tool="wall" title="Wall (W)"><i class="fas fa-slash"></i></button>
             <button class="tool-btn" data-tool="room" title="Room / Zone (R)"><i class="far fa-square"></i></button>
         </div>
         <hr class="tool-divider">
         <div class="tool-group">
             <button class="tool-btn" data-tool="door" title="Door (D)"><i class="fas fa-door-open"></i></button>
             <button class="tool-btn" data-tool="window" title="Window (O)"><i class="fas fa-border-all"></i></button>
-            <button class="tool-btn" data-tool="furniture" title="Furniture (F)"><i class="fas fa-couch"></i></button>
-        </div>
-        <hr class="tool-divider">
-        <div class="tool-group">
-            <button class="tool-btn" data-tool="text" title="Text (T)"><i class="fas fa-font"></i></button>
-            <button class="tool-btn" data-tool="measure" title="Dimension (M)"><i class="fas fa-ruler-horizontal"></i></button>
         </div>
     </aside>
 
     <aside class="right-panel" id="propsPanel">
         <div class="panel-header">Properties</div>
         <div class="panel-content">
-            
             <div class="prop-section">
                 <div class="prop-title">Transform</div>
                 <div class="input-grid">
@@ -71,40 +63,13 @@
                     <div class="input-wrap"><span class="label"><i class="fas fa-sync-alt"></i></span><input type="number" id="propA" value="0"></div>
                 </div>
             </div>
-
             <hr class="panel-divider">
-
-            <div class="prop-section">
-                <div class="prop-title">Appearance</div>
-                <div class="color-row">
-                    <span class="color-label">Fill</span>
-                    <input type="color" id="propFill" value="#ffffff" class="color-picker">
-                </div>
-                <div class="color-row">
-                    <span class="color-label">Stroke</span>
-                    <input type="color" id="propStroke" value="#111827" class="color-picker">
-                </div>
-                <div class="color-row" style="margin-top: 10px;">
-                    <span class="color-label">Weight</span>
-                    <select id="propWeight" class="select-box">
-                        <option value="1">1 px</option>
-                        <option value="2">2 px</option>
-                        <option value="4">4 px</option>
-                        <option value="15">15 px (Wall)</option>
-                    </select>
-                </div>
-            </div>
-
-            <hr class="panel-divider">
-
-            <button class="btn-delete" id="btnDelete"><i class="fas fa-trash"></i> Delete</button>
+            <button class="btn-delete" id="btnDelete"><i class="fas fa-trash"></i> Delete Element</button>
         </div>
     </aside>
 
     <footer class="bottom-bar">
-        <div class="status-left">
-            <span id="coordsDisplay">X: 0, Y: 0</span>
-        </div>
+        <div class="status-left"><span id="coordsDisplay">X: 0, Y: 0</span></div>
         <div class="status-right">
             <button class="status-btn"><i class="fas fa-magnet"></i> Snap to Grid</button>
             <span class="zoom-level" id="zoomDisplay">100%</span>
