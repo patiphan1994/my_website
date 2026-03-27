@@ -1,199 +1,184 @@
+// ==========================================
+// 3DNP CAD ENGINE (AutoCAD Mechanics)
+// ==========================================
+
 // --- 1. การตั้งค่าหน้ากระดาษ ---
 const canvas = new fabric.Canvas('draftCanvas', {
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: document.getElementById('canvas-wrapper').clientWidth,
+    height: document.getElementById('canvas-wrapper').clientHeight,
     selection: true,
-    preserveObjectStacking: true
+    preserveObjectStacking: true,
+    fireRightClick: true, // เปิดใช้งานคลิกขวาแบบ AutoCAD
+    stopContextMenu: true // ปิดเมนูคลิกขวาของเบราว์เซอร์
 });
-canvas.absolutePan({ x: -window.innerWidth/2 + 200, y: -window.innerHeight/2 + 100 });
+canvas.absolutePan({ x: -window.innerWidth/2, y: -window.innerHeight/2 });
 
-// --- 2. จัดการเมนูเครื่องมือ ---
+// จำลองพื้นหลังตารางแบบจุด (Grid)
+const gridPattern = new fabric.Pattern({
+    source: function() {
+        const patCanvas = document.createElement('canvas');
+        patCanvas.width = 40; patCanvas.height = 40;
+        const ctx = patCanvas.getContext('2d');
+        ctx.fillStyle = '#D1D5DB';
+        ctx.beginPath(); ctx.arc(20, 20, 1.5, 0, Math.PI * 2); ctx.fill();
+        return patCanvas;
+    }(),
+    repeat: 'repeat'
+});
+canvas.backgroundColor = gridPattern;
+canvas.renderAll();
+
+// --- 2. ตัวแปรระบบ ---
 let currentTool = 'select';
-const toolBtns = document.querySelectorAll('.tool-btn');
+let isDrawing = false;
+let activeLine = null; // เส้นที่กำลังลาก (Preview)
+let isPanning = false;
+let lastPosX, lastPosY;
 
+// --- 3. จัดการ Toolbar สลับเครื่องมือ ---
+const toolBtns = document.querySelectorAll('.floating-toolbar .tool-btn');
 toolBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
         toolBtns.forEach(b => b.classList.remove('active'));
-        const clickedBtn = e.currentTarget;
-        clickedBtn.classList.add('active');
+        e.currentTarget.classList.add('active');
+        currentTool = e.currentTarget.getAttribute('data-tool');
         
-        currentTool = clickedBtn.getAttribute('data-tool');
-        
-        if(currentTool === 'pan') {
-            canvas.selection = false;
-            canvas.defaultCursor = 'grab';
-        } else if (currentTool === 'select') {
-            canvas.selection = true;
-            canvas.defaultCursor = 'default';
-        } else {
-            canvas.selection = false;
-            canvas.defaultCursor = 'crosshair';
-            canvas.discardActiveObject().renderAll();
+        // ยกเลิกคำสั่งเดิมก่อนเปลี่ยนเครื่องมือ
+        endCADCommand();
+
+        if(currentTool === 'pan') { 
+            canvas.selection = false; canvas.defaultCursor = 'grab'; 
+        } else if(currentTool === 'select') { 
+            canvas.selection = true; canvas.defaultCursor = 'default'; 
+        } else { 
+            canvas.selection = false; canvas.defaultCursor = 'crosshair'; 
+            canvas.discardActiveObject().renderAll(); 
         }
     });
 });
 
-// --- 3. ตรรกะการวาดลงกระดาน ---
-let isDrawingWall = false;
-let tempLine = null;
-let isPanning = false;
-let lastPosX, lastPosY;
+// ฟังก์ชันจบคำสั่ง (เหมือนกด ESC ในแคด)
+function endCADCommand() {
+    if (isDrawing) {
+        isDrawing = false;
+        // ลบเส้นพรีวิวที่ยาว 0 ออก (เส้นติ่ง)
+        if (activeLine && activeLine.x1 === activeLine.x2 && activeLine.y1 === activeLine.y2) {
+            canvas.remove(activeLine);
+        } else if (activeLine) {
+            activeLine.set({ selectable: true, evented: true });
+        }
+        activeLine = null;
+    }
+}
 
+// ผูกปุ่ม ESC บนคีย์บอร์ด
+window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        endCADCommand();
+        // เด้งกลับไปที่เมาส์ Select
+        document.querySelector('[data-tool="select"]').click();
+    }
+});
+
+// --- 4. ENGINE การวาดสไตล์ AutoCAD ---
 canvas.on('mouse:down', function(opt) {
     const evt = opt.e;
     
-    // Pan (เลื่อนกระดาน)
-    if (currentTool === 'pan' || evt.altKey) {
-        isPanning = true;
-        canvas.selection = false;
-        lastPosX = evt.clientX;
-        lastPosY = evt.clientY;
+    // คลิกขวา (Right Click) = จบคำสั่งเหมือน AutoCAD
+    if (evt.button === 2) {
+        endCADCommand();
+        document.querySelector('[data-tool="select"]').click();
+        return;
+    }
+
+    // Pan กระดาน (กดลูกกลิ้ง หรือกด Alt ค้าง)
+    if (currentTool === 'pan' || evt.button === 1 || evt.altKey) { 
+        isPanning = true; 
+        lastPosX = evt.clientX; lastPosY = evt.clientY;
+        canvas.defaultCursor = 'grabbing';
         return;
     }
 
     const pointer = canvas.getPointer(opt.e);
+    let x = pointer.x;
+    let y = pointer.y;
 
-    // วาดห้อง (Room)
-    if (currentTool === 'room') {
-        const rect = new fabric.Rect({
-            left: pointer.x, top: pointer.y, width: 250, height: 200,
-            fill: 'rgba(79, 70, 229, 0.15)', stroke: '#4f46e5', strokeWidth: 2,
-            originX: 'center', originY: 'center', transparentCorners: false
-        });
-        canvas.add(rect);
-        canvas.setActiveObject(rect);
-        document.querySelector('[data-tool="select"]').click(); // กลับโหมดเมาส์
-    }
+    // การวาดกำแพง (ต่อเนื่องแบบ Polyline)
+    if (currentTool === 'wall' || currentTool === 'line') {
+        const thickness = currentTool === 'wall' ? 15 : 2;
+        const color = currentTool === 'wall' ? '#111827' : '#4f46e5';
 
-    // วาดกำแพง (Wall)
-    if (currentTool === 'wall') {
-        isDrawingWall = true;
-        tempLine = new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
-            strokeWidth: 15, fill: '#374151', stroke: '#374151',
-            strokeLineCap: 'square', originX: 'center', originY: 'center',
-            selectable: false, evented: false
-        });
-        canvas.add(tempLine);
+        if (!isDrawing) {
+            // คลิกจุดที่ 1 (เริ่มวาด)
+            isDrawing = true;
+            activeLine = new fabric.Line([x, y, x, y], {
+                strokeWidth: thickness, stroke: color, fill: color,
+                strokeLineCap: 'square', originX: 'center', originY: 'center',
+                selectable: false, evented: false
+            });
+            canvas.add(activeLine);
+        } else {
+            // คลิกจุดที่ 2 (วางเส้นแรก และเริ่มเส้นที่สองจากจุดเดิม)
+            activeLine.set({ selectable: true, evented: true }); // ปลดล็อกเส้นเก่า
+            activeLine.setCoords();
+            
+            // สร้างเส้นใหม่มาต่อตูดทันที
+            activeLine = new fabric.Line([x, y, x, y], {
+                strokeWidth: thickness, stroke: color, fill: color,
+                strokeLineCap: 'square', originX: 'center', originY: 'center',
+                selectable: false, evented: false
+            });
+            canvas.add(activeLine);
+        }
     }
 });
 
 canvas.on('mouse:move', function(opt) {
     const pointer = canvas.getPointer(opt.e);
-    const coordsDisplay = document.getElementById('coordsDisplay');
-    if(coordsDisplay) coordsDisplay.innerText = `X: ${Math.round(pointer.x)}, Y: ${Math.round(pointer.y)}`;
+    let x = pointer.x;
+    let y = pointer.y;
 
-    // เลื่อนกระดาน
+    // Pan กระดาน
     if (isPanning) {
-        const e = opt.e;
         const vpt = this.viewportTransform;
-        vpt[4] += e.clientX - lastPosX;
-        vpt[5] += e.clientY - lastPosY;
-        this.requestRenderAll();
-        lastPosX = e.clientX;
-        lastPosY = e.clientY;
-        document.getElementById('gridBg').style.backgroundPosition = `${vpt[4]}px ${vpt[5]}px`;
+        vpt[4] += opt.e.clientX - lastPosX; vpt[5] += opt.e.clientY - lastPosY;
+        this.requestRenderAll(); 
+        lastPosX = opt.e.clientX; lastPosY = opt.e.clientY;
+        return;
     }
 
-    // ลากกำแพง
-    if (isDrawingWall && tempLine) {
-        if (opt.e.shiftKey) { // กด Shift เพื่อวาดเส้นตรง
-            let dx = Math.abs(pointer.x - tempLine.x1);
-            let dy = Math.abs(pointer.y - tempLine.y1);
-            if (dx > dy) pointer.y = tempLine.y1; else pointer.x = tempLine.x1;
+    // ลากเส้นตามเมาส์ (Preview)
+    if (isDrawing && activeLine) {
+        // ระบบ Ortho แบบ AutoCAD (กด Shift ล็อคแกน)
+        if (opt.e.shiftKey) {
+            let dx = Math.abs(x - activeLine.x1);
+            let dy = Math.abs(y - activeLine.y1);
+            if (dx > dy) { y = activeLine.y1; } else { x = activeLine.x1; }
         }
-        tempLine.set({ x2: pointer.x, y2: pointer.y });
+        activeLine.set({ x2: x, y2: y });
         canvas.renderAll();
     }
 });
 
 canvas.on('mouse:up', function(opt) {
     if (isPanning) {
-        this.setViewportTransform(this.viewportTransform);
         isPanning = false;
-        if(currentTool === 'select') this.selection = true;
-    }
-    
-    if (isDrawingWall) {
-        isDrawingWall = false;
-        tempLine.setCoords();
-        tempLine.set({ selectable: true, evented: true });
-        
-        // ลบถ้าจิ้มพลาดเส้นสั้นไป
-        if (Math.abs(tempLine.x1 - tempLine.x2) < 5 && Math.abs(tempLine.y1 - tempLine.y2) < 5) {
-            canvas.remove(tempLine);
-        } else {
-            canvas.setActiveObject(tempLine);
-            document.querySelector('[data-tool="select"]').click();
-        }
+        if(currentTool === 'select') canvas.defaultCursor = 'default';
+        else canvas.defaultCursor = 'crosshair';
     }
 });
 
-// ซูมกระดาน
+// --- 5. ระบบซูม (Scroll Wheel) ---
 canvas.on('mouse:wheel', function(opt) {
-    let delta = opt.e.deltaY;
     let zoom = canvas.getZoom();
-    zoom *= 0.999 ** delta;
-    if (zoom > 5) zoom = 5;
-    if (zoom < 0.1) zoom = 0.1;
+    zoom *= 0.999 ** opt.e.deltaY;
+    if (zoom > 10) zoom = 10; if (zoom < 0.05) zoom = 0.05;
     canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-    
-    document.getElementById('zoomDisplay').innerText = `${Math.round(zoom * 100)}%`;
-    document.getElementById('gridBg').style.backgroundSize = `${50 * zoom}px ${50 * zoom}px`;
-    document.getElementById('gridBg').style.backgroundPosition = `${canvas.viewportTransform[4]}px ${canvas.viewportTransform[5]}px`;
-    
-    opt.e.preventDefault();
-    opt.e.stopPropagation();
+    opt.e.preventDefault(); opt.e.stopPropagation();
 });
 
-// --- 4. จัดการ Properties Panel ---
-const propsPanel = document.getElementById('propsPanel');
-
-function showProps() {
-    const obj = canvas.getActiveObject();
-    if(!obj) return;
-    
-    propsPanel.classList.add('active');
-    document.getElementById('propX').value = Math.round(obj.left);
-    document.getElementById('propY').value = Math.round(obj.top);
-    document.getElementById('propW').value = Math.round(obj.width * obj.scaleX);
-    document.getElementById('propH').value = Math.round(obj.height * obj.scaleY);
-    document.getElementById('propA').value = Math.round(obj.angle);
-}
-
-canvas.on('selection:created', showProps);
-canvas.on('selection:updated', showProps);
-canvas.on('object:modified', showProps);
-canvas.on('selection:cleared', () => { propsPanel.classList.remove('active'); });
-
-// พิมพ์แก้ตัวเลขแล้วโมเดลเปลี่ยนตาม
-document.querySelectorAll('#propsPanel input').forEach(input => {
-    input.addEventListener('input', () => {
-        const obj = canvas.getActiveObject();
-        if(!obj) return;
-        
-        const newX = parseFloat(document.getElementById('propX').value) || 0;
-        const newY = parseFloat(document.getElementById('propY').value) || 0;
-        const newW = parseFloat(document.getElementById('propW').value) || 10;
-        const newH = parseFloat(document.getElementById('propH').value) || 10;
-        const newA = parseFloat(document.getElementById('propA').value) || 0;
-
-        obj.set({
-            left: newX, top: newY, angle: newA,
-            width: newW / obj.scaleX, height: newH / obj.scaleY
-        });
-        obj.setCoords();
-        canvas.requestRenderAll();
-    });
-});
-
-// ปุ่มลบ
-document.getElementById('btnDelete').addEventListener('click', () => {
-    const obj = canvas.getActiveObject();
-    if(obj) { canvas.remove(obj); propsPanel.classList.remove('active'); }
-});
-
-// ย่อขยายหน้าจอ
+// --- 6. Resize ---
 window.addEventListener('resize', () => {
-    canvas.setWidth(window.innerWidth);
-    canvas.setHeight(window.innerHeight);
+    canvas.setWidth(document.getElementById('canvas-wrapper').clientWidth);
+    canvas.setHeight(document.getElementById('canvas-wrapper').clientHeight);
 });
