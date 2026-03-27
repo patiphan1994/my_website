@@ -1,4 +1,4 @@
-// --- 1. ตั้งค่ากระดานวาด ---
+// --- 1. การตั้งค่าหน้ากระดาษ (Fabric.js) ---
 const canvas = new fabric.Canvas('draftCanvas', {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -6,171 +6,157 @@ const canvas = new fabric.Canvas('draftCanvas', {
     preserveObjectStacking: true
 });
 
-canvas.absolutePan({ x: -100, y: -100 });
-let currentTool = 'select';
-let isDrawingWall = false;
-let tempLine;
+canvas.absolutePan({ x: -window.innerWidth/2, y: -window.innerHeight/2 });
 
-// --- 2. ระบบ ซูม และ เลื่อน (Pan/Zoom) ---
+// --- 2. ตัวแปรสถานะเครื่องมือ ---
+let currentTool = 'select';
+let isDrawing = false;
+let tempObj = null;
+
+// --- 3. จัดการปุ่ม Toolbar ด้านซ้าย ---
+const toolBtns = document.querySelectorAll('.tool-btn');
+toolBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // อัปเดต UI ปุ่ม
+        toolBtns.forEach(b => b.classList.remove('active'));
+        const clickedBtn = e.currentTarget;
+        clickedBtn.classList.add('active');
+        
+        // เซ็ตเครื่องมือปัจจุบัน
+        currentTool = clickedBtn.getAttribute('data-tool');
+        
+        // จัดการสถานะเคอร์เซอร์เมาส์บนกระดาน
+        if(currentTool === 'pan') {
+            canvas.selection = false;
+            canvas.defaultCursor = 'grab';
+        } else if (currentTool === 'select') {
+            canvas.selection = true;
+            canvas.defaultCursor = 'default';
+        } else {
+            canvas.selection = false;
+            canvas.defaultCursor = 'crosshair';
+            canvas.discardActiveObject().renderAll();
+        }
+    });
+});
+
+// --- 4. ตรรกะการวาดลงกระดาน (เมาส์ทำงาน) ---
+canvas.on('mouse:down', function(opt) {
+    if (currentTool === 'pan' || opt.e.altKey) {
+        this.isDragging = true;
+        this.selection = false;
+        this.lastPosX = opt.e.clientX;
+        this.lastPosY = opt.e.clientY;
+    }
+    
+    // โค้ดทดสอบ: กดวาดห้อง (Room) ทันทีที่คลิก
+    if (currentTool === 'room') {
+        const pointer = canvas.getPointer(opt.e);
+        const rect = new fabric.Rect({
+            left: pointer.x, top: pointer.y, width: 200, height: 150,
+            fill: 'rgba(79, 70, 229, 0.1)', stroke: '#4f46e5', strokeWidth: 2,
+            originX: 'center', originY: 'center'
+        });
+        canvas.add(rect);
+        // วาดเสร็จเด้งกลับไปหน้า Select อัตโนมัติ
+        document.querySelector('[data-tool="select"]').click();
+        canvas.setActiveObject(rect);
+    }
+});
+
+canvas.on('mouse:move', function(opt) {
+    // ระบบแสดงพิกัดเมาส์ด้านล่าง
+    const pointer = canvas.getPointer(opt.e);
+    document.getElementById('coordsDisplay').innerText = `X: ${Math.round(pointer.x)}, Y: ${Math.round(pointer.y)}`;
+
+    // ระบบ Pan กระดาน
+    if (this.isDragging) {
+        var e = opt.e;
+        var vpt = this.viewportTransform;
+        vpt[4] += e.clientX - this.lastPosX;
+        vpt[5] += e.clientY - this.lastPosY;
+        this.requestRenderAll();
+        this.lastPosX = e.clientX;
+        this.lastPosY = e.clientY;
+        document.getElementById('gridBg').style.backgroundPosition = `${vpt[4]}px ${vpt[5]}px`;
+    }
+});
+
+canvas.on('mouse:up', function(opt) {
+    this.setViewportTransform(this.viewportTransform);
+    this.isDragging = false;
+    if(currentTool === 'select') this.selection = true;
+});
+
+// ระบบ Zoom กระดาน
 canvas.on('mouse:wheel', function(opt) {
     var delta = opt.e.deltaY;
     var zoom = canvas.getZoom();
     zoom *= 0.999 ** delta;
     if (zoom > 5) zoom = 5;
-    if (zoom < 0.2) zoom = 0.2;
+    if (zoom < 0.1) zoom = 0.1;
     canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
     
-    document.getElementById('gridBg').style.backgroundSize = `${100 * zoom}px ${100 * zoom}px`;
+    document.getElementById('zoomDisplay').innerText = `${Math.round(zoom * 100)}%`;
+    document.getElementById('gridBg').style.backgroundSize = `${50 * zoom}px ${50 * zoom}px`;
     document.getElementById('gridBg').style.backgroundPosition = `${canvas.viewportTransform[4]}px ${canvas.viewportTransform[5]}px`;
+    
     opt.e.preventDefault();
     opt.e.stopPropagation();
 });
 
-let isPanning = false;
-let lastPosX, lastPosY;
+// --- 5. จัดการหน้าต่าง Properties ขวามือ ---
+const propsPanel = document.getElementById('propsPanel');
 
-canvas.on('mouse:down', function(opt) {
-    var evt = opt.e;
-    
-    // Pan Canvas
-    if (currentTool === 'pan' || evt.altKey) {
-        isPanning = true;
-        canvas.selection = false;
-        lastPosX = evt.clientX;
-        lastPosY = evt.clientY;
-        return;
-    }
+canvas.on('selection:created', showProps);
+canvas.on('selection:updated', showProps);
+canvas.on('object:modified', showProps);
+canvas.on('selection:cleared', () => { propsPanel.classList.remove('active'); });
 
-    // วาดกำแพง
-    if (currentTool === 'wall') {
-        isDrawingWall = true;
-        var pointer = canvas.getPointer(opt.e);
-        var points = [pointer.x, pointer.y, pointer.x, pointer.y];
-        tempLine = new fabric.Line(points, {
-            strokeWidth: 15, fill: '#374151', stroke: '#374151',
-            strokeLineCap: 'square', originX: 'center', originY: 'center',
-            selectable: false, evented: false
-        });
-        canvas.add(tempLine);
-    }
-});
-
-canvas.on('mouse:move', function(opt) {
-    if (isPanning) {
-        var e = opt.e;
-        var vpt = this.viewportTransform;
-        vpt[4] += e.clientX - lastPosX;
-        vpt[5] += e.clientY - lastPosY;
-        this.requestRenderAll();
-        lastPosX = e.clientX;
-        lastPosY = e.clientY;
-        document.getElementById('gridBg').style.backgroundPosition = `${vpt[4]}px ${vpt[5]}px`;
-    }
-
-    if (isDrawingWall && tempLine) {
-        var pointer = canvas.getPointer(opt.e);
-        if (opt.e.shiftKey) { // ล็อคแกน
-            let dx = Math.abs(pointer.x - tempLine.x1);
-            let dy = Math.abs(pointer.y - tempLine.y1);
-            if (dx > dy) { pointer.y = tempLine.y1; } else { pointer.x = tempLine.x1; }
-        }
-        tempLine.set({ x2: pointer.x, y2: pointer.y });
-        canvas.renderAll();
-    }
-});
-
-canvas.on('mouse:up', function(opt) {
-    if (isPanning) {
-        this.setViewportTransform(this.viewportTransform);
-        isPanning = false;
-        if(currentTool === 'select') canvas.selection = true;
-    }
-    if (isDrawingWall) {
-        isDrawingWall = false;
-        tempLine.setCoords();
-        tempLine.set({ selectable: true, evented: true });
-        if (Math.abs(tempLine.x1 - tempLine.x2) < 5 && Math.abs(tempLine.y1 - tempLine.y2) < 5) {
-            canvas.remove(tempLine); // ลบถ้าสั้นไป
-        } else {
-            setTool('select');
-            canvas.setActiveObject(tempLine);
-        }
-    }
-});
-
-// --- 3. ระบบเครื่องมือ ---
-window.setTool = function(tool) {
-    currentTool = tool;
-    document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('tool-' + tool).classList.add('active');
-    
-    canvas.selection = (tool === 'select');
-    canvas.forEachObject(o => o.selectable = (tool === 'select'));
-    canvas.defaultCursor = (tool === 'pan') ? 'grab' : (tool === 'wall' ? 'crosshair' : 'default');
-    
-    if(tool !== 'select') canvas.discardActiveObject().renderAll();
-};
-
-window.addRoom = function() {
-    setTool('select');
-    var rect = new fabric.Rect({
-        left: canvas.getVpCenter().x, top: canvas.getVpCenter().y,
-        width: 400, height: 300, fill: 'rgba(79, 70, 229, 0.15)',
-        stroke: '#4f46e5', strokeWidth: 2, strokeDashArray: [5, 5],
-        originX: 'center', originY: 'center', transparentCorners: false
-    });
-    canvas.add(rect);
-    canvas.setActiveObject(rect);
-};
-
-// --- 4. เมนูตั้งค่าด้านขวา ---
-const panel = document.getElementById('propsPanel');
-canvas.on('selection:created', showProperties);
-canvas.on('selection:updated', showProperties);
-canvas.on('object:modified', showProperties);
-canvas.on('selection:cleared', () => panel.classList.remove('open'));
-
-function showProperties() {
+function showProps() {
     const obj = canvas.getActiveObject();
     if(!obj) return;
-    panel.classList.add('open');
-    document.getElementById('propL').value = Math.round(obj.left);
-    document.getElementById('propT').value = Math.round(obj.top);
     
-    if (obj.type === 'line') {
-        let length = Math.sqrt(Math.pow(obj.x2 - obj.x1, 2) + Math.pow(obj.y2 - obj.y1, 2));
-        document.getElementById('propW').value = Math.round(length * obj.scaleX);
-        document.getElementById('propH').value = Math.round(obj.strokeWidth * obj.scaleY);
-        document.getElementById('propColor').value = obj.stroke;
-    } else {
-        document.getElementById('propW').value = Math.round(obj.width * obj.scaleX);
-        document.getElementById('propH').value = Math.round(obj.height * obj.scaleY);
-        let c = new fabric.Color(obj.fill).toHex();
-        document.getElementById('propColor').value = '#' + c;
-    }
+    // เปิดแผงควบคุม
+    propsPanel.classList.add('active');
+    
+    // ดึงค่ามาใส่ช่อง Input
+    document.getElementById('propX').value = Math.round(obj.left);
+    document.getElementById('propY').value = Math.round(obj.top);
+    document.getElementById('propW').value = Math.round(obj.width * obj.scaleX);
+    document.getElementById('propH').value = Math.round(obj.height * obj.scaleY);
+    document.getElementById('propA').value = Math.round(obj.angle);
 }
 
-window.updateObject = function() {
+// อัปเดตวัตถุเมื่อพิมพ์แก้ตัวเลข
+document.querySelectorAll('#propsPanel input').forEach(input => {
+    input.addEventListener('change', () => {
+        const obj = canvas.getActiveObject();
+        if(!obj) return;
+        
+        obj.set({
+            left: parseFloat(document.getElementById('propX').value),
+            top: parseFloat(document.getElementById('propY').value),
+            angle: parseFloat(document.getElementById('propA').value),
+            width: parseFloat(document.getElementById('propW').value) / obj.scaleX,
+            height: parseFloat(document.getElementById('propH').value) / obj.scaleY
+        });
+        obj.setCoords();
+        canvas.requestRenderAll();
+    });
+});
+
+// ปุ่ม Delete
+document.getElementById('btnDelete').addEventListener('click', () => {
     const obj = canvas.getActiveObject();
-    if(!obj) return;
-    if (obj.type === 'line') {
-        obj.set({ stroke: document.getElementById('propColor').value });
-        obj.set({ strokeWidth: parseFloat(document.getElementById('propH').value) || 15 });
-    } else {
-        const newW = parseFloat(document.getElementById('propW').value) || 100;
-        const newH = parseFloat(document.getElementById('propH').value) || 100;
-        obj.set({ left: parseFloat(document.getElementById('propL').value), top: parseFloat(document.getElementById('propT').value), width: newW, height: newH, scaleX: 1, scaleY: 1 });
-        let colorHex = document.getElementById('propColor').value;
-        let colorRgb = new fabric.Color(colorHex).getSource();
-        obj.set({ fill: `rgba(${colorRgb[0]}, ${colorRgb[1]}, ${colorRgb[2]}, 0.15)`, stroke: colorHex });
+    if(obj) {
+        canvas.remove(obj);
+        propsPanel.classList.remove('active');
     }
-    obj.setCoords();
-    canvas.requestRenderAll();
-};
+});
 
-window.deleteObject = function() {
-    const obj = canvas.getActiveObject();
-    if(obj) { canvas.remove(obj); panel.classList.remove('open'); }
-};
-
-window.addEventListener('resize', () => { canvas.setWidth(window.innerWidth); canvas.setHeight(window.innerHeight); });
+// จัดการขนาดจอ
+window.addEventListener('resize', () => {
+    canvas.setWidth(window.innerWidth);
+    canvas.setHeight(window.innerHeight);
+});
