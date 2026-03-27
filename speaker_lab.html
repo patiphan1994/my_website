@@ -3,152 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speaker Lab PRO | Advanced Acoustic Design</title>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Speaker Lab | Pro Studio Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg-dark: #0a0a0a;
-            --panel-bg: rgba(20, 20, 20, 0.85);
-            --accent: #4facfe; /* เปลี่ยนเป็นสีฟ้า Pro Audio */
-            --accent-glow: rgba(79, 172, 254, 0.4);
+            --bg-color: #f4f5f7;
+            --panel-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --accent: #0066cc; /* สีฟ้าพรีเมียม */
+            --border: #e0e4e8;
+            --shadow: 0 8px 30px rgba(0,0,0,0.08);
         }
 
         body {
             margin: 0; overflow: hidden;
-            font-family: 'SF Pro Display', 'Prompt', sans-serif;
-            background: var(--bg-dark);
-            color: #ccc;
+            font-family: 'Inter', 'Prompt', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
             display: flex;
             height: 100vh;
         }
 
-        /* --- ซ้าย: 3D และ กราฟ --- */
-        .workspace {
+        /* --- 3D Workspace --- */
+        #canvas-container {
             flex: 1;
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e2e6ea 100%);
+        }
+
+        /* --- Top Toolbar (เครื่องมือแบบ SketchUp) --- */
+        .toolbar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--panel-bg);
+            padding: 8px 15px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            border: 1px solid var(--border);
+        }
+        .tool-btn {
+            background: none; border: none; padding: 10px 15px;
+            font-size: 1.1rem; color: var(--text-muted);
+            border-radius: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .tool-btn:hover { background: #f0f4f8; color: var(--accent); }
+        .tool-btn.active { background: #e6f0fa; color: var(--accent); font-weight: 600; }
+
+        /* --- Panels --- */
+        .side-panel {
+            width: 360px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.03);
             display: flex;
             flex-direction: column;
-            position: relative;
+            z-index: 10;
         }
 
-        #canvas-container { flex: 6; position: relative; }
-        
-        #graph-container {
-            flex: 4;
-            background: #111;
-            border-top: 1px solid #333;
+        .panel-header {
             padding: 20px;
-            box-sizing: border-box;
-            position: relative;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-
-        /* --- ขวา: แผงควบคุมแบบโคตรละเอียด --- */
-        .control-panel {
-            width: 380px;
-            background: var(--panel-bg);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid #333;
-            padding: 25px;
-            box-sizing: border-box;
+        .panel-title { font-size: 1.1rem; font-weight: 600; color: var(--text-main); }
+        
+        .panel-content {
+            padding: 20px;
             overflow-y: auto;
+            flex: 1;
         }
 
-        .panel-header { font-size: 1.2rem; color: #fff; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px; }
-        .section-title { font-size: 0.9rem; color: var(--accent); font-weight: 600; margin: 20px 0 10px 0; border-bottom: 1px solid #333; padding-bottom: 5px; text-transform: uppercase; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-        .input-group { margin-bottom: 10px; }
-        .input-group label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 4px; }
-        .input-group input {
-            width: 100%; padding: 8px 10px; background: #000;
-            border: 1px solid #333; border-radius: 4px;
-            color: #fff; font-family: monospace; font-size: 0.9rem; box-sizing: border-box;
+        .section-label {
+            font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; margin: 20px 0 10px 0; letter-spacing: 0.5px;
         }
-        .input-group input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 8px var(--accent-glow); }
+        .section-label:first-child { margin-top: 0; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .input-box { display: flex; flex-direction: column; }
+        .input-box label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+        .input-box input {
+            padding: 10px; border: 1px solid var(--border); border-radius: 6px;
+            font-family: 'Inter', monospace; font-size: 0.95rem; color: var(--text-main);
+            background: #fafbfc; transition: 0.2s; outline: none;
+        }
+        .input-box input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(0,102,204,0.1); }
+
+        /* --- Graph Area --- */
+        .graph-section {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            background: #fafbfc;
+            height: 250px;
+            box-sizing: border-box;
+        }
+
+        /* --- Result Display --- */
+        .result-card {
+            background: #f8f9fa; border: 1px solid var(--border);
+            border-radius: 8px; padding: 15px; margin-top: 15px;
+        }
+        .res-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+        .res-row:last-child { margin-bottom: 0; }
+        .res-val { font-weight: 600; color: var(--text-main); font-family: monospace; }
+        .res-val.highlight { color: var(--accent); font-size: 1.05rem; }
 
         .btn-back {
             position: absolute; top: 20px; left: 20px; width: 40px; height: 40px;
-            background: rgba(0,0,0,0.5); border-radius: 8px; display: flex; justify-content: center; align-items: center;
-            color: #fff; text-decoration: none; border: 1px solid #4facfe; z-index: 1000; transition: 0.3s;
+            background: var(--panel-bg); border-radius: 8px; display: flex; justify-content: center; align-items: center;
+            color: var(--text-main); text-decoration: none; border: 1px solid var(--border); box-shadow: var(--shadow); z-index: 1000; transition: 0.2s;
         }
-        .btn-back:hover { background: #4facfe; color: #000; }
-
-        /* ผลลัพธ์การคำนวณ */
-        .result-box {
-            background: #000; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-top: 20px;
-        }
-        .result-item { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; }
-        .result-value { color: #fff; font-weight: 600; font-family: monospace; }
-        .result-value.highlight { color: #2ed573; font-size: 1rem; }
+        .btn-back:hover { color: var(--accent); border-color: var(--accent); }
 
     </style>
 </head>
 <body>
 
-    <div class="workspace">
+    <div id="canvas-container">
         <a href="system.html" class="btn-back" title="Back"><i class="fas fa-arrow-left"></i></a>
-        <div id="canvas-container"></div>
-        <div id="graph-container">
-            <canvas id="splChart"></canvas>
+        
+        <div class="toolbar">
+            <button class="tool-btn" id="tool-translate" onclick="setTool('translate')" title="Move (M)"><i class="fas fa-arrows-alt"></i></button>
+            <button class="tool-btn active" id="tool-scale" onclick="setTool('scale')" title="Scale (S)"><i class="fas fa-expand-arrows-alt"></i></button>
+            <button class="tool-btn" id="tool-rotate" onclick="setTool('rotate')" title="Rotate (Q)"><i class="fas fa-sync-alt"></i></button>
         </div>
     </div>
 
-    <div class="control-panel">
-        <div class="panel-header"><i class="fas fa-sliders-h"></i> DSP & ACOUSTICS LAB</div>
-
-        <div class="section-title">Thiele/Small Parameters</div>
-        <div class="grid-2">
-            <div class="input-group"><label>Fs (Hz)</label><input type="number" id="tsFs" value="35" oninput="updateAll()"></div>
-            <div class="input-group"><label>Vas (Liters)</label><input type="number" id="tsVas" value="80" oninput="updateAll()"></div>
-            <div class="input-group"><label>Qts</label><input type="number" id="tsQts" value="0.45" step="0.01" oninput="updateAll()"></div>
-            <div class="input-group"><label>Xmax (mm)</label><input type="number" id="tsXmax" value="12.5" oninput="updateAll()"></div>
+    <div class="side-panel">
+        <div class="panel-header">
+            <div class="panel-title"><i class="fas fa-sliders-h" style="color:var(--accent);"></i> Acoustic Inspector</div>
         </div>
-
-        <div class="section-title">Enclosure Geometry</div>
-        <div class="grid-2">
-            <div class="input-group"><label>Width (cm)</label><input type="number" id="boxW" value="45" oninput="updateAll()"></div>
-            <div class="input-group"><label>Height (cm)</label><input type="number" id="boxH" value="65" oninput="updateAll()"></div>
-            <div class="input-group"><label>Depth (cm)</label><input type="number" id="boxD" value="40" oninput="updateAll()"></div>
-            <div class="input-group"><label>Wood (mm)</label><input type="number" id="woodT" value="18" oninput="updateAll()"></div>
-        </div>
-
-        <div class="section-title">Port Tuning (Bass Reflex)</div>
-        <div class="grid-2">
-            <div class="input-group"><label>Tuning Fb (Hz)</label><input type="number" id="portFb" value="40" oninput="updateAll()"></div>
-            <div class="input-group"><label>Port Dia. (cm)</label><input type="number" id="portDia" value="10" oninput="updateAll()"></div>
-        </div>
-
-        <div class="result-box">
-            <div class="result-item"><span>Gross Volume:</span> <span class="result-value" id="resGross">0 L</span></div>
-            <div class="result-item"><span>Net Volume (Vb):</span> <span class="result-value highlight" id="resNet">0 L</span></div>
-            <div class="result-item"><span>Port Length (Lv):</span> <span class="result-value highlight" id="resPortLen" style="color:#ff4757;">0 cm</span></div>
-            <div class="result-item" style="margin-top:10px; border-top:1px solid #333; padding-top:10px;">
-                <span>System F3 (-3dB):</span> <span class="result-value" id="resF3">0 Hz</span>
+        
+        <div class="panel-content">
+            <div class="section-label">Thiele/Small Parameters</div>
+            <div class="grid-2">
+                <div class="input-box"><label>Fs (Hz)</label><input type="number" id="paramFs" value="38" oninput="calculateAcoustics()"></div>
+                <div class="input-box"><label>Vas (Liters)</label><input type="number" id="paramVas" value="85" oninput="calculateAcoustics()"></div>
+                <div class="input-box"><label>Qts</label><input type="number" id="paramQts" value="0.42" step="0.01" oninput="calculateAcoustics()"></div>
             </div>
+
+            <div class="section-label" style="margin-top: 25px;">Port Tuning (Bass Reflex)</div>
+            <div class="grid-2">
+                <div class="input-box"><label>Target Fb (Hz)</label><input type="number" id="portFb" value="42" oninput="calculateAcoustics()"></div>
+                <div class="input-box"><label>Diameter (cm)</label><input type="number" id="portDia" value="10" oninput="calculateAcoustics()"></div>
+            </div>
+
+            <div class="section-label" style="margin-top: 25px;">Physical Properties</div>
+            <div class="input-box">
+                <label>Wood Thickness (mm)</label>
+                <input type="number" id="woodThick" value="18" oninput="calculateAcoustics()">
+            </div>
+
+            <div class="result-card">
+                <div class="res-row"><span>Gross Volume:</span><span class="res-val" id="valGross">0 L</span></div>
+                <div class="res-row"><span>Internal Vol (Vb):</span><span class="res-val highlight" id="valNet">0 L</span></div>
+                <div class="res-row"><span>Port Length (Lv):</span><span class="res-val highlight" id="valPortLen" style="color:#e74c3c;">0 cm</span></div>
+            </div>
+        </div>
+
+        <div class="graph-section">
+            <canvas id="splChart"></canvas>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // 1. ACOUSTIC MATH & GRAPH ENGINE (Chart.js)
+        // 1. SETUP GRAPH ENGINE (Light Theme)
         // ==========================================
         const ctx = document.getElementById('splChart').getContext('2d');
         const splChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: Array.from({length: 100}, (_, i) => 20 + i * 2), // แกน X: 20Hz - 218Hz
+                labels: Array.from({length: 80}, (_, i) => 20 + i * 2), // 20Hz - 180Hz
                 datasets: [{
-                    label: 'Predicted Frequency Response (SPL)',
+                    label: 'SPL Response (dB)',
                     data: [],
-                    borderColor: '#4facfe',
-                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                    borderColor: '#0066cc',
+                    backgroundColor: 'rgba(0, 102, 204, 0.1)',
                     borderWidth: 2,
                     tension: 0.4,
                     fill: true,
@@ -156,121 +204,163 @@
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 scales: {
-                    x: { type: 'logarithmic', title: { display: true, text: 'Frequency (Hz)', color: '#888' }, grid: { color: '#222' }, ticks: { color: '#888' } },
-                    y: { title: { display: true, text: 'Magnitude (dB)', color: '#888' }, grid: { color: '#222' }, ticks: { color: '#888' }, min: -24, max: 6 }
+                    x: { type: 'logarithmic', grid: { color: '#ecf0f1' }, ticks: { color: '#7f8c8d', maxTicksLimit: 5 } },
+                    y: { grid: { color: '#ecf0f1' }, ticks: { color: '#7f8c8d' }, min: -20, max: 5 }
                 },
-                plugins: { legend: { labels: { color: '#ccc' } } }
+                plugins: { legend: { display: false }, tooltip: { enabled: true } }
             }
         });
 
         // ==========================================
-        // 2. 3D ENGINE (Three.js)
+        // 2. SETUP 3D ENGINE (SKETCHUP STYLE)
         // ==========================================
+        const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0a0a);
-        const camera = new THREE.PerspectiveCamera(60, document.getElementById('canvas-container').clientWidth / document.getElementById('canvas-container').clientHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(document.getElementById('canvas-container').clientWidth, document.getElementById('canvas-container').clientHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        // หมอกบางๆ ให้ดูเป็น Studio
+        scene.fog = new THREE.FogExp2(0xe2e6ea, 0.002);
 
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        camera.position.set(80, 50, 100); controls.update();
-        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8); dirLight.position.set(50, 100, 50); scene.add(dirLight);
+        const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(100, 80, 120);
 
-        // Materials
-        const woodMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9, transparent: true, opacity: 0.8 });
-        const driverMat = new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.5 });
-        const portMat = new THREE.MeshStandardMaterial({ color: 0x000, side: THREE.DoubleSide });
-        const edgeMat = new THREE.LineBasicMaterial({ color: 0x4facfe, opacity: 0.5, transparent: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.shadowMap.enabled = true; // เปิดเงาให้ดูสมจริง
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
 
-        let boxMesh, edgeMesh, driverMesh, portMesh;
+        // แสงสว่าง (Studio Lighting)
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+        scene.add(hemiLight);
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(100, 200, 50);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        scene.add(dirLight);
+
+        // พื้น Grid แบบโปรแกรม CAD
+        const grid = new THREE.GridHelper(200, 40, 0xbdc3c7, 0xecf0f1);
+        scene.add(grid);
+        
+        // พื้นรับเงา
+        const planeGeo = new THREE.PlaneGeometry(200, 200);
+        const planeMat = new THREE.ShadowMaterial({ opacity: 0.1 });
+        const plane = new THREE.Mesh(planeGeo, planeMat);
+        plane.rotation.x = -Math.PI / 2;
+        plane.receiveShadow = true;
+        scene.add(plane);
 
         // ==========================================
-        // 3. MASTER CALCULATION FUNCTION
+        // 3. CREATE SPEAKER BOX & CONTROLS
         // ==========================================
-        function updateAll() {
-            // -- ดึงค่าจาก UI --
-            const w = parseFloat(document.getElementById('boxW').value) || 1;
-            const h = parseFloat(document.getElementById('boxH').value) || 1;
-            const d = parseFloat(document.getElementById('boxD').value) || 1;
-            const t_cm = (parseFloat(document.getElementById('woodT').value) || 0) / 10;
+        // ใช้ OrbitControls สำหรับหมุนมุมกล้อง
+        const orbit = new THREE.OrbitControls(camera, renderer.domElement);
+        orbit.enableDamping = true; // หมุนสมูทขึ้น
+
+        // วัสดุไม้สีสว่าง (Birch Wood Style)
+        const woodMat = new THREE.MeshStandardMaterial({ 
+            color: 0xd2b48c, roughness: 0.7, metalness: 0.1 
+        });
+
+        // สร้างตู้ลำโพงเริ่มต้น (กว้าง 40, สูง 60, ลึก 35)
+        const boxGeo = new THREE.BoxGeometry(40, 60, 35);
+        const boxMesh = new THREE.Mesh(boxGeo, woodMat);
+        boxMesh.position.y = 30; // ยกขึ้นมาวางบน Grid
+        boxMesh.castShadow = true;
+        scene.add(boxMesh);
+
+        // เพิ่มเส้นขอบดำบางๆ ให้ดูเป็นกล่องแบบ SketchUp
+        const edges = new THREE.EdgesGeometry(boxGeo);
+        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.2, transparent: true }));
+        boxMesh.add(line);
+
+        // === หัวใจหลัก: TransformControls (ตัวดึง/ขยาย/หมุน) ===
+        const transformControl = new THREE.TransformControls(camera, renderer.domElement);
+        transformControl.addEventListener('dragging-changed', function (event) {
+            orbit.enabled = !event.value; // ปิดการหมุนกล้องตอนกำลังดึงวัตถุ
+        });
+        
+        // เมื่อดึง/ขยายเสร็จ ให้คำนวณสูตรเสียงใหม่ทันที!
+        transformControl.addEventListener('change', calculateAcoustics);
+        
+        scene.add(transformControl);
+        transformControl.attach(boxMesh);
+        transformControl.setMode('scale'); // เริ่มต้นด้วยโหมดดึงขนาด (Scale)
+
+        // ฟังก์ชันเปลี่ยนเครื่องมือ (Toolbars)
+        window.setTool = function(mode) {
+            transformControl.setMode(mode);
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tool-' + mode).classList.add('active');
+        };
+
+        // ==========================================
+        // 4. ACOUSTIC MATH PHYSICS
+        // ==========================================
+        function calculateAcoustics() {
+            // ดึงขนาดจริงของกล่อง (ความกว้างดั้งเดิม * สเกลที่ถูกดึงใน 3D)
+            const actualW = 40 * boxMesh.scale.x;
+            const actualH = 60 * boxMesh.scale.y;
+            const actualD = 35 * boxMesh.scale.z;
+
+            // ป้องกันกล่องจมดินตอนดึงย่อ/ขยาย
+            boxMesh.position.y = actualH / 2;
+
+            // อ่านค่าจาก UI
+            const t_cm = (parseFloat(document.getElementById('woodThick').value) || 0) / 10;
             const fb = parseFloat(document.getElementById('portFb').value) || 40;
-            const fs = parseFloat(document.getElementById('tsFs').value) || 35;
             const portDia = parseFloat(document.getElementById('portDia').value) || 10;
 
-            // -- 3.1 คำนวณปริมาตรและท่อลม --
-            const intW = Math.max(0, w - (t_cm * 2));
-            const intH = Math.max(0, h - (t_cm * 2));
-            const intD = Math.max(0, d - (t_cm * 2));
-            const grossVol = (w * h * d) / 1000;
-            const netVol = (intW * intH * intD) / 1000; // Vb
+            // คำนวณปริมาตร (หักความหนาไม้)
+            const intW = Math.max(0, actualW - (t_cm * 2));
+            const intH = Math.max(0, actualH - (t_cm * 2));
+            const intD = Math.max(0, actualD - (t_cm * 2));
             
-            // สูตรคำนวณความยาวท่อลม Lv (cm)
-            const portR = portDia / 2;
-            const portArea = Math.PI * (portR * portR); // ตร.ซม.
-            // Lv = (23400 * D^2) / (Vb * Fb^2) - (0.73 * D)  [สูตรมาตรฐานท่อกลม]
+            const grossVol = (actualW * actualH * actualD) / 1000;
+            const netVol = (intW * intH * intD) / 1000; // Vb
+
+            // คำนวณท่อลม (Helmholtz Resonance Approximation)
             let portLen = ((23400 * Math.pow(portDia, 2)) / (netVol * Math.pow(fb, 2))) - (0.73 * portDia);
-            if(portLen < 0) portLen = 0;
+            if(portLen < 0 || !isFinite(portLen)) portLen = 0;
 
-            document.getElementById('resGross').innerText = grossVol.toFixed(1) + ' L';
-            document.getElementById('resNet').innerText = netVol.toFixed(1) + ' L';
-            document.getElementById('resPortLen').innerText = portLen.toFixed(1) + ' cm';
-            document.getElementById('resF3').innerText = (fb * 0.85).toFixed(1) + ' Hz'; // ค่าประมาณ F3
+            // แสดงผลลัพธ์
+            document.getElementById('valGross').innerText = grossVol.toFixed(1) + ' L';
+            document.getElementById('valNet').innerText = netVol.toFixed(1) + ' L';
+            document.getElementById('valPortLen').innerText = portLen.toFixed(1) + ' cm';
 
-            // -- 3.2 อัปเดตกราฟเสียง (Simulation) --
+            // อัปเดตกราฟ (Simulation 24dB/octave)
             const freqs = splChart.data.labels;
             const splData = freqs.map(f => {
-                // จำลอง Response ของ Bass Reflex (4th Order High-Pass Filter approximation)
                 const fn = f / fb;
                 const fn4 = Math.pow(fn, 4);
-                // สร้างความชันลดหลั่นแบบสมการฟิสิกส์ (Roll-off 24dB/Octave ด้านล่าง Fb)
                 let mag = 10 * Math.log10(fn4 / (Math.pow(fn4 - 1, 2) + fn4)); 
-                // บูสต์บริเวณจุดจูน (Fb) เล็กน้อยให้ดูสมจริง
-                if(f >= fb - 5 && f <= fb + 10) mag += 1.5; 
-                return Math.max(-24, mag); // Limit ขอบล่างที่ -24dB
+                if(f >= fb - 5 && f <= fb + 10) mag += 1.5; // Bass boost at tuning
+                return Math.max(-20, mag);
             });
             splChart.data.datasets[0].data = splData;
             splChart.update();
-
-            // -- 3.3 อัปเดตโมเดล 3D --
-            if (boxMesh) { scene.remove(boxMesh); scene.remove(edgeMesh); scene.remove(driverMesh); scene.remove(portMesh); }
-
-            // ตู้ลำโพง
-            const geo = new THREE.BoxGeometry(w, h, d);
-            boxMesh = new THREE.Mesh(geo, woodMat);
-            edgeMesh = new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat);
-            scene.add(boxMesh); scene.add(edgeMesh);
-
-            // ดอกลำโพง (วางด้านบน)
-            const dGeo = new THREE.CylinderGeometry(15, 12, 2, 32); dGeo.rotateX(Math.PI/2);
-            driverMesh = new THREE.Mesh(dGeo, driverMat);
-            driverMesh.position.set(0, h/4, d/2);
-            scene.add(driverMesh);
-
-            // ท่อลม (Port) (วางด้านล่าง, ขนาดตามจริง)
-            const pGeo = new THREE.CylinderGeometry(portDia/2, portDia/2, Math.min(portLen, d), 32); pGeo.rotateX(Math.PI/2);
-            portMesh = new THREE.Mesh(pGeo, portMat);
-            portMesh.position.set(0, -h/4, (d/2) - (Math.min(portLen, d)/2));
-            scene.add(portMesh);
         }
 
-        updateAll(); // เรียกครั้งแรก
-
-        // ลูปอนิเมชั่น 3D
-        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+        // ==========================================
+        // 5. ANIMATION LOOP & RESIZE
+        // ==========================================
+        function animate() {
+            requestAnimationFrame(animate);
+            orbit.update();
+            renderer.render(scene, camera);
+        }
         animate();
+        calculateAcoustics(); // คำนวณครั้งแรก
 
-        // จัดการหน้าจอเวลา Resize
         window.addEventListener('resize', () => {
-            const container = document.getElementById('canvas-container');
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
         });
+
     </script>
 </body>
 </html>
