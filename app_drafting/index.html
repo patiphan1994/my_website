@@ -7,54 +7,109 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Prompt:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 </head>
 <body>
 
     <div class="grid-bg" id="gridBg"></div>
+    <div id="canvas-wrapper"><canvas id="draftCanvas"></canvas></div>
 
-    <div class="top-bar">
-        <a href="../system.html" class="btn-back"><i class="fas fa-arrow-left"></i></a>
-        <div class="file-name"><i class="fas fa-home" style="color: var(--accent);"></i> Modern_House_Plan.dwg</div>
-        <div class="scale-badge">1 Grid = 1m</div>
-    </div>
-
-    <div class="toolbar">
-        <button class="tool-btn active" id="tool-select" onclick="setTool('select')" title="Select (V)"><i class="fas fa-mouse-pointer"></i></button>
-        <button class="tool-btn" id="tool-pan" onclick="setTool('pan')" title="Pan Canvas (H)"><i class="fas fa-hand-paper"></i></button>
-        <hr style="border-top: 1px solid var(--border); width: 24px; margin: 4px auto;">
-        <button class="tool-btn" id="tool-wall" onclick="setTool('wall')" title="Draw Wall (L)"><i class="fas fa-slash"></i></button>
-        <button class="tool-btn" id="tool-room" onclick="addRoom()" title="Draw Room Area (R)"><i class="far fa-square"></i></button>
-    </div>
-
-    <div class="props-panel" id="propsPanel">
-        <div class="panel-header">Object Properties</div>
-        <div class="panel-body">
-            <div class="prop-group">
-                <div class="prop-label">Position & Size (cm)</div>
-                <div class="input-row">
-                    <div class="input-box"><label>L</label><input type="number" id="propL" onchange="updateObject()"></div>
-                    <div class="input-box"><label>T</label><input type="number" id="propT" onchange="updateObject()"></div>
-                </div>
-                <div class="input-row">
-                    <div class="input-box"><label>W</label><input type="number" id="propW" onchange="updateObject()"></div>
-                    <div class="input-box"><label>H</label><input type="number" id="propH" onchange="updateObject()"></div>
-                </div>
-            </div>
-            <div class="prop-group">
-                <div class="prop-label">Style</div>
-                <div class="input-row">
-                    <input type="color" id="propColor" class="color-picker" onchange="updateObject()">
-                </div>
-                <button class="btn-delete" onclick="deleteObject()"><i class="fas fa-trash-alt"></i> Delete Element</button>
+    <header class="top-nav">
+        <div class="nav-left">
+            <a href="../system.html" class="btn-back" title="Back to OS"><i class="fas fa-arrow-left"></i></a>
+            <div class="menu-dropdown"><i class="fas fa-bars"></i></div>
+            <div class="file-info">
+                <span class="file-name">Project_Villa_01</span>
+                <span class="file-status">Saved</span>
             </div>
         </div>
-    </div>
+        <div class="nav-center">
+            <button class="action-btn" title="Undo (Ctrl+Z)"><i class="fas fa-undo"></i></button>
+            <button class="action-btn" title="Redo (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+        </div>
+        <div class="nav-right">
+            <button class="share-btn"><i class="fas fa-share-alt"></i> Share</button>
+            <button class="export-btn"><i class="fas fa-download"></i> Export PDF</button>
+        </div>
+    </header>
 
-    <div id="canvas-wrapper">
-        <canvas id="draftCanvas"></canvas>
-    </div>
+    <aside class="left-toolbar">
+        <div class="tool-group">
+            <button class="tool-btn active" data-tool="select" title="Select (V)"><i class="fas fa-mouse-pointer"></i></button>
+            <button class="tool-btn" data-tool="pan" title="Pan (H)"><i class="fas fa-hand-paper"></i></button>
+        </div>
+        <hr class="tool-divider">
+        <div class="tool-group">
+            <button class="tool-btn" data-tool="line" title="Line (L)"><i class="fas fa-minus"></i></button>
+            <button class="tool-btn" data-tool="wall" title="Wall (W)"><i class="fas fa-bars" style="transform: rotate(90deg);"></i></button>
+            <button class="tool-btn" data-tool="room" title="Room / Zone (R)"><i class="far fa-square"></i></button>
+        </div>
+        <hr class="tool-divider">
+        <div class="tool-group">
+            <button class="tool-btn" data-tool="door" title="Door (D)"><i class="fas fa-door-open"></i></button>
+            <button class="tool-btn" data-tool="window" title="Window (O)"><i class="fas fa-border-all"></i></button>
+            <button class="tool-btn" data-tool="furniture" title="Furniture (F)"><i class="fas fa-couch"></i></button>
+        </div>
+        <hr class="tool-divider">
+        <div class="tool-group">
+            <button class="tool-btn" data-tool="text" title="Text (T)"><i class="fas fa-font"></i></button>
+            <button class="tool-btn" data-tool="measure" title="Dimension (M)"><i class="fas fa-ruler-horizontal"></i></button>
+        </div>
+    </aside>
+
+    <aside class="right-panel" id="propsPanel">
+        <div class="panel-header">Properties</div>
+        <div class="panel-content">
+            
+            <div class="prop-section">
+                <div class="prop-title">Transform</div>
+                <div class="input-grid">
+                    <div class="input-wrap"><span class="label">X</span><input type="number" id="propX" value="0"></div>
+                    <div class="input-wrap"><span class="label">Y</span><input type="number" id="propY" value="0"></div>
+                    <div class="input-wrap"><span class="label">W</span><input type="number" id="propW" value="0"></div>
+                    <div class="input-wrap"><span class="label">H</span><input type="number" id="propH" value="0"></div>
+                    <div class="input-wrap"><span class="label"><i class="fas fa-sync-alt"></i></span><input type="number" id="propA" value="0"></div>
+                </div>
+            </div>
+
+            <hr class="panel-divider">
+
+            <div class="prop-section">
+                <div class="prop-title">Appearance</div>
+                <div class="color-row">
+                    <span class="color-label">Fill</span>
+                    <input type="color" id="propFill" value="#ffffff" class="color-picker">
+                </div>
+                <div class="color-row">
+                    <span class="color-label">Stroke</span>
+                    <input type="color" id="propStroke" value="#111827" class="color-picker">
+                </div>
+                <div class="color-row" style="margin-top: 10px;">
+                    <span class="color-label">Weight</span>
+                    <select id="propWeight" class="select-box">
+                        <option value="1">1 px</option>
+                        <option value="2">2 px</option>
+                        <option value="4">4 px</option>
+                        <option value="15">15 px (Wall)</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr class="panel-divider">
+
+            <button class="btn-delete" id="btnDelete"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+    </aside>
+
+    <footer class="bottom-bar">
+        <div class="status-left">
+            <span id="coordsDisplay">X: 0, Y: 0</span>
+        </div>
+        <div class="status-right">
+            <button class="status-btn"><i class="fas fa-magnet"></i> Snap to Grid</button>
+            <span class="zoom-level" id="zoomDisplay">100%</span>
+        </div>
+    </footer>
 
     <script src="app_logic.js"></script>
 </body>
