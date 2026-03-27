@@ -3,229 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speaker Lab | 3D Design</title>
+    <title>Speaker Lab PRO | Advanced Acoustic Design</title>
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg-dark: #000000;
-            --panel-bg: rgba(25, 25, 25, 0.8);
-            --accent: #ff416c; /* สีส้มอมแดงให้เข้ากับไอคอนแอป */
+            --bg-dark: #0a0a0a;
+            --panel-bg: rgba(20, 20, 20, 0.85);
+            --accent: #4facfe; /* เปลี่ยนเป็นสีฟ้า Pro Audio */
+            --accent-glow: rgba(79, 172, 254, 0.4);
         }
 
         body {
             margin: 0; overflow: hidden;
             font-family: 'SF Pro Display', 'Prompt', sans-serif;
             background: var(--bg-dark);
-            color: white;
+            color: #ccc;
             display: flex;
             height: 100vh;
         }
 
-        /* --- พื้นที่ 3D (ซ้าย) --- */
-        #canvas-container {
+        /* --- ซ้าย: 3D และ กราฟ --- */
+        .workspace {
             flex: 1;
+            display: flex;
+            flex-direction: column;
             position: relative;
         }
 
-        /* --- แผงควบคุม (ขวา) --- */
+        #canvas-container { flex: 6; position: relative; }
+        
+        #graph-container {
+            flex: 4;
+            background: #111;
+            border-top: 1px solid #333;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* --- ขวา: แผงควบคุมแบบโคตรละเอียด --- */
         .control-panel {
-            width: 320px;
+            width: 380px;
             background: var(--panel-bg);
             backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            border-left: 1px solid #333;
+            padding: 25px;
             box-sizing: border-box;
             overflow-y: auto;
         }
 
-        .panel-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .panel-header { font-size: 1.2rem; color: #fff; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px; }
+        .section-title { font-size: 0.9rem; color: var(--accent); font-weight: 600; margin: 20px 0 10px 0; border-bottom: 1px solid #333; padding-bottom: 5px; text-transform: uppercase; }
 
-        .input-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: #888;
-            margin-bottom: 5px;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+        .input-group { margin-bottom: 10px; }
+        .input-group label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 4px; }
         .input-group input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
+            width: 100%; padding: 8px 10px; background: #000;
+            border: 1px solid #333; border-radius: 4px;
+            color: #fff; font-family: monospace; font-size: 0.9rem; box-sizing: border-box;
         }
+        .input-group input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 8px var(--accent-glow); }
 
-        .input-group input:focus {
-            border-color: var(--accent);
-        }
-
-        /* ปุ่มกลับหน้าหลัก (สไตล์ Apple) */
         .btn-back {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 45px;
-            height: 45px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            text-decoration: none;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: 0.3s;
-            z-index: 1000;
+            position: absolute; top: 20px; left: 20px; width: 40px; height: 40px;
+            background: rgba(0,0,0,0.5); border-radius: 8px; display: flex; justify-content: center; align-items: center;
+            color: #fff; text-decoration: none; border: 1px solid #4facfe; z-index: 1000; transition: 0.3s;
         }
-        .btn-back:hover {
-            background: #fff;
-            color: #000;
-            transform: scale(1.1);
+        .btn-back:hover { background: #4facfe; color: #000; }
+
+        /* ผลลัพธ์การคำนวณ */
+        .result-box {
+            background: #000; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-top: 20px;
         }
+        .result-item { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; }
+        .result-value { color: #fff; font-weight: 600; font-family: monospace; }
+        .result-value.highlight { color: #2ed573; font-size: 1rem; }
+
     </style>
 </head>
 <body>
 
-    <a href="system.html" class="btn-back" title="Back to OS"><i class="fas fa-arrow-left"></i></a>
-
-    <div id="canvas-container"></div>
+    <div class="workspace">
+        <a href="system.html" class="btn-back" title="Back"><i class="fas fa-arrow-left"></i></a>
+        <div id="canvas-container"></div>
+        <div id="graph-container">
+            <canvas id="splChart"></canvas>
+        </div>
+    </div>
 
     <div class="control-panel">
-        <div class="panel-title"><i class="fas fa-cube"></i> Enclosure Size</div>
-        
-        <div class="input-group">
-            <label>Width (กว้าง) [cm]</label>
-            <input type="number" id="boxW" value="40" oninput="updateBox()">
-        </div>
-        <div class="input-group">
-            <label>Height (สูง) [cm]</label>
-            <input type="number" id="boxH" value="60" oninput="updateBox()">
-        </div>
-        <div class="input-group">
-            <label>Depth (ลึก) [cm]</label>
-            <input type="number" id="boxD" value="35" oninput="updateBox()">
+        <div class="panel-header"><i class="fas fa-sliders-h"></i> DSP & ACOUSTICS LAB</div>
+
+        <div class="section-title">Thiele/Small Parameters</div>
+        <div class="grid-2">
+            <div class="input-group"><label>Fs (Hz)</label><input type="number" id="tsFs" value="35" oninput="updateAll()"></div>
+            <div class="input-group"><label>Vas (Liters)</label><input type="number" id="tsVas" value="80" oninput="updateAll()"></div>
+            <div class="input-group"><label>Qts</label><input type="number" id="tsQts" value="0.45" step="0.01" oninput="updateAll()"></div>
+            <div class="input-group"><label>Xmax (mm)</label><input type="number" id="tsXmax" value="12.5" oninput="updateAll()"></div>
         </div>
 
-        <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+        <div class="section-title">Enclosure Geometry</div>
+        <div class="grid-2">
+            <div class="input-group"><label>Width (cm)</label><input type="number" id="boxW" value="45" oninput="updateAll()"></div>
+            <div class="input-group"><label>Height (cm)</label><input type="number" id="boxH" value="65" oninput="updateAll()"></div>
+            <div class="input-group"><label>Depth (cm)</label><input type="number" id="boxD" value="40" oninput="updateAll()"></div>
+            <div class="input-group"><label>Wood (mm)</label><input type="number" id="woodT" value="18" oninput="updateAll()"></div>
+        </div>
 
-        <div class="panel-title"><i class="fas fa-calculator"></i> Internal Volume</div>
-        <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; text-align: center;">
-            <span id="volumeCalc" style="font-size: 1.5rem; font-weight: 600;">84.0</span> <span style="color:#888;">Liters</span>
+        <div class="section-title">Port Tuning (Bass Reflex)</div>
+        <div class="grid-2">
+            <div class="input-group"><label>Tuning Fb (Hz)</label><input type="number" id="portFb" value="40" oninput="updateAll()"></div>
+            <div class="input-group"><label>Port Dia. (cm)</label><input type="number" id="portDia" value="10" oninput="updateAll()"></div>
+        </div>
+
+        <div class="result-box">
+            <div class="result-item"><span>Gross Volume:</span> <span class="result-value" id="resGross">0 L</span></div>
+            <div class="result-item"><span>Net Volume (Vb):</span> <span class="result-value highlight" id="resNet">0 L</span></div>
+            <div class="result-item"><span>Port Length (Lv):</span> <span class="result-value highlight" id="resPortLen" style="color:#ff4757;">0 cm</span></div>
+            <div class="result-item" style="margin-top:10px; border-top:1px solid #333; padding-top:10px;">
+                <span>System F3 (-3dB):</span> <span class="result-value" id="resF3">0 Hz</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // 1. ตั้งค่าพื้นฐาน Scene, Camera, Renderer
+        // ==========================================
+        // 1. ACOUSTIC MATH & GRAPH ENGINE (Chart.js)
+        // ==========================================
+        const ctx = document.getElementById('splChart').getContext('2d');
+        const splChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 100}, (_, i) => 20 + i * 2), // แกน X: 20Hz - 218Hz
+                datasets: [{
+                    label: 'Predicted Frequency Response (SPL)',
+                    data: [],
+                    borderColor: '#4facfe',
+                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { type: 'logarithmic', title: { display: true, text: 'Frequency (Hz)', color: '#888' }, grid: { color: '#222' }, ticks: { color: '#888' } },
+                    y: { title: { display: true, text: 'Magnitude (dB)', color: '#888' }, grid: { color: '#222' }, ticks: { color: '#888' }, min: -24, max: 6 }
+                },
+                plugins: { legend: { labels: { color: '#ccc' } } }
+            }
+        });
+
+        // ==========================================
+        // 2. 3D ENGINE (Three.js)
+        // ==========================================
         const scene = new THREE.Scene();
-        // ใส่สีพื้นหลังให้ดูมีมิติ
-        scene.background = new THREE.Color(0x1a1a1a);
-        
-        const camera = new THREE.PerspectiveCamera(75, (window.innerWidth - 320) / window.innerHeight, 0.1, 1000);
-        
+        scene.background = new THREE.Color(0x0a0a0a);
+        const camera = new THREE.PerspectiveCamera(60, document.getElementById('canvas-container').clientWidth / document.getElementById('canvas-container').clientHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth - 320, window.innerHeight); // เว้นที่ให้แผงควบคุม 320px
+        renderer.setSize(document.getElementById('canvas-container').clientWidth, document.getElementById('canvas-container').clientHeight);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // 2. เพิ่มการควบคุม (หมุน/ซูม) ด้วยเมาส์
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        camera.position.set(60, 60, 100);
-        controls.update();
+        camera.position.set(80, 50, 100); controls.update();
+        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8); dirLight.position.set(50, 100, 50); scene.add(dirLight);
 
-        // 3. จัดแสง (Lighting)
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // แสงรอบทิศทาง
-        scene.add(ambientLight);
+        // Materials
+        const woodMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9, transparent: true, opacity: 0.8 });
+        const driverMat = new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.5 });
+        const portMat = new THREE.MeshStandardMaterial({ color: 0x000, side: THREE.DoubleSide });
+        const edgeMat = new THREE.LineBasicMaterial({ color: 0x4facfe, opacity: 0.5, transparent: true });
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // แสงไฟส่องลงมา
-        directionalLight.position.set(50, 100, 50);
-        scene.add(directionalLight);
+        let boxMesh, edgeMesh, driverMesh, portMesh;
 
-        // 4. สร้างวัสดุตู้ลำโพง (Material)
-        const material = new THREE.MeshStandardMaterial({ 
-            color: 0x8b5a2b, // สีไม้ (Brown)
-            roughness: 0.8,
-            metalness: 0.2
-        });
-        
-        // เพิ่มเส้นขอบ (Wireframe) ให้ดูชัดขึ้น
-        const edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
-
-        // ตัวแปรเก็บกล่องและเส้นขอบ
-        let boxMesh, boxEdges;
-
-        // ฟังก์ชันสร้างและอัปเดตขนาดกล่อง
-        function updateBox() {
-            // ลบกล่องเก่าออกก่อน
-            if (boxMesh) scene.remove(boxMesh);
-            if (boxEdges) scene.remove(boxEdges);
-
-            // ดึงค่าจากช่อง Input
+        // ==========================================
+        // 3. MASTER CALCULATION FUNCTION
+        // ==========================================
+        function updateAll() {
+            // -- ดึงค่าจาก UI --
             const w = parseFloat(document.getElementById('boxW').value) || 1;
             const h = parseFloat(document.getElementById('boxH').value) || 1;
             const d = parseFloat(document.getElementById('boxD').value) || 1;
+            const t_cm = (parseFloat(document.getElementById('woodT').value) || 0) / 10;
+            const fb = parseFloat(document.getElementById('portFb').value) || 40;
+            const fs = parseFloat(document.getElementById('tsFs').value) || 35;
+            const portDia = parseFloat(document.getElementById('portDia').value) || 10;
 
-            // สร้างรูปทรงเรขาคณิตใหม่ (Geometry)
-            const geometry = new THREE.BoxGeometry(w, h, d);
+            // -- 3.1 คำนวณปริมาตรและท่อลม --
+            const intW = Math.max(0, w - (t_cm * 2));
+            const intH = Math.max(0, h - (t_cm * 2));
+            const intD = Math.max(0, d - (t_cm * 2));
+            const grossVol = (w * h * d) / 1000;
+            const netVol = (intW * intH * intD) / 1000; // Vb
             
-            // สร้าง Mesh (กล่องทึบ)
-            boxMesh = new THREE.Mesh(geometry, material);
-            scene.add(boxMesh);
+            // สูตรคำนวณความยาวท่อลม Lv (cm)
+            const portR = portDia / 2;
+            const portArea = Math.PI * (portR * portR); // ตร.ซม.
+            // Lv = (23400 * D^2) / (Vb * Fb^2) - (0.73 * D)  [สูตรมาตรฐานท่อกลม]
+            let portLen = ((23400 * Math.pow(portDia, 2)) / (netVol * Math.pow(fb, 2))) - (0.73 * portDia);
+            if(portLen < 0) portLen = 0;
 
-            // สร้างเส้นขอบ (Edges)
-            const edges = new THREE.EdgesGeometry(geometry);
-            boxEdges = new THREE.LineSegments(edges, edgesMaterial);
-            scene.add(boxEdges);
+            document.getElementById('resGross').innerText = grossVol.toFixed(1) + ' L';
+            document.getElementById('resNet').innerText = netVol.toFixed(1) + ' L';
+            document.getElementById('resPortLen').innerText = portLen.toFixed(1) + ' cm';
+            document.getElementById('resF3').innerText = (fb * 0.85).toFixed(1) + ' Hz'; // ค่าประมาณ F3
 
-            // คำนวณปริมาตร (กว้าง x ยาว x สูง) / 1000 = ลิตร (Liters)
-            const volumeLiters = (w * h * d) / 1000;
-            document.getElementById('volumeCalc').innerText = volumeLiters.toFixed(2);
+            // -- 3.2 อัปเดตกราฟเสียง (Simulation) --
+            const freqs = splChart.data.labels;
+            const splData = freqs.map(f => {
+                // จำลอง Response ของ Bass Reflex (4th Order High-Pass Filter approximation)
+                const fn = f / fb;
+                const fn4 = Math.pow(fn, 4);
+                // สร้างความชันลดหลั่นแบบสมการฟิสิกส์ (Roll-off 24dB/Octave ด้านล่าง Fb)
+                let mag = 10 * Math.log10(fn4 / (Math.pow(fn4 - 1, 2) + fn4)); 
+                // บูสต์บริเวณจุดจูน (Fb) เล็กน้อยให้ดูสมจริง
+                if(f >= fb - 5 && f <= fb + 10) mag += 1.5; 
+                return Math.max(-24, mag); // Limit ขอบล่างที่ -24dB
+            });
+            splChart.data.datasets[0].data = splData;
+            splChart.update();
+
+            // -- 3.3 อัปเดตโมเดล 3D --
+            if (boxMesh) { scene.remove(boxMesh); scene.remove(edgeMesh); scene.remove(driverMesh); scene.remove(portMesh); }
+
+            // ตู้ลำโพง
+            const geo = new THREE.BoxGeometry(w, h, d);
+            boxMesh = new THREE.Mesh(geo, woodMat);
+            edgeMesh = new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat);
+            scene.add(boxMesh); scene.add(edgeMesh);
+
+            // ดอกลำโพง (วางด้านบน)
+            const dGeo = new THREE.CylinderGeometry(15, 12, 2, 32); dGeo.rotateX(Math.PI/2);
+            driverMesh = new THREE.Mesh(dGeo, driverMat);
+            driverMesh.position.set(0, h/4, d/2);
+            scene.add(driverMesh);
+
+            // ท่อลม (Port) (วางด้านล่าง, ขนาดตามจริง)
+            const pGeo = new THREE.CylinderGeometry(portDia/2, portDia/2, Math.min(portLen, d), 32); pGeo.rotateX(Math.PI/2);
+            portMesh = new THREE.Mesh(pGeo, portMat);
+            portMesh.position.set(0, -h/4, (d/2) - (Math.min(portLen, d)/2));
+            scene.add(portMesh);
         }
 
-        // เรียกใช้ครั้งแรกเพื่อวาดกล่อง
-        updateBox();
+        updateAll(); // เรียกครั้งแรก
 
-        // เพิ่มตารางตาราง (Grid Helper) ให้ดูเหมือนโปรแกรมออกแบบ
-        const gridHelper = new THREE.GridHelper(200, 20, 0x444444, 0x222222);
-        gridHelper.position.y = - (document.getElementById('boxH').value / 2); // ให้อยู่ใต้ฐานกล่อง
-        scene.add(gridHelper);
-
-        // 5. ลูปการเรนเดอร์ (Animation Loop)
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update(); // อัปเดตการหมุนเมาส์
-            renderer.render(scene, camera);
-        }
+        // ลูปอนิเมชั่น 3D
+        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
         animate();
 
-        // 6. ปรับขนาดหน้าจอเมื่อย่อขยายเบราว์เซอร์
+        // จัดการหน้าจอเวลา Resize
         window.addEventListener('resize', () => {
-            const newWidth = window.innerWidth - 320;
-            camera.aspect = newWidth / window.innerHeight;
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(newWidth, window.innerHeight);
+            renderer.setSize(container.clientWidth, container.clientHeight);
         });
-
     </script>
 </body>
 </html>
