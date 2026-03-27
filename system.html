@@ -128,7 +128,7 @@
         const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', dateOptions);
 
-        // --- ข้อมูลแอปทั้งหมด (ผูกลิงก์ไฟล์ .html รอไว้หมดแล้ว!) ---
+        // --- ข้อมูลแอปทั้งหมด (✅ ใส่ไอคอนให้ AI Architect กับ Structural แล้ว!) ---
         const appsData = [
             {
                 name: "BOQ Pro",
@@ -149,17 +149,17 @@
             {
                 name: "AI Architect",
                 status: "Ready to chat",
-                icon: "", // ปล่อยว่าง เพราะในรูปเป็นสีม่วงเกลี้ยงๆ
-                iconColor: "transparent",
-                bgGradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)", // ม่วงสไตล์ AI
+                icon: "fas fa-brain", // 🧠 จัดไอคอนสมองสื่อถึง AI ไปเลยครับลูกพี่
+                iconColor: "#ffffff",
+                bgGradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)",
                 link: "ai_architect.html"
             },
             {
                 name: "Structural",
                 status: "Ready",
-                icon: "", // ปล่อยว่าง เพราะในรูปเป็นสีดำเกลี้ยงๆ
-                iconColor: "transparent",
-                bgGradient: "linear-gradient(135deg, #2a2a2a 0%, #111111 100%)", // เทาดำ
+                icon: "fas fa-city", // 🏙️ จัดไอคอนเมือง/ตึก สื่อถึงงานวิศวกรรมโครงสร้าง
+                iconColor: "#ffffff",
+                bgGradient: "linear-gradient(135deg, #2a2a2a 0%, #111111 100%)",
                 link: "structural.html"
             },
             {
@@ -184,14 +184,14 @@
                 icon: "fas fa-shield-halved",
                 iconColor: "#8e8e93",
                 bgGradient: "",
-                link: "admin_keygen.html" // ใช้หน้า Admin Keygen เดิมของลูกพี่
+                link: "admin_keygen.html"
             },
             {
                 name: "Speaker Lab",
                 status: "3D Design",
                 icon: "fas fa-volume-up",
                 iconColor: "#ffffff",
-                bgGradient: "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)", // สีแดงอมส้ม
+                bgGradient: "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
                 link: "speaker_lab.html"
             }
         ];
@@ -203,13 +203,10 @@
         appsData.forEach(app => {
             let bgStyle = app.bgGradient ? `background: ${app.bgGradient};` : '';
             
-            // ตรวจสอบว่าถ้าไม่มีไอคอน ไม่ต้องใส่แท็ก <i> ป้องกันกรอบเปล่าๆ
-            let iconHTML = app.icon ? `<i class="${app.icon}" style="color: ${app.iconColor};"></i>` : '';
-
             appHTML += `
                 <a href="${app.link}" class="app-icon-wrapper">
                     <div class="app-icon" style="${bgStyle}">
-                        ${iconHTML}
+                        <i class="${app.icon}" style="color: ${app.iconColor};"></i>
                     </div>
                     <div class="app-name">${app.name}</div>
                     <div class="app-status">${app.status}</div>
