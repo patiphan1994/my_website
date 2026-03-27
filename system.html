@@ -11,14 +11,13 @@
         :root {
             --apple-glass: rgba(255, 255, 255, 0.03);
             --apple-blur: blur(20px);
-            --accent-blue: #0071e3; /* Apple Blue */
+            --accent-blue: #0071e3;
             --bg-dark: #000000;
         }
 
         body {
             margin: 0; padding: 0;
             background: #000;
-            /* พื้นหลังแบบไล่เฉดนุ่มนวลสไตล์ macOS Sonoma */
             background-image: radial-gradient(circle at 0% 0%, #1a1a1a 0%, #000 50%),
                               radial-gradient(circle at 100% 100%, #001f3f 0%, #000 50%);
             color: #fff;
@@ -29,7 +28,6 @@
             -webkit-user-select: none; user-select: none;
         }
 
-        /* --- 🍏 SIDEBAR (Apple Sidebar Style) --- */
         .sidebar {
             width: 260px;
             background: rgba(0, 0, 0, 0.4);
@@ -40,52 +38,25 @@
             padding: 40px 20px;
         }
 
-        .brand-header {
-            padding: 0 15px 30px;
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-        }
+        .brand-header { padding: 0 15px 30px; font-size: 1.4rem; font-weight: 600; letter-spacing: -0.5px; }
         .brand-header span { color: #888; font-weight: 300; }
 
         .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            color: #888;
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            transition: 0.2s;
-            font-size: 0.95rem;
+            display: flex; align-items: center; padding: 12px 15px; color: #888;
+            text-decoration: none; border-radius: 12px; margin-bottom: 5px;
+            transition: 0.2s; font-size: 0.95rem;
         }
         .nav-item i { width: 25px; font-size: 1.1rem; }
-        .nav-item:hover, .nav-item.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
+        .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
-        /* --- 🖥️ MAIN WORKSPACE --- */
-        .main-workspace {
-            flex: 1;
-            padding: 60px;
-            overflow-y: auto;
-        }
-
-        .welcome-header {
-            margin-bottom: 50px;
-        }
+        .main-workspace { flex: 1; padding: 60px; overflow-y: auto; }
+        .welcome-header { margin-bottom: 50px; }
         .welcome-header h1 {
-            font-size: 3rem;
-            font-weight: 600;
-            margin: 0;
-            letter-spacing: -1.5px;
+            font-size: 3rem; font-weight: 600; margin: 0; letter-spacing: -1.5px;
             background: linear-gradient(to bottom, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* --- 📱 APP GRID (Apple Squircle Style) --- */
         .app-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -93,80 +64,36 @@
         }
 
         .app-icon-wrapper {
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            text-decoration: none; display: flex; flex-direction: column;
+            align-items: center; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        /* ทรงมนแบบ Apple (Squircle) */
         .app-icon {
-            width: 100px;
-            height: 100px;
-            background: var(--apple-glass);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 22px; /* Apple Squircle radius */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 2.2rem;
-            color: #fff;
-            position: relative;
-            transition: 0.3s;
+            width: 100px; height: 100px; background: var(--apple-glass);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 22px;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 15px; font-size: 2.2rem; color: #fff;
+            position: relative; transition: 0.3s;
         }
-
         .app-icon::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 22px;
+            content: ''; position: absolute; inset: 0; border-radius: 22px;
             background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
         }
-
         .app-icon-wrapper:hover .app-icon {
-            transform: scale(1.05) translateY(-5px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transform: scale(1.05) translateY(-5px); background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .app-name {
-            font-size: 0.9rem;
-            color: #fff;
-            font-weight: 400;
-            text-align: center;
-        }
-        .app-status {
-            font-size: 0.7rem;
-            color: #555;
-            margin-top: 4px;
-        }
+        .app-name { font-size: 0.9rem; color: #fff; font-weight: 400; text-align: center; }
+        .app-status { font-size: 0.7rem; color: #555; margin-top: 4px; }
 
-        /* --- 🏠 HOME BUTTON (Apple Home) --- */
         .apple-home {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            text-decoration: none;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: 0.3s;
+            position: fixed; bottom: 40px; right: 40px; width: 60px; height: 60px;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            color: #fff; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.2); transition: 0.3s;
         }
-        .apple-home:hover {
-            background: #fff;
-            color: #000;
-            transform: scale(1.1);
-        }
+        .apple-home:hover { background: #fff; color: #000; transform: scale(1.1); }
 
     </style>
 </head>
@@ -194,24 +121,21 @@
             </div>
     </div>
 
-    <a href="index.html" class="apple-home">
-        <i class="fas fa-house"></i>
-    </a>
+    <a href="index.html" class="apple-home"><i class="fas fa-house"></i></a>
 
     <script>
-        // --- 1. แสดงวันที่ปัจจุบัน ---
+        // แสดงวันที่ปัจจุบัน
         const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', dateOptions);
 
-
-        // --- 2. ข้อมูลแอปทั้งหมด (ลูกพี่แก้ตรงนี้ได้เลย) ---
+        // --- ข้อมูลแอปทั้งหมด (ผูกลิงก์ไฟล์ .html รอไว้หมดแล้ว!) ---
         const appsData = [
             {
                 name: "BOQ Pro",
                 status: "v2.4",
                 icon: "fas fa-calculator",
                 iconColor: "#ff9f0a",
-                bgGradient: "", // ถ้าไม่ใส่ จะใช้สีใสๆ แบบปกติ
+                bgGradient: "",
                 link: "app_boq.html"
             },
             {
@@ -220,23 +144,23 @@
                 icon: "fas fa-pen-ruler",
                 iconColor: "#64d2ff",
                 bgGradient: "",
-                link: "#"
+                link: "drafting.html"
             },
             {
                 name: "AI Architect",
                 status: "Ready to chat",
-                icon: "fas fa-shining",
-                iconColor: "#fff",
-                bgGradient: "linear-gradient(135deg, #5e5ce6 0%, #bf5af2 100%)", // ตัวอย่างการใส่พื้นหลังแบบ AI
-                link: "#"
+                icon: "", // ปล่อยว่าง เพราะในรูปเป็นสีม่วงเกลี้ยงๆ
+                iconColor: "transparent",
+                bgGradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)", // ม่วงสไตล์ AI
+                link: "ai_architect.html"
             },
             {
                 name: "Structural",
                 status: "Ready",
-                icon: "fas fa-cubic-bezier",
-                iconColor: "#30d158",
-                bgGradient: "",
-                link: "#"
+                icon: "", // ปล่อยว่าง เพราะในรูปเป็นสีดำเกลี้ยงๆ
+                iconColor: "transparent",
+                bgGradient: "linear-gradient(135deg, #2a2a2a 0%, #111111 100%)", // เทาดำ
+                link: "structural.html"
             },
             {
                 name: "PDF Suite",
@@ -244,7 +168,7 @@
                 icon: "fas fa-file-pdf",
                 iconColor: "#ff3b30",
                 bgGradient: "",
-                link: "#"
+                link: "pdf_suite.html"
             },
             {
                 name: "GIS Land",
@@ -252,7 +176,7 @@
                 icon: "fas fa-map-location-dot",
                 iconColor: "#ffcc00",
                 bgGradient: "",
-                link: "#"
+                link: "gis_land.html"
             },
             {
                 name: "Management",
@@ -260,32 +184,32 @@
                 icon: "fas fa-shield-halved",
                 iconColor: "#8e8e93",
                 bgGradient: "",
-                link: "#"
+                link: "admin_keygen.html" // ใช้หน้า Admin Keygen เดิมของลูกพี่
             },
-            // ✨ แอปใหม่ที่ลูกพี่ต้องการสร้าง (Speaker Lab) ✨
             {
                 name: "Speaker Lab",
                 status: "3D Design",
                 icon: "fas fa-volume-up",
-                iconColor: "#fff",
-                bgGradient: "linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)", // สีส้มอมแดงเท่ๆ
+                iconColor: "#ffffff",
+                bgGradient: "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)", // สีแดงอมส้ม
                 link: "speaker_lab.html"
             }
         ];
 
-
-        // --- 3. ฟังก์ชันวาดแอปบนหน้าจอ ---
+        // วาดแอปบนหน้าจอ
         const container = document.getElementById('app-grid-container');
         let appHTML = "";
 
         appsData.forEach(app => {
-            // เช็คว่าแอปนี้มี bgGradient ไหม ถ้ามีให้ใช้ ถ้าไม่มีให้ว่างไว้
             let bgStyle = app.bgGradient ? `background: ${app.bgGradient};` : '';
             
+            // ตรวจสอบว่าถ้าไม่มีไอคอน ไม่ต้องใส่แท็ก <i> ป้องกันกรอบเปล่าๆ
+            let iconHTML = app.icon ? `<i class="${app.icon}" style="color: ${app.iconColor};"></i>` : '';
+
             appHTML += `
                 <a href="${app.link}" class="app-icon-wrapper">
                     <div class="app-icon" style="${bgStyle}">
-                        <i class="${app.icon}" style="color: ${app.iconColor};"></i>
+                        ${iconHTML}
                     </div>
                     <div class="app-name">${app.name}</div>
                     <div class="app-status">${app.status}</div>
@@ -293,9 +217,7 @@
             `;
         });
 
-        // ยัดโค้ดที่สร้างเสร็จลงในหน้าเว็บ
         container.innerHTML = appHTML;
     </script>
-
 </body>
 </html>
