@@ -128,7 +128,7 @@
         const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', dateOptions);
 
-        // --- ข้อมูลแอปทั้งหมด (✅ ใส่ไอคอนให้ AI Architect กับ Structural แล้ว!) ---
+        // --- ข้อมูลแอปทั้งหมด ---
         const appsData = [
             {
                 name: "BOQ Pro",
@@ -144,12 +144,12 @@
                 icon: "fas fa-pen-ruler",
                 iconColor: "#64d2ff",
                 bgGradient: "",
-                link: "drafting.html"
+                link: "app_drafting/index.html" // 📍 แก้แล้ว! ชี้เข้าโฟลเดอร์แอปแบบ Rayon
             },
             {
                 name: "AI Architect",
                 status: "Ready to chat",
-                icon: "fas fa-brain", // 🧠 จัดไอคอนสมองสื่อถึง AI ไปเลยครับลูกพี่
+                icon: "fas fa-brain", 
                 iconColor: "#ffffff",
                 bgGradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)",
                 link: "ai_architect.html"
@@ -157,7 +157,7 @@
             {
                 name: "Structural",
                 status: "Ready",
-                icon: "fas fa-city", // 🏙️ จัดไอคอนเมือง/ตึก สื่อถึงงานวิศวกรรมโครงสร้าง
+                icon: "fas fa-city", 
                 iconColor: "#ffffff",
                 bgGradient: "linear-gradient(135deg, #2a2a2a 0%, #111111 100%)",
                 link: "structural.html"
@@ -192,7 +192,7 @@
                 icon: "fas fa-volume-up",
                 iconColor: "#ffffff",
                 bgGradient: "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
-                link: "speaker_lab.html"
+                link: "app_speaker/index.html" // 📍 แก้แล้ว! ชี้รอไว้สำหรับตอนลูกพี่สร้างโฟลเดอร์ตู้ลำโพง
             }
         ];
 
