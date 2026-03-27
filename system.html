@@ -186,60 +186,116 @@
 
     <div class="main-workspace">
         <div class="welcome-header">
-            <div style="color: var(--accent-blue); font-weight: 600; margin-bottom: 10px;">FRIDAY, JANUARY 23</div>
+            <div id="current-date" style="color: var(--accent-blue); font-weight: 600; margin-bottom: 10px; text-transform: uppercase;"></div>
             <h1>Good Morning, Chief.</h1>
         </div>
 
-        <div class="app-grid">
-            <a href="app_boq.html" class="app-icon-wrapper">
-                <div class="app-icon"><i class="fas fa-calculator" style="color: #ff9f0a;"></i></div>
-                <div class="app-name">BOQ Pro</div>
-                <div class="app-status">v2.4</div>
-            </a>
-
-            <a href="#" class="app-icon-wrapper">
-                <div class="app-icon"><i class="fas fa-pen-ruler" style="color: #64d2ff;"></i></div>
-                <div class="app-name">Drafting</div>
-                <div class="app-status">AutoSave On</div>
-            </a>
-
-            <a href="#" class="app-icon-wrapper">
-                <div class="app-icon" style="background: linear-gradient(135deg, #5e5ce6 0%, #bf5af2 100%);">
-                    <i class="fas fa-shining"></i>
-                </div>
-                <div class="app-name">AI Architect</div>
-                <div class="app-status">Ready to chat</div>
-            </a>
-
-            <a href="#" class="app-icon-wrapper">
-                <div class="app-icon"><i class="fas fa-cubic-bezier" style="color: #30d158;"></i></div>
-                <div class="app-name">Structural</div>
-                <div class="app-status">Ready</div>
-            </a>
-
-            <a href="#" class="app-icon-wrapper">
-                <div class="app-icon"><i class="fas fa-file-pdf" style="color: #ff3b30;"></i></div>
-                <div class="app-name">PDF Suite</div>
-                <div class="app-status">12 Tools</div>
-            </a>
-
-            <a href="#" class="app-icon-wrapper">
-                <div class="app-icon"><i class="fas fa-map-location-dot" style="color: #ffcc00;"></i></div>
-                <div class="app-name">GIS Land</div>
-                <div class="app-status">Connected</div>
-            </a>
-
-            <a href="#" class="app-icon-wrapper">
-                <div class="app-icon"><i class="fas fa-shield-halved" style="color: #8e8e93;"></i></div>
-                <div class="app-name">Management</div>
-                <div class="app-status">Admin Only</div>
-            </a>
-        </div>
+        <div id="app-grid-container" class="app-grid">
+            </div>
     </div>
 
     <a href="index.html" class="apple-home">
         <i class="fas fa-house"></i>
     </a>
+
+    <script>
+        // --- 1. แสดงวันที่ปัจจุบัน ---
+        const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', dateOptions);
+
+
+        // --- 2. ข้อมูลแอปทั้งหมด (ลูกพี่แก้ตรงนี้ได้เลย) ---
+        const appsData = [
+            {
+                name: "BOQ Pro",
+                status: "v2.4",
+                icon: "fas fa-calculator",
+                iconColor: "#ff9f0a",
+                bgGradient: "", // ถ้าไม่ใส่ จะใช้สีใสๆ แบบปกติ
+                link: "app_boq.html"
+            },
+            {
+                name: "Drafting",
+                status: "AutoSave On",
+                icon: "fas fa-pen-ruler",
+                iconColor: "#64d2ff",
+                bgGradient: "",
+                link: "#"
+            },
+            {
+                name: "AI Architect",
+                status: "Ready to chat",
+                icon: "fas fa-shining",
+                iconColor: "#fff",
+                bgGradient: "linear-gradient(135deg, #5e5ce6 0%, #bf5af2 100%)", // ตัวอย่างการใส่พื้นหลังแบบ AI
+                link: "#"
+            },
+            {
+                name: "Structural",
+                status: "Ready",
+                icon: "fas fa-cubic-bezier",
+                iconColor: "#30d158",
+                bgGradient: "",
+                link: "#"
+            },
+            {
+                name: "PDF Suite",
+                status: "12 Tools",
+                icon: "fas fa-file-pdf",
+                iconColor: "#ff3b30",
+                bgGradient: "",
+                link: "#"
+            },
+            {
+                name: "GIS Land",
+                status: "Connected",
+                icon: "fas fa-map-location-dot",
+                iconColor: "#ffcc00",
+                bgGradient: "",
+                link: "#"
+            },
+            {
+                name: "Management",
+                status: "Admin Only",
+                icon: "fas fa-shield-halved",
+                iconColor: "#8e8e93",
+                bgGradient: "",
+                link: "#"
+            },
+            // ✨ แอปใหม่ที่ลูกพี่ต้องการสร้าง (Speaker Lab) ✨
+            {
+                name: "Speaker Lab",
+                status: "3D Design",
+                icon: "fas fa-volume-up",
+                iconColor: "#fff",
+                bgGradient: "linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)", // สีส้มอมแดงเท่ๆ
+                link: "speaker_lab.html"
+            }
+        ];
+
+
+        // --- 3. ฟังก์ชันวาดแอปบนหน้าจอ ---
+        const container = document.getElementById('app-grid-container');
+        let appHTML = "";
+
+        appsData.forEach(app => {
+            // เช็คว่าแอปนี้มี bgGradient ไหม ถ้ามีให้ใช้ ถ้าไม่มีให้ว่างไว้
+            let bgStyle = app.bgGradient ? `background: ${app.bgGradient};` : '';
+            
+            appHTML += `
+                <a href="${app.link}" class="app-icon-wrapper">
+                    <div class="app-icon" style="${bgStyle}">
+                        <i class="${app.icon}" style="color: ${app.iconColor};"></i>
+                    </div>
+                    <div class="app-name">${app.name}</div>
+                    <div class="app-status">${app.status}</div>
+                </a>
+            `;
+        });
+
+        // ยัดโค้ดที่สร้างเสร็จลงในหน้าเว็บ
+        container.innerHTML = appHTML;
+    </script>
 
 </body>
 </html>
