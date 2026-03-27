@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3DNP Drafting | Architecture Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Prompt:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+</head>
+<body>
+
+    <div class="grid-bg" id="gridBg"></div>
+
+    <div class="top-bar">
+        <a href="../system.html" class="btn-back"><i class="fas fa-arrow-left"></i></a>
+        <div class="file-name"><i class="fas fa-home" style="color: var(--accent);"></i> Modern_House_Plan.dwg</div>
+        <div class="scale-badge">1 Grid = 1m</div>
+    </div>
+
+    <div class="toolbar">
+        <button class="tool-btn active" id="tool-select" onclick="setTool('select')" title="Select (V)"><i class="fas fa-mouse-pointer"></i></button>
+        <button class="tool-btn" id="tool-pan" onclick="setTool('pan')" title="Pan Canvas (H)"><i class="fas fa-hand-paper"></i></button>
+        <hr style="border-top: 1px solid var(--border); width: 24px; margin: 4px auto;">
+        <button class="tool-btn" id="tool-wall" onclick="setTool('wall')" title="Draw Wall (L)"><i class="fas fa-slash"></i></button>
+        <button class="tool-btn" id="tool-room" onclick="addRoom()" title="Draw Room Area (R)"><i class="far fa-square"></i></button>
+    </div>
+
+    <div class="props-panel" id="propsPanel">
+        <div class="panel-header">Object Properties</div>
+        <div class="panel-body">
+            <div class="prop-group">
+                <div class="prop-label">Position & Size (cm)</div>
+                <div class="input-row">
+                    <div class="input-box"><label>L</label><input type="number" id="propL" onchange="updateObject()"></div>
+                    <div class="input-box"><label>T</label><input type="number" id="propT" onchange="updateObject()"></div>
+                </div>
+                <div class="input-row">
+                    <div class="input-box"><label>W</label><input type="number" id="propW" onchange="updateObject()"></div>
+                    <div class="input-box"><label>H</label><input type="number" id="propH" onchange="updateObject()"></div>
+                </div>
+            </div>
+            <div class="prop-group">
+                <div class="prop-label">Style</div>
+                <div class="input-row">
+                    <input type="color" id="propColor" class="color-picker" onchange="updateObject()">
+                </div>
+                <button class="btn-delete" onclick="deleteObject()"><i class="fas fa-trash-alt"></i> Delete Element</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="canvas-wrapper">
+        <canvas id="draftCanvas"></canvas>
+    </div>
+
+    <script src="app_logic.js"></script>
+</body>
+</html>
