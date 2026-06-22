@@ -6,6 +6,7 @@
     <title>3DNP OS | Inventory System</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ปลั๊กอินแจ้งเตือนแบบแอนิเมชันติ๊กถูกสวยงาม -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
@@ -94,7 +95,7 @@
         .dropdown-item:hover { background: #f8fafc; }
         .dropdown-item img { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-color); }
         
-        /* 🖼️ ขยายรูปพรีวิวก่อนกดเบิกจ่ายให้ใหญ่ขึ้นตามคำขอ */
+        /* 🖼️ ขยายรูปพรีวิวก่อนกดเบิกจ่ายให้ใหญ่ขึ้นเป็น 150px ตามสั่ง */
         .item-preview-box { display: none; align-items: center; gap: 20px; margin-top: 15px; padding: 20px; background: #f8fafc; border: 1px dashed var(--accent-blue); border-radius: 12px; }
         .item-preview-img { width: 150px; height: 150px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-color); }
 
@@ -136,7 +137,7 @@
         .bg-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
         .bg-warning { background: #fef3c7; color: #9a3412; border: 1px solid #fde68a; }
 
-        /* 🖼️ ขยายรูปภาพสินค้าในตารางคลังหลักให้ใหญ่ขึ้นมองชัดเจนตามคำขอ */
+        /* 🖼️ ขยายรูปภาพสินค้าในตารางคลังหลักให้ใหญ่ขึ้นเป็น 120px ตามสั่ง */
         .preview-img-large { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-color); background: #f8fafc; }
         .currency { color: var(--accent-blue); font-weight: 700; }
         .text-right { text-align: right; }
@@ -150,7 +151,7 @@
             background: #fff; width: 100%; max-width: 650px; border-radius: 16px; padding: 30px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.15); animation: zoomIn 0.2s ease; max-height: 90vh; overflow-y: auto;
         }
-        /* 🖼️ ขยายรูปป็อปอัปใน Modal ให้ใหญ่เพิ่มขึ้นตามคำขอ */
+        /* 🖼️ ขยายรูปป็อปอัปใน Modal ให้ใหญ่เพิ่มขึ้นเป็น 220px ตามคำขอ */
         #modal-img { width: 220px; height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); background:#f8fafc; }
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-footer { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
@@ -159,11 +160,13 @@
 <body oncontextmenu="return false">
 
 <div class="container">
+    <!-- TOP BAR -->
     <div class="top-bar">
         <h1>📦 คลังระบบสต๊อกอัจฉริยะ <span>3DNP Inventory</span></h1>
         <a href="system.html" class="btn-back"><i class="fas fa-arrow-left"></i> กลับหน้า Workspace</a>
     </div>
 
+    <!-- TABS MENU -->
     <div class="tabs-menu">
         <button class="tab-btn active" onclick="switchTab(event, 'dashboard-tab')"><i class="fas fa-chart-pie"></i> แผงควบคุม (Dashboard)</button>
         <button class="tab-btn" onclick="switchTab(event, 'daily-tab')"><i class="fas fa-calendar-day"></i> ติดตามรายวัน (Daily)</button>
@@ -173,13 +176,16 @@
         <button class="tab-btn" onclick="switchTab(event, 'history-tab')"><i class="fas fa-history"></i> ประวัติ ERP (Sheets)</button>
     </div>
 
+    <!-- TAB 1: DASHBOARD -->
     <div id="dashboard-tab" class="tab-content active">
         <div class="grid-layout">
+            <!-- สรุปผลภาพรวมแยกกระเป๋าเงินซื้อของสิ้นเปลือง -->
             <div class="glass-card" style="grid-column: span 2; display: flex; justify-content: space-around; padding: 25px; background: #ffffff; flex-wrap: wrap; gap: 20px;">
                 <div style="text-align:center;">
                     <h4 style="margin:0; color:var(--text-muted);">มูลค่าคลังพัสดุรวม</h4>
                     <p class="currency" id="dash-total-value" style="font-size: 1.6rem; margin: 5px 0 0 0;">฿0.00</p>
                 </div>
+                <!-- 💰 ยอดแยกเงินซื้อวัสดุสิ้นเปลืองสะสมตามสั่ง -->
                 <div style="text-align:center; border-left: 1px solid var(--border-color); padding-left: 30px;">
                     <h4 style="margin:0; color:var(--text-muted);">ยอดซื้อวัสดุสิ้นเปลืองสะสม</h4>
                     <p class="currency" id="dash-consume-spent" style="font-size: 1.6rem; margin: 5px 0 0 0; color:#855cd6;">฿0.00</p>
@@ -216,25 +222,43 @@
         </div>
     </div>
 
+    <!-- TAB 2: DAILY TRACKING (เพิ่มตารางค้างคืนแบบถาวรไม่มีหมดอายุตามสั่ง) -->
     <div id="daily-tab" class="tab-content">
+        <!-- ตารางที่ 1: ความเคลื่อนไหวเฉพาะของวันนี้ -->
         <div class="glass-card w-100">
             <div class="card-title" style="color: var(--accent-blue); justify-content: space-between; display: flex;">
                 <div><i class="fas fa-clock"></i> ตารางความเคลื่อนไหววันนี้ (<span id="daily-date"></span>)</div>
-                <span style="font-size:0.9rem; color:var(--text-muted); font-weight:normal;">*ช่วงเวลาปฏิบัติงาน 08:00 น. ถึง 21:00 น.</span>
+                <span style="font-size:0.9rem; color:var(--text-muted); font-weight:normal;">*ธุรกรรมเฉพาะช่วงเวลา 08:00 น. ถึง 21:00 น. ของวันนี้</span>
             </div>
             <div class="table-container">
                 <table class="custom-table">
                     <thead>
                         <tr>
-                            <th>เวลา</th><th>ผู้เบิก / หมายเหตุธุรกรรม</th><th>รายการพัสดุ</th><th style="text-align:right;">จำนวน</th><th>สถานะปัจจุบัน</th><th>อัปเดตสถานะคืนของ (เฉพาะเครื่องมือ)</th>
+                            <th>เวลา</th><th>ผู้เบิก / หมายเหตุธุรกรรม</th><th>รายการพัสดุ</th><th style="text-align:right;">จำนวน</th><th>สถานะปัจจุบัน</th><th>อัปเดตสถานะคืนของ</th>
                         </tr>
                     </thead>
                     <tbody id="daily-body"></tbody>
                 </table>
             </div>
         </div>
+
+        <!-- ตารางที่ 2: เครื่องมือค้างส่งคืนทั้งหมด (ล็อกรายชื่อช่างสะสมทุกวัน ไม่มีวันหายจนกว่าจะคืนของ) -->
+        <div class="glass-card w-100" style="margin-top: 30px; border-top: 4px solid var(--accent-red);">
+            <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-exclamation-circle"></i> 📦 รายชื่อผู้เบิกเครื่องมืออุปกรณ์ที่ "ยังไม่คืนคลัง" (สะสมทุกวัน ตรวจสอบได้ทันที)</div>
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>วันที่เบิกไป</th><th>ช่างผู้เบิก / หน้างานไซต์</th><th>รายการเครื่องมือที่ค้าง</th><th style="text-align:right;">จำนวนค้างยืม</th><th>สถานะระบบ</th><th>กดทำรายการเมื่อช่างนำของมาคืน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="all-borrowed-body"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
+    <!-- TAB 3: INVENTORY -->
     <div id="stock-tab" class="tab-content">
         <div class="glass-card w-100">
             <div class="card-title" style="color: var(--accent-blue);"><i class="fas fa-warehouse"></i> ทะเบียนควบคุมทรัพย์สินและคลังวัสดุกลาง (คลิกพัสดุเพื่อดูรายละเอียด/แก้ไข/ลบ)</div>
@@ -269,13 +293,14 @@
         </div>
     </div>
 
+    <!-- TAB 4: โครงการลูกค้า -->
     <div id="project-tab" class="tab-content">
         <div id="project-list-view">
             <div class="grid-layout">
                 <div class="glass-card">
                     <div class="card-title"><i class="fas fa-folder-plus"></i> ลงทะเบียนโครงการ / ลูกค้าใหม่</div>
                     <form id="project-form">
-                        <div class="form-group"><label>ชื่อโปรเจกต์ / ไซต์งาน</label><input type="text" id="project-name" class="form-control" required placeholder="เช่น ไซต์งานรามอินทรา"></div>
+                        <div class="form-group"><label>ชื่อโปรเจกต์ / ไไซท์งาน</label><input type="text" id="project-name" class="form-control" required placeholder="เช่น ไซต์งานรามอินทรา"></div>
                         <div class="form-group"><label>ชื่อลูกค้า / เจ้าของงาน</label><input type="text" id="project-client" class="form-control" required placeholder="เช่น คุณสมชาย"></div>
                         <div class="form-group"><label>งบประมาณโครงการตั้งต้น (บาท)</label><input type="number" id="project-budget" class="form-control" value="0"></div>
                         <button type="submit" class="btn-action btn-blue">📁 บันทึกสร้างโปรเจกต์</button>
@@ -322,8 +347,10 @@
         </div>
     </div>
 
+    <!-- TAB 5: เบิกจ่าย / รับเข้า -->
     <div id="action-tab" class="tab-content">
         <div class="grid-layout">
+            <!-- นำของเข้าคลัง -->
             <div class="glass-card">
                 <div class="card-title" style="color: var(--accent-green);"><i class="fas fa-arrow-alt-circle-down"></i> 📥 ระบบลงทะเบียนนำพัสดุเข้าคลังสินค้า (IN)</div>
                 <form id="incoming-form">
@@ -350,6 +377,7 @@
                     </div>
 
                     <div style="display:flex; gap:20px;">
+                        <!-- ✍️ หน่วยนับแบบพิมพ์เองได้และเลือกได้ตามสั่ง -->
                         <div class="form-group" style="flex:1;"><label>หน่วยนับบรรจุภัณฑ์ (พิมพ์เองหรือเลือก)</label>
                             <input type="text" id="in-unit" list="unit-list" class="form-control" placeholder="เลือกหรือพิมพ์หน่วยนับ เช่น ม้วน, ถัง..." required>
                         </div>
@@ -368,11 +396,13 @@
                 </form>
             </div>
 
+            <!-- เบิกจ่ายพัสดุ -->
             <div class="glass-card">
                 <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-arrow-alt-circle-up"></i> 📤 ระบบเบิกจ่ายวัสดุเครื่องมือไปใช้งาน (OUT)</div>
                 <form id="out-form">
                     <div class="form-group"><label>เลือกโครงการปลายทางที่จะนำพัสดุไปใช้</label><select id="out-project" class="form-select" required></select></div>
                     
+                    <!-- 🔍 ช่องคัดกรองหมวดหมู่พัสดุที่จะเบิกตามคำสั่ง -->
                     <div class="form-group">
                         <label>เลือกกรองหมวดหมู่พัสดุที่จะเบิก</label>
                         <select id="out-cat-filter" class="form-select" onchange="renderDropdown(document.getElementById('out-item-search').value)">
@@ -392,6 +422,7 @@
                         <input type="hidden" id="out-item-id" required>
                         <div id="out-dropdown-list" class="dropdown-list"></div>
                         
+                        <!-- 🖼️ รูปพรีวิวก่อนเบิกขยายใหญ่ขึ้น 150px ตามสั่ง -->
                         <div id="out-preview-box" class="item-preview-box">
                             <img id="out-preview-img" class="item-preview-img" src="">
                             <div>
@@ -402,13 +433,14 @@
                     </div>
 
                     <div class="form-group"><label>ระบุจำนวนที่ต้องการเบิกจ่าย</label><input type="number" id="out-qty" class="form-control" min="1" value="1" required></div>
-                    <div class="form-group"><label>ระบุผู้เบิกสิ่งของ / ระบุหมายเหตุหน้าไซต์งาน</label><input type="text" id="out-remark" class="form-control" required placeholder="เช่น ช่างแดง เบิกไปใช้งาน"></div>
+                    <div class="form-group"><label>ระบุผู้เบิกสิ่งของ / ระบุหมายเหตุหน้าไซต์งาน</label><input type="text" id="out-remark" class="form-control" required placeholder="เช่น ช่างแดง เบิกสว่าน"></div>
                     <button type="submit" class="btn-action btn-red">🚀 ยืนยันทำรายการอนุมัติเบิก</button>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- TAB 6: HISTORY LOGS -->
     <div id="history-tab" class="tab-content">
         <div class="glass-card w-100">
             <div class="card-title"><i class="fas fa-database"></i> บันทึกบัญชีธุรกรรมระบบคลังส่วนกลาง (Sync Google Sheets อัตโนมัติ)</div>
@@ -422,6 +454,7 @@
     </div>
 </div>
 
+<!-- ตัวเลือกรวมสำหรับระบบหน่วยนับบรรจุภัณฑ์ -->
 <datalist id="unit-list">
     <option value="ชิ้น">
     <option value="กล่อง">
@@ -434,10 +467,12 @@
     <option value="แผ่น">
 </datalist>
 
+<!-- 🏛️ MODAL BOX VIEW/EDIT/DELETE INTERACTION -->
 <div id="item-modal" class="modal-overlay">
     <div class="modal-box">
         <h3 id="modal-title" style="margin-top:0; color:var(--accent-blue); border-bottom:1px solid #e2e8f0; padding-bottom:10px;"><i class="fas fa-info-circle"></i> รายละเอียดคุมพัสดุวัสดุ</h3>
         
+        <!-- รูปแสดงผลในป็อปอัปขยายใหญ่ขึ้น 220px ตามคำขอ -->
         <center><img id="modal-img" src="" style="border:1px solid var(--border-color);"></center>
         
         <form id="modal-edit-form">
@@ -455,6 +490,7 @@
             </div>
             <div style="display:flex; gap:15px;">
                 <div class="form-group" style="flex:1;"><label>จำนวนคงเหลือในคลัง</label><input type="number" id="modal-qty" class="form-control" readonly style="background:#f1f5f9;"></div>
+                <!-- ✍️ หน่วยนับหน้าแก้ไขแบบพิมพ์เองได้เลือกได้ตามสั่ง -->
                 <div class="form-group" style="flex:1;"><label>หน่วยนับพัสดุ (พิมพ์เองหรือเลือก)</label>
                     <input type="text" id="modal-unit" list="unit-list" class="form-control">
                 </div>
@@ -548,7 +584,7 @@ function switchTab(e, tabId) {
 }
 
 // =========================================================
-// 🔍 DROPDOWN SEARCH ENGINE (เพิ่มฟังก์ชั่นเลือกหมวดหมู่ก่อนเบิกตามสั่ง)
+// 🔍 DROPDOWN SEARCH ENGINE (ระบบกรองหมวดหมู่ก่อนเบิกตามสั่ง)
 // =========================================================
 const searchInput = document.getElementById('out-item-search');
 const dropdownList = document.getElementById('out-dropdown-list');
@@ -559,7 +595,7 @@ document.addEventListener('click', (e) => { if (!document.getElementById('dropdo
 
 function renderDropdown(filterText = '') {
     dropdownList.innerHTML = '';
-    let catFilter = document.getElementById('out-cat-filter').value; // ดึงหมวดหมู่ที่เลือกกรองมาใช้
+    let catFilter = document.getElementById('out-cat-filter').value;
     
     let filtered = stockItems.filter(item => {
         let matchText = item.name.toLowerCase().includes(filterText.toLowerCase()) || item.id.toLowerCase().includes(filterText.toLowerCase());
@@ -617,7 +653,6 @@ function renderDashboard() {
     historyLogs.forEach(log => {
         if(log.returnStatus === '⏳ ยังไม่คืน' || log.returnStatus === 'ยังไม่คืนคลัง') borrowedCount += log.qty;
         
-        // 💰 คำนวณแยกบัญชีเงินที่ซื้อวัสดุสิ้นเปลืองสะสมตามคำขอ
         if(log.action.includes('รับเข้า') || log.action.includes('เพิ่มสต๊อก')) {
             let itemRef = stockItems.find(i => i.id === log.itemId);
             if(itemRef && itemRef.cat === 'วัสดุสิ้นเปลือง') {
@@ -636,7 +671,7 @@ function renderDashboard() {
     });
 
     document.getElementById('dash-total-value').innerText = formatMoney(totalValue);
-    document.getElementById('dash-consume-spent').innerText = formatMoney(totalConsumeSpent); // แสดงยอดซื้อวัสดุสิ้นเปลืองสะสม
+    document.getElementById('dash-consume-spent').innerText = formatMoney(totalConsumeSpent); 
     document.getElementById('dash-borrowed-count').innerText = borrowedCount;
     document.getElementById('dash-project-count').innerText = projects.length;
 
@@ -646,35 +681,63 @@ function renderDashboard() {
 
 function renderDaily() {
     const dailyBody = document.getElementById('daily-body'); dailyBody.innerHTML = '';
+    const allBorrowedBody = document.getElementById('all-borrowed-body'); allBorrowedBody.innerHTML = ''; // ตารางค้างคืนทั้งหมด
+    
     let todayStr = new Date().toLocaleDateString('th-TH');
     document.getElementById('daily-date').innerText = todayStr;
+    
+    // 1. เรนเดอร์ตารางเฉพาะของวันนี้
     let todayLogs = historyLogs.filter(log => log.time.startsWith(todayStr));
+    if(todayLogs.length === 0) { 
+        dailyBody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:30px; color:#86868b;">ไม่มีธุรกรรมเบิกจ่ายพัสดุในวันนี้</td></tr>'; 
+    } else {
+        todayLogs.forEach(log => {
+            let isTool = (log.returnStatus && log.returnStatus !== 'สิ้นเปลือง' && log.returnStatus !== 'รับเข้า');
+            let actBtns = '';
+            
+            if(isTool && (log.returnStatus === '⏳ ยังไม่คืน' || log.returnStatus === 'ยังไม่คืนคลัง')) {
+                actBtns = `
+                    <button class="btn-status btn-status-ok" onclick="setToolStatus('${log.ref}', '✅ คืนปกติ')"><i class="fas fa-check"></i> คืนคลัง</button>
+                    <button class="btn-status btn-status-bad" onclick="setToolStatus('${log.ref}', '❌ ชำรุด')"><i class="fas fa-tools"></i> ชำรุด</button>
+                    <button class="btn-status btn-status-bad" style="background:#fef2f2; color:#ef4444; border-color:#fca5a5;" onclick="setToolStatus('${log.ref}', '⚠️ หาย')"><i class="fas fa-times"></i> หาย</button>
+                `;
+            } else if (!isTool) { actBtns = `<small style="color:#94a3b8;">(ตัดยอดวัสดุถาวร)</small>`; }
 
-    if(todayLogs.length === 0) { dailyBody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:30px; color:#86868b;">ไม่มีธุรกรรมเบิกจ่ายพัสดุในวันนี้</td></tr>'; return; }
-
-    todayLogs.forEach(log => {
-        let isTool = (log.returnStatus && log.returnStatus !== 'สิ้นเปลือง' && log.returnStatus !== 'รับเข้า');
-        let actBtns = '';
-        
-        if(isTool && (log.returnStatus === '⏳ ยังไม่คืน' || log.returnStatus === 'ยังไม่คืนคลัง')) {
-            actBtns = `
-                <button class="btn-status btn-status-ok" onclick="setToolStatus('${log.ref}', '✅ คืนปกติ')"><i class="fas fa-check"></i> คืนคลัง</button>
-                <button class="btn-status btn-status-bad" onclick="setToolStatus('${log.ref}', '❌ ชำรุด')"><i class="fas fa-tools"></i> ชำรุด</button>
-                <button class="btn-status btn-status-bad" style="background:#fef2f2; color:#ef4444; border-color:#fca5a5;" onclick="setToolStatus('${log.ref}', '⚠️ หาย')"><i class="fas fa-times"></i> หาย</button>
+            dailyBody.innerHTML += `
+                <tr>
+                    <td><strong>${log.time.split(' ')[1]} น.</strong></td>
+                    <td><strong>${log.remark}</strong><br><small style="color:var(--accent-blue);">${log.project}</small></td>
+                    <td>${log.itemName} <br><small style="color:#64748b;">รหัส: ${log.itemId}</small></td>
+                    <td style="text-align:right; font-weight:600;" class="${log.action==='เบิกจ่าย'?'text-danger':'text-success'}">${log.action==='เบิกจ่าย'?'-':'+'}${log.qty}</td>
+                    <td>${getStatusHTML(log.returnStatus)}</td>
+                    <td>${actBtns}</td>
+                </tr>
             `;
-        } else if (!isTool) { actBtns = `<small style="color:#94a3b8;">(ตัดยอดวัสดุถาวร)</small>`; }
+        });
+    }
 
-        dailyBody.innerHTML += `
-            <tr>
-                <td><strong>${log.time.split(' ')[1]} น.</strong></td>
-                <td><strong>${log.remark}</strong><br><small style="color:var(--accent-blue);">${log.project}</small></td>
-                <td>${log.itemName} <br><small style="color:#64748b;">รหัส: ${log.itemId}</small></td>
-                <td style="text-align:right; font-weight:600;" class="${log.action==='เบิกจ่าย'?'text-danger':'text-success'}">${log.action==='เบิกจ่าย'?'-':'+'}${log.qty}</td>
-                <td>${getStatusHTML(log.returnStatus)}</td>
-                <td>${actBtns}</td>
-            </tr>
-        `;
-    });
+    // 2. เรนเดอร์ตารางค้างคืนทั้งหมด (สะสมข้ามวัน ใครยังไม่คืนจะล็อกรายชื่อติดไว้ที่นี่ถาวรตามสั่ง)
+    let globalActiveLoans = historyLogs.filter(log => log.returnStatus === '⏳ ยังไม่คืน' || log.returnStatus === 'ยังไม่คืนคลัง');
+    if(globalActiveLoans.length === 0) {
+        allBorrowedBody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:30px; color:#22c55e; font-weight:600;">✅ ยอดเยี่ยม! ไม่มีช่างคนไหนค้างส่งคืนเครื่องมือเลย</td></tr>';
+    } else {
+        globalActiveLoans.forEach(log => {
+            allBorrowedBody.innerHTML += `
+                <tr>
+                    <td><small style="color:var(--text-muted); font-weight:600;">${log.time}</small></td>
+                    <td style="background: #fffbeb;"><strong>👤 ผู้เบิก: ${log.remark}</strong><br><small style="color:var(--text-muted);">ไซต์งาน: ${log.project}</small></td>
+                    <td><strong>${log.itemName}</strong> <br><small style="color:#64748b;">รหัสพัสดุ: ${log.itemId}</small></td>
+                    <td style="text-align:right; font-weight:700; color:var(--accent-red); font-size:1.1rem;">${log.qty}</td>
+                    <td>${getStatusHTML(log.returnStatus)}</td>
+                    <td>
+                        <button class="btn-status btn-status-ok" onclick="setToolStatus('${log.ref}', '✅ คืนปกติ')"><i class="fas fa-check"></i> คืนคลัง</button>
+                        <button class="btn-status btn-status-bad" onclick="setToolStatus('${log.ref}', '❌ ชำรุด')"><i class="fas fa-tools"></i> ชำรุด</button>
+                        <button class="btn-status btn-status-bad" style="background:#fef2f2; color:#ef4444; border-color:#fca5a5;" onclick="setToolStatus('${log.ref}', '⚠️ หาย')"><i class="fas fa-times"></i> หาย</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
 }
 
 function renderStock() {
@@ -693,6 +756,7 @@ function renderStock() {
         stockBody.innerHTML += `
             <tr>
                 <td><span class="badge" style="background:#e2e8f0; color:#334155;">${item.id}</span></td>
+                <!-- 🖼️ รูปคลังสินค้าขยายขนาดใหญ่ขึ้นเต็มตา 120px ตามสั่ง -->
                 <td><img src="${item.image || 'https://placehold.co/120'}" class="preview-img-large"></td>
                 <td><strong>${item.name}</strong><br><small style="color:var(--text-muted);">${item.spec || 'ไม่มีรายละเอียดสเปค'}</small></td>
                 <td>${getCatBadgeHTML(item.cat)}</td>
@@ -713,7 +777,7 @@ function renderProjects() {
 
     projects.forEach(p => {
         projBody.innerHTML += `<tr><td><span class="badge bg-tool">${p.id}</span></td><td><strong>${p.name}</strong></td><td>${p.client}</td><td style="text-align:right;" class="currency">${formatMoney(p.budget)}</td><td><button class="btn-back" style="padding:6px 15px; font-size:0.8rem;" onclick="openProjectDetail('${p.id}')">📂 เจาะลึกโครงการ</button></td></tr>`;
-        outProjSelect.innerHTML += `<option value="${p.id}">${p.name} (${p.client})</option>`;
+        outProjSelect.innerHTML += `<option value="${p.id}">${p.name} (${p.client})</option>';`;
     });
 }
 
@@ -759,7 +823,7 @@ window.setToolStatus = function(ref, newStatus) {
 }
 
 // =========================================================
-// 🏛️ ITEM MODAL MANAGEMENT (ดูข้อมูล / แก้ไข / ลบด้วยรหัสผ่าน)
+// 🏛️ ITEM MODAL MANAGEMENT 
 // =========================================================
 window.openModal = function(id) {
     let item = stockItems.find(i => i.id === id); if(!item) return;
@@ -823,7 +887,7 @@ window.deleteModalItem = function() {
         showCancelButton: true, confirmButtonColor: '#ef4444'
     }).then((res) => {
         if(res.isConfirmed) {
-            if(res.value === '08102540') { // รหัสผ่านความปลอดภัยตามที่ขอเป๊ะๆ
+            if(res.value === '08102540') { 
                 stockItems = stockItems.filter(i => i.id !== id);
                 let log = { ref: genID('DEL'), time: new Date().toLocaleString('th-TH'), action: 'ลบวัสดุถาวร', project: 'คลังกลาง', itemId: item.id, itemName: item.name, qty: item.qty, price: 0, totalValue: 0, remark: 'แอดมินลบพัสดุออกจากสารบบทะเบียนควบคุม', returnStatus: 'ลบพัสดุ' };
                 historyLogs.push(log); saveData(); sendToSheets(log);
