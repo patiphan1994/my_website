@@ -6,11 +6,13 @@
     <title>3DNP Prime | Enterprise ERP</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- นำเข้า SweetAlert2 สำหรับ Animation เด้งแจ้งเตือนสวยงาม -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         :root {
-            --primary-color: #0f172a; /* สีกรมท่าเข้ม (Slate 900) */
-            --accent-color: #2563eb; /* สีฟ้าสว่าง (Blue 600) */
+            --primary-color: #0f172a; 
+            --accent-color: #2563eb; 
             --bg-light: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #334155;
@@ -60,7 +62,7 @@
         .btn-home {
             padding: 10px 20px; background: var(--card-bg); border: 1px solid var(--border-color);
             border-radius: 50px; color: var(--text-main); text-decoration: none;
-            box-shadow: var(--shadow-sm); transition: 0.2s; font-weight: 500;
+            box-shadow: var(--shadow-sm); transition: 0.2s; font-weight: 500; cursor: pointer;
         }
         .btn-home:hover { background: var(--primary-color); color: #fff; }
 
@@ -138,11 +140,18 @@
         .bg-elec { background: #fef3c7; color: #d97706; }
         .bg-water { background: #d1fae5; color: #059669; }
         .bg-consume { background: #f3e8ff; color: #9333ea; }
+        .bg-warning { background: #ffedd5; color: #b45309; }
 
         .text-right { text-align: right; }
         .currency { font-family: 'SF Pro Display', sans-serif; font-weight: 600; color: var(--primary-color); }
         
-        /* --- PROJECT DETAIL VIEW --- */
+        /* Action Buttons in Table */
+        .btn-status { border: none; padding: 5px 10px; border-radius: 5px; font-family: 'Prompt'; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: 0.2s; margin-right: 5px; }
+        .btn-status-ok { background: #d1fae5; color: #059669; border: 1px solid #34d399; }
+        .btn-status-ok:hover { background: #10b981; color: #fff; }
+        .btn-status-bad { background: #fee2e2; color: #e11d48; border: 1px solid #fb7185; }
+        .btn-status-bad:hover { background: #e11d48; color: #fff; }
+
         #project-detail-view { display: none; }
         .back-link { color: var(--accent-color); cursor: pointer; font-weight: 600; margin-bottom: 20px; display: inline-block; }
         .back-link:hover { text-decoration: underline; }
@@ -155,6 +164,7 @@
         <div class="brand">3DNP <span>PRIME</span></div>
         <div class="nav-menu">
             <div class="nav-item active" onclick="navTo('dashboard')"><i class="fas fa-chart-pie"></i> แผงควบคุม (Dashboard)</div>
+            <div class="nav-item" onclick="navTo('daily')"><i class="fas fa-calendar-day"></i> ติดตามรายวัน (Daily)</div>
             <div class="nav-item" onclick="navTo('inventory')"><i class="fas fa-boxes"></i> คลังพัสดุ & ค้นหา</div>
             <div class="nav-item" onclick="navTo('transactions')"><i class="fas fa-exchange-alt"></i> เบิก-คืน / รับเข้าคลัง</div>
             <div class="nav-item" onclick="navTo('projects')"><i class="fas fa-building"></i> โครงการลูกค้า</div>
@@ -178,9 +188,9 @@
                     <div class="stat-info"><h3>มูลค่าคลังรวมทั้งหมด</h3><p class="currency" id="dash-total-value">฿0.00</p></div>
                     <div class="stat-icon"><i class="fas fa-coins"></i></div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-info"><h3>พัสดุในระบบ (รายการ)</h3><p id="dash-total-items">0</p></div>
-                    <div class="stat-icon"><i class="fas fa-box-open"></i></div>
+                <div class="stat-card" style="border-left-color: #d97706;">
+                    <div class="stat-info"><h3>เครื่องมือถูกยืม (ยังไม่คืน)</h3><p id="dash-borrowed" style="color:#d97706;">0</p></div>
+                    <div class="stat-icon" style="background:#fef3c7; color:#d97706;"><i class="fas fa-hand-holding"></i></div>
                 </div>
                 <div class="stat-card" style="border-left-color: #059669;">
                     <div class="stat-info"><h3>โครงการที่กำลังดำเนินงาน</h3><p id="dash-active-projects">0</p></div>
@@ -188,23 +198,58 @@
                 </div>
             </div>
             
+            <div class="form-row">
+                <div class="content-card">
+                    <div class="card-header"><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> แจ้งเตือนของเหลือน้อย (เฉพาะวัสดุสิ้นเปลือง < 5 ชิ้น)</div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>รูปภาพ</th><th>ชื่อวัสดุ</th><th>คงเหลือ</th></tr></thead>
+                            <tbody id="low-stock-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header"><i class="fas fa-tools" style="color: #d97706;"></i> แจ้งเตือนสถานะเครื่องมือ (ชำรุด / หาย / ไม่คืน)</div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>สถานะ</th><th>ผู้เบิก</th><th>รายการ</th><th>จำนวน</th></tr></thead>
+                            <tbody id="alert-tool-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DAILY TRACKING (ติดตามรายวัน) -->
+        <div id="daily" class="tab-pane">
             <div class="content-card">
-                <div class="card-header"><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> แจ้งเตือนของเหลือน้อย (เฉพาะหมวดวัสดุสิ้นเปลือง < 5 ชิ้น)</div>
+                <div class="card-header" style="justify-content: space-between;">
+                    <div><i class="fas fa-calendar-check"></i> ตารางติดตามความเคลื่อนไหว วันนี้ (<span id="today-date-text"></span>)</div>
+                    <span style="font-size:0.9rem; font-weight:400; color:var(--text-muted);">*แสดงรายการตั้งแต่ 08:00 - 21:00 น.</span>
+                </div>
                 <div class="table-responsive">
                     <table class="table">
-                        <thead><tr><th>รูปภาพ</th><th>รหัสพัสดุ</th><th>ชื่อวัสดุ</th><th>หมวดหมู่</th><th>คงเหลือ</th></tr></thead>
-                        <tbody id="low-stock-body"></tbody>
+                        <thead>
+                            <tr>
+                                <th>เวลา</th>
+                                <th>ผู้เบิก / หมายเหตุ</th>
+                                <th>รายการพัสดุ</th>
+                                <th class="text-right">จำนวน</th>
+                                <th>สถานะปัจจุบัน</th>
+                                <th>อัปเดตสถานะ (เฉพาะเครื่องมือ)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-body"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- 2. INVENTORY (คลังพัสดุ) -->
+        <!-- 3. INVENTORY (คลังพัสดุ) -->
         <div id="inventory" class="tab-pane">
             <div class="content-card">
                 <div class="card-header"><i class="fas fa-list"></i> ทะเบียนควบคุมทรัพย์สินและวัสดุ (Master List)</div>
-                
-                <!-- 🔍 แถบค้นหาและตัวกรอง -->
                 <div class="filter-bar">
                     <div style="flex: 2;">
                         <input type="text" id="filter-search" class="form-control" placeholder="🔍 พิมพ์ค้นหา ชื่อวัสดุ หรือ รหัสพัสดุ..." oninput="renderInventory()">
@@ -220,7 +265,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -232,7 +276,6 @@
                                 <th class="text-right">ราคา/หน่วย</th>
                                 <th class="text-right">คงเหลือ</th>
                                 <th class="text-right">มูลค่ารวม</th>
-                                <th>หมายเหตุเฉพาะ</th>
                             </tr>
                         </thead>
                         <tbody id="inventory-body"></tbody>
@@ -241,7 +284,7 @@
             </div>
         </div>
 
-        <!-- 3. TRANSACTIONS (เบิก-คืน/รับเข้า) -->
+        <!-- 4. TRANSACTIONS (เบิก-คืน/รับเข้า) -->
         <div id="transactions" class="tab-pane">
             <div class="form-row">
                 <!-- รับของเข้า -->
@@ -260,7 +303,7 @@
                                     <option value="เครื่องใช้ไฟฟ้า">เครื่องใช้ไฟฟ้า</option>
                                     <option value="ระบบน้ำ">ระบบสุขาภิบาลและงานน้ำ</option>
                                     <option value="ระบบไฟฟ้า">ระบบไฟฟ้ากำลัง</option>
-                                    <option value="วัสดุสิ้นเปลือง">วัสดุสิ้นเปลือง (เตือนเมื่อใกล้หมด)</option>
+                                    <option value="วัสดุสิ้นเปลือง">วัสดุสิ้นเปลือง</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -283,32 +326,25 @@
                             <input type="text" id="in-remark" class="form-control" placeholder="เช่น ขนาด 2 นิ้ว, สีขาว">
                         </div>
                         <div class="form-group">
-                            <label>แนบรูปภาพพัสดุ / รูปบิลใบเสร็จ (รวมกันได้)</label>
+                            <label>แนบรูปภาพพัสดุ (อัปโหลดเข้าเครื่อง)</label>
                             <input type="file" id="in-img" class="form-control" accept="image/*">
                         </div>
                         <button type="submit" class="btn-primary" style="background:#059669;"><i class="fas fa-check"></i> ยืนยันบันทึกรับเข้าคลัง</button>
                     </form>
                 </div>
 
-                <!-- เบิก/คืน -->
+                <!-- เบิกจ่าย -->
                 <div class="content-card">
-                    <div class="card-header"><i class="fas fa-upload" style="color:#ef4444;"></i> ระบบสั่งจ่าย เบิก/คืนพัสดุ (OUT/RETURN)</div>
+                    <div class="card-header"><i class="fas fa-upload" style="color:#ef4444;"></i> ระบบสั่งจ่าย / เบิกหน้างาน (OUT)</div>
                     <form id="form-out">
                         <div class="form-group">
                             <label>เลือกโครงการปลายทาง</label>
                             <select id="out-project" class="form-select" required></select>
                         </div>
-                        <div class="form-group">
-                            <label>ประเภทรายการ</label>
-                            <select id="out-type" class="form-select">
-                                <option value="เบิกจ่าย">📤 เบิกจ่ายไปหน้างาน</option>
-                                <option value="ส่งคืน">📥 ส่งคืนคลัง (เลิกใช้งาน/ซ่อม)</option>
-                            </select>
-                        </div>
                         
                         <!-- 🔍 ช่องค้นหาและเลือกพัสดุแบบเห็นภาพ -->
                         <div class="form-group searchable-dropdown" id="dropdown-container">
-                            <label>พิมพ์ค้นหาและเลือกพัสดุที่จะทำรายการ</label>
+                            <label>พิมพ์ค้นหาและเลือกพัสดุที่จะเบิก</label>
                             <input type="text" id="out-item-search" class="form-control" placeholder="🔍 พิมพ์ชื่อวัสดุ หรือคลิกเพื่อดูรายการ..." autocomplete="off">
                             <input type="hidden" id="out-item-id" required>
                             
@@ -326,20 +362,20 @@
                         </div>
 
                         <div class="form-group">
-                            <label>จำนวนที่ต้องการเบิก/คืน</label>
+                            <label>จำนวนที่ต้องการเบิก</label>
                             <input type="number" id="out-qty" class="form-control" min="1" required>
                         </div>
                         <div class="form-group">
                             <label>ผู้เบิก / หมายเหตุการเบิก</label>
-                            <input type="text" id="out-remark" class="form-control" required placeholder="ใครเป็นคนเบิก / นำไปใช้ทำอะไร?">
+                            <input type="text" id="out-remark" class="form-control" required placeholder="ระบุชื่อคนเบิก / เอาไปทำอะไร?">
                         </div>
-                        <button type="submit" class="btn-primary" style="background:#ef4444;"><i class="fas fa-paper-plane"></i> ยืนยันการทำรายการ</button>
+                        <button type="submit" class="btn-primary" style="background:#ef4444;"><i class="fas fa-paper-plane"></i> ยืนยันเบิกพัสดุ</button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- 4. PROJECTS (โครงการลูกค้า) -->
+        <!-- 5. PROJECTS (โครงการลูกค้า) -->
         <div id="projects" class="tab-pane">
             <div id="project-list-view">
                 <div class="content-card">
@@ -386,7 +422,7 @@
                             <div class="stat-info"><h3>งบประมาณตั้งต้น</h3><p class="currency" id="det-budget">฿0</p></div>
                         </div>
                         <div class="stat-card" style="background: #fef2f2; border-left: none;">
-                            <div class="stat-info"><h3>ต้นทุนวัสดุที่เบิกใช้ไป</h3><p class="currency" id="det-cost" style="color: #ef4444;">฿0</p></div>
+                            <div class="stat-info"><h3>ต้นทุนที่เบิกใช้ไป</h3><p class="currency" id="det-cost" style="color: #ef4444;">฿0</p></div>
                         </div>
                         <div class="stat-card" style="background: #ecfdf5; border-left: none;">
                             <div class="stat-info"><h3>งบประมาณคงเหลือ</h3><p class="currency" id="det-balance" style="color: #059669;">฿0</p></div>
@@ -404,10 +440,10 @@
             </div>
         </div>
 
-        <!-- 5. HISTORY (ประวัติ ERP) -->
+        <!-- 6. HISTORY (ประวัติ ERP) -->
         <div id="history" class="tab-pane">
             <div class="content-card">
-                <div class="card-header"><i class="fas fa-server"></i> บันทึกธุรกรรม ERP แบบเรียลไทม์ (Sync to Google Sheets)</div>
+                <div class="card-header"><i class="fas fa-server"></i> บันทึกธุรกรรมย้อนหลังทั้งหมด (Sync to Google Sheets)</div>
                 <div class="table-responsive">
                     <table class="table" style="font-size: 0.85rem;">
                         <thead>
@@ -419,7 +455,7 @@
                                 <th>รายการสินค้า</th>
                                 <th class="text-right">จำนวน</th>
                                 <th class="text-right">มูลค่าสุทธิ</th>
-                                <th>หมายเหตุ</th>
+                                <th>สถานะยืมคืน</th>
                             </tr>
                         </thead>
                         <tbody id="history-body"></tbody>
@@ -433,7 +469,7 @@
 // =========================================================
 // 🚀 CONFIGURATION
 // =========================================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD0mVBmsq1aM2QoP-ZI8-GcSac_hUaUEoSfU1S6jSnkvG88SRKNNnmKl_vV0LF31YdYg/exec"; // <-- เอาลิงก์ Google Sheet ของคุณมาวางตรงนี้ครับ
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD0mVBmsq1aM2QoP-ZI8-GcSac_hUaUEoSfU1S6jSnkvG88SRKNNnmKl_vV0LF31YdYg/exec"; // <-- ใส่ลิงก์ Google Sheet ของคุณ
 
 // =========================================================
 // 🗄️ DATABASE (LocalStorage Cache)
@@ -469,9 +505,16 @@ function getCatClass(cat) {
     if(cat.includes('น้ำ')) return 'bg-water';
     return 'bg-consume';
 }
+function getStatusBadge(status) {
+    if(status === 'ใช้งานสิ้นเปลือง' || status === 'รับเข้า') return `<span class="badge bg-tool">ปกติ</span>`;
+    if(status === '⏳ ยังไม่คืน') return `<span class="badge bg-warning">⏳ ยังไม่คืน</span>`;
+    if(status === '✅ คืนปกติ') return `<span class="badge bg-success">✅ คืนแล้ว</span>`;
+    if(status === '❌ ชำรุด') return `<span class="badge bg-danger">❌ ชำรุด</span>`;
+    if(status === '⚠️ หาย') return `<span class="badge bg-danger" style="background:#7f1d1d;">⚠️ หาย</span>`;
+    return `<span class="badge bg-tool">${status}</span>`;
+}
 
-// นาฬิกามุมขวาบน
-setInterval(() => { document.getElementById('datetime-display').innerText = new Date().toLocaleString('th-TH'); }, 1000);
+document.getElementById('today-date-text').innerText = new Date().toLocaleDateString('th-TH');
 
 function navTo(tabId) {
     document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
@@ -479,7 +522,7 @@ function navTo(tabId) {
     document.getElementById(tabId).classList.add('active');
     event.currentTarget.classList.add('active');
     
-    const titles = { 'dashboard': 'แผงควบคุม (Dashboard)', 'inventory': 'คลังพัสดุ & อุปกรณ์ (Master List)', 'transactions': 'ระบบรับเข้า และ เบิกจ่าย', 'projects': 'การจัดการโครงการ (Project Management)', 'history': 'ระบบบันทึกธุรกรรม (ERP Logs)' };
+    const titles = { 'dashboard': 'แผงควบคุม (Dashboard)', 'daily': 'ติดตามเครื่องมือรายวัน (Daily Track)', 'inventory': 'คลังพัสดุ & ค้นหา', 'transactions': 'ระบบรับเข้า และ เบิกจ่าย', 'projects': 'การจัดการโครงการ (Project Management)', 'history': 'ระบบบันทึกธุรกรรมทั้งหมด' };
     document.getElementById('page-title-text').innerText = titles[tabId];
     if(tabId === 'projects') closeProjectDetail(); 
 }
@@ -492,11 +535,7 @@ const dropdownList = document.getElementById('out-dropdown-list');
 
 searchInput.addEventListener('focus', () => { renderDropdown(searchInput.value); dropdownList.style.display = 'block'; });
 searchInput.addEventListener('input', () => { renderDropdown(searchInput.value); dropdownList.style.display = 'block'; });
-
-// ปิด Dropdown เมื่อคลิกที่อื่น
-document.addEventListener('click', (e) => {
-    if (!document.getElementById('dropdown-container').contains(e.target)) dropdownList.style.display = 'none';
-});
+document.addEventListener('click', (e) => { if (!document.getElementById('dropdown-container').contains(e.target)) dropdownList.style.display = 'none'; });
 
 function renderDropdown(filterText = '') {
     dropdownList.innerHTML = '';
@@ -507,7 +546,7 @@ function renderDropdown(filterText = '') {
     filtered.forEach(item => {
         let div = document.createElement('div');
         div.className = 'dropdown-item';
-        div.innerHTML = `<img src="${item.img || 'https://placehold.co/50'}"> <div><strong>${item.name}</strong><br><small style="color:#666;">รหัส: ${item.id} | คงเหลือ: ${item.qty}</small></div>`;
+        div.innerHTML = `<img src="${item.img || 'https://placehold.co/80'}"> <div><strong>${item.name}</strong><br><small style="color:#666;">รหัส: ${item.id} | คงเหลือ: ${item.qty}</small></div>`;
         div.onclick = () => selectItemFromDropdown(item.id);
         dropdownList.appendChild(div);
     });
@@ -535,7 +574,8 @@ function selectItemFromDropdown(id) {
 // =========================================================
 function renderAll() {
     renderDashboard();
-    renderInventory(); // แยกฟังก์ชันเพื่อง่ายต่อการ Filter
+    renderDaily();
+    renderInventory(); 
     renderProjects();
     renderHistory();
 }
@@ -543,16 +583,32 @@ function renderAll() {
 function renderDashboard() {
     let totalStockValue = 0;
     const lowStockBody = document.getElementById('low-stock-body');
-    lowStockBody.innerHTML = '';
+    const alertToolBody = document.getElementById('alert-tool-body');
+    lowStockBody.innerHTML = ''; alertToolBody.innerHTML = '';
     
     db_items.forEach(item => {
         totalStockValue += item.price * item.qty;
-        // ⚠️ เงื่อนไขใหม่: แจ้งเตือนของใกล้หมด เฉพาะ "วัสดุสิ้นเปลือง" เท่านั้น
+        // แจ้งเตือนเฉพาะวัสดุสิ้นเปลือง < 5
         if(item.cat === 'วัสดุสิ้นเปลือง' && item.qty < 5) {
             lowStockBody.innerHTML += `<tr>
                 <td><img src="${item.img || 'https://placehold.co/50'}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;"></td>
-                <td>${item.id}</td><td><strong>${item.name}</strong></td><td><span class="badge bg-consume">${item.cat}</span></td>
+                <td><strong>${item.name}</strong></td>
                 <td style="color:#ef4444; font-weight:bold; font-size:1.1rem;">${item.qty}</td>
+            </tr>`;
+        }
+    });
+
+    let borrowedCount = 0;
+    // หาประวัติของที่ยังไม่คืน หรือชำรุด หรือหาย
+    db_logs.forEach(log => {
+        if(log.returnStatus === '⏳ ยังไม่คืน') borrowedCount += log.qty;
+        
+        if(log.returnStatus === '⏳ ยังไม่คืน' || log.returnStatus === '❌ ชำรุด' || log.returnStatus === '⚠️ หาย') {
+            alertToolBody.innerHTML += `<tr>
+                <td>${getStatusBadge(log.returnStatus)}</td>
+                <td>${log.remark}</td>
+                <td><strong>${log.itemName}</strong> <small>(${log.project})</small></td>
+                <td>${log.qty}</td>
             </tr>`;
         }
     });
@@ -560,7 +616,48 @@ function renderDashboard() {
     document.getElementById('dash-total-value').innerText = formatMoney(totalStockValue);
     document.getElementById('dash-total-items').innerText = db_items.length;
     document.getElementById('dash-active-projects').innerText = db_projects.length;
-    if(lowStockBody.innerHTML === '') lowStockBody.innerHTML = '<tr><td colspan="5" class="text-center" style="padding:30px; color:#059669;">✅ วัสดุสิ้นเปลืองในคลังมีเพียงพอใช้งานครับ</td></tr>';
+    document.getElementById('dash-borrowed').innerText = borrowedCount;
+
+    if(lowStockBody.innerHTML === '') lowStockBody.innerHTML = '<tr><td colspan="3" class="text-center" style="padding:20px; color:#059669;">✅ วัสดุสิ้นเปลืองมีเพียงพอ</td></tr>';
+    if(alertToolBody.innerHTML === '') alertToolBody.innerHTML = '<tr><td colspan="4" class="text-center" style="padding:20px; color:#059669;">✅ ไม่มีเครื่องมือตกค้างหรือชำรุด</td></tr>';
+}
+
+function renderDaily() {
+    const dailyBody = document.getElementById('daily-body');
+    dailyBody.innerHTML = '';
+    
+    // ดึงเฉพาะรายการของ "วันนี้"
+    let todayStr = new Date().toLocaleDateString('th-TH');
+    let todayLogs = db_logs.filter(log => log.time.startsWith(todayStr));
+
+    if(todayLogs.length === 0) { dailyBody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:30px;">ไม่มีความเคลื่อนไหวในวันนี้</td></tr>'; return; }
+
+    todayLogs.forEach(log => {
+        let isTool = (log.returnStatus && log.returnStatus !== 'ใช้งานสิ้นเปลือง' && log.returnStatus !== 'รับเข้า');
+        let updateBtns = '';
+        
+        // ถ้าเป็นเครื่องมือที่ "ยังไม่คืน" ให้โชว์ปุ่มอัปเดตสถานะ
+        if(isTool && log.returnStatus === '⏳ ยังไม่คืน') {
+            updateBtns = `
+                <button class="btn-status btn-status-ok" onclick="updateLogStatus('${log.ref}', '✅ คืนปกติ')">คืนปกติ</button>
+                <button class="btn-status btn-status-bad" onclick="updateLogStatus('${log.ref}', '❌ ชำรุด')">ชำรุด</button>
+                <button class="btn-status btn-status-bad" style="background:#7f1d1d; color:#fff;" onclick="updateLogStatus('${log.ref}', '⚠️ หาย')">หาย</button>
+            `;
+        } else if (!isTool) {
+            updateBtns = `<span style="color:#94a3b8; font-size:0.8rem;">(วัสดุสิ้นเปลือง)</span>`;
+        }
+
+        dailyBody.innerHTML += `
+            <tr>
+                <td><strong>${log.time.split(' ')[1]}</strong></td>
+                <td>${log.remark} <br><small style="color:var(--accent-color);">${log.project}</small></td>
+                <td>${log.itemName}</td>
+                <td class="text-right fw-bold ${log.action==='เบิกจ่าย'?'text-danger':'text-success'}">${log.action==='เบิกจ่าย'?'-':'+'}${log.qty}</td>
+                <td>${getStatusBadge(log.returnStatus)}</td>
+                <td>${updateBtns}</td>
+            </tr>
+        `;
+    });
 }
 
 function renderInventory() {
@@ -569,7 +666,6 @@ function renderInventory() {
     const catFilter = document.getElementById('filter-category').value;
     
     invBody.innerHTML = '';
-    
     let filteredItems = db_items.filter(item => {
         let matchSearch = item.name.toLowerCase().includes(searchText) || item.id.toLowerCase().includes(searchText);
         let matchCat = catFilter === 'all' || item.cat === catFilter;
@@ -588,7 +684,6 @@ function renderInventory() {
                 <td class="text-right">${formatMoney(item.price)}</td>
                 <td class="text-right fw-bold" style="color: ${item.qty<5 && item.cat==='วัสดุสิ้นเปลือง'?'#ef4444':'#059669'}; font-size:1.1rem;">${item.qty}</td>
                 <td class="text-right currency">${formatMoney(item.price * item.qty)}</td>
-                <td><small style="color:#64748b;">${item.remark || '-'}<br><sub>ร้าน: ${item.supplier || '-'}</sub></small></td>
             </tr>
         `;
     });
@@ -600,15 +695,7 @@ function renderProjects() {
     projBody.innerHTML = ''; outProjSelect.innerHTML = '<option value="คลังกลาง">🏢 คลังกลาง (ส่วนกลาง)</option>';
 
     db_projects.forEach(p => {
-        projBody.innerHTML += `
-            <tr>
-                <td><span class="badge bg-tool">${p.id}</span></td>
-                <td><strong>${p.name}</strong></td>
-                <td>${p.client}</td>
-                <td class="text-right">${formatMoney(p.budget)}</td>
-                <td><button class="btn-home" style="cursor:pointer; padding: 5px 15px; font-size:0.85rem;" onclick="openProjectDetail('${p.id}')">ดูรายละเอียด</button></td>
-            </tr>
-        `;
+        projBody.innerHTML += `<tr><td><span class="badge bg-tool">${p.id}</span></td><td><strong>${p.name}</strong></td><td>${p.client}</td><td class="text-right">${formatMoney(p.budget)}</td><td><button class="btn-home" style="cursor:pointer; padding: 5px 15px; font-size:0.85rem;" onclick="openProjectDetail('${p.id}')">ดูรายละเอียด</button></td></tr>`;
         outProjSelect.innerHTML += `<option value="${p.id}">${p.id} - ${p.name}</option>`;
     });
 }
@@ -617,19 +704,7 @@ function renderHistory() {
     const histBody = document.getElementById('history-body');
     histBody.innerHTML = '';
     [...db_logs].reverse().forEach(log => {
-        let isOut = log.action === 'เบิกจ่าย';
-        histBody.innerHTML += `
-            <tr>
-                <td><small style="color:#94a3b8;">${log.ref}</small></td>
-                <td><small>${log.time}</small></td>
-                <td><span class="badge ${isOut ? 'bg-danger':'bg-success'}">${log.action}</span></td>
-                <td>${log.project}</td>
-                <td>${log.itemName}</td>
-                <td class="text-right">${isOut?'-':'+'}${log.qty}</td>
-                <td class="text-right currency">${formatMoney(log.totalValue)}</td>
-                <td><small>${log.remark}</small></td>
-            </tr>
-        `;
+        histBody.innerHTML += `<tr><td><small style="color:#94a3b8;">${log.ref}</small></td><td><small>${log.time}</small></td><td><span class="badge ${log.action==='เบิกจ่าย'?'bg-danger':'bg-success'}">${log.action}</span></td><td>${log.project}</td><td>${log.itemName}</td><td class="text-right">${log.action==='เบิกจ่าย'?'-':'+'}${log.qty}</td><td class="text-right currency">${formatMoney(log.totalValue)}</td><td>${getStatusBadge(log.returnStatus)}</td></tr>`;
     });
 }
 
@@ -637,56 +712,57 @@ function renderHistory() {
 // 🏢 PROJECT DETAIL VIEW LOGIC
 // =========================================================
 function openProjectDetail(projId) {
-    document.getElementById('project-list-view').style.display = 'none';
-    document.getElementById('project-detail-view').style.display = 'block';
-    
-    let p = db_projects.find(x => x.id === projId);
-    if(!p) return;
-
-    document.getElementById('det-title').innerText = p.name;
-    document.getElementById('det-id').innerText = p.id;
-    document.getElementById('det-client').innerText = p.client;
-    document.getElementById('det-budget').innerText = formatMoney(p.budget);
+    document.getElementById('project-list-view').style.display = 'none'; document.getElementById('project-detail-view').style.display = 'block';
+    let p = db_projects.find(x => x.id === projId); if(!p) return;
+    document.getElementById('det-title').innerText = p.name; document.getElementById('det-id').innerText = p.id; document.getElementById('det-client').innerText = p.client; document.getElementById('det-budget').innerText = formatMoney(p.budget);
 
     let projLogs = db_logs.filter(l => l.projectId === projId && l.action === 'เบิกจ่าย');
-    let totalCost = 0;
-    let histBody = document.getElementById('det-history-body');
-    histBody.innerHTML = '';
+    let totalCost = 0; let histBody = document.getElementById('det-history-body'); histBody.innerHTML = '';
 
     projLogs.forEach(l => {
         totalCost += l.totalValue;
-        // หากระบุรูปจากฐานข้อมูลพัสดุ
         let itemRef = db_items.find(i => i.id === l.itemId);
         let imgSrc = itemRef ? itemRef.img : 'https://placehold.co/50';
-
-        histBody.innerHTML += `
-            <tr>
-                <td><small>${l.time}</small></td>
-                <td><img src="${imgSrc}" style="width:50px; height:50px; border-radius:6px; object-fit:cover;"></td>
-                <td>${l.itemId}</td>
-                <td>${l.itemName}</td>
-                <td class="text-right">${l.qty}</td>
-                <td class="text-right currency text-danger">${formatMoney(l.totalValue)}</td>
-                <td><small>${l.remark}</small></td>
-            </tr>
-        `;
+        histBody.innerHTML += `<tr><td><small>${l.time}</small></td><td><img src="${imgSrc}" style="width:50px; height:50px; border-radius:6px; object-fit:cover;"></td><td>${l.itemId}</td><td>${l.itemName}</td><td class="text-right">${l.qty}</td><td class="text-right currency text-danger">${formatMoney(l.totalValue)}</td><td><small>${l.remark}</small></td></tr>`;
     });
-
     if(projLogs.length === 0) histBody.innerHTML = '<tr><td colspan="7" class="text-center">ยังไม่มีการเบิกวัสดุในโครงการนี้</td></tr>';
 
-    document.getElementById('det-cost').innerText = formatMoney(totalCost);
-    document.getElementById('det-balance').innerText = formatMoney(p.budget - totalCost);
+    document.getElementById('det-cost').innerText = formatMoney(totalCost); document.getElementById('det-balance').innerText = formatMoney(p.budget - totalCost);
 }
 function closeProjectDetail() { document.getElementById('project-detail-view').style.display = 'none'; document.getElementById('project-list-view').style.display = 'block'; }
 
 // =========================================================
-// 📤 FORM SUBMISSIONS (สร้างข้อมูล)
+// 🔄 UPDATE TOOL STATUS (ปุ่มในหน้า Daily)
+// =========================================================
+window.updateLogStatus = function(ref, newStatus) {
+    let log = db_logs.find(l => l.ref === ref);
+    if(!log) return;
+    
+    // ถ้าสถานะเป็นคืนปกติ ให้บวกสต๊อกกลับคืนไป
+    if(newStatus === '✅ คืนปกติ') {
+        let item = db_items.find(i => i.id === log.itemId);
+        if(item) item.qty += log.qty;
+    }
+    // ถ้าชำรุดหรือหาย ไม่ต้องบวกสต๊อกกลับ ถือว่าสูญเสีย
+
+    log.returnStatus = newStatus;
+    saveData();
+    
+    // ยิงประวัติอัปเดตลง Sheets ด้วย
+    let updateLog = { time: new Date().toLocaleString('th-TH'), ref: generateID('UPD'), action: 'อัปเดตสถานะ: '+newStatus, project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: 0, totalValue: 0, remark: 'อัปเดตอ้างอิงจากรายการ: '+log.ref };
+    sendToSheets(updateLog);
+
+    Swal.fire({ title: 'สำเร็จ!', text: `อัปเดตสถานะเป็น "${newStatus}" เรียบร้อยแล้ว`, icon: 'success', timer: 2000, showConfirmButton: false });
+}
+
+// =========================================================
+// 📤 FORM SUBMISSIONS (สร้างข้อมูล + SweetAlert)
 // =========================================================
 document.getElementById('form-project').addEventListener('submit', (e) => {
     e.preventDefault();
     let newProj = { id: generateID('PRJ'), name: document.getElementById('proj-name').value, client: document.getElementById('proj-client').value, budget: parseFloat(document.getElementById('proj-budget').value) || 0 };
     db_projects.push(newProj); saveData(); document.getElementById('form-project').reset();
-    alert('✅ สร้างโครงการใหม่สำเร็จ รหัส: ' + newProj.id);
+    Swal.fire({ title: 'สร้างโครงการสำเร็จ!', text: `รหัส: ${newProj.id}`, icon: 'success', confirmButtonColor: '#2563eb' });
 });
 
 document.getElementById('form-in').addEventListener('submit', async (e) => {
@@ -704,39 +780,43 @@ document.getElementById('form-in').addEventListener('submit', async (e) => {
     if(item) { item.qty += qty; item.price = price; if(imgBase64) item.img = imgBase64; } 
     else { db_items.push({ id: itemId, name, cat, qty, price, supplier: document.getElementById('in-supplier').value, remark: document.getElementById('in-remark').value, img: imgBase64 }); }
 
-    let logEntry = { ref: generateID('TRX'), time: now, action: 'รับเข้า', projectId: 'คลังกลาง', project: 'คลังกลาง', itemId: itemId, itemName: name, qty: qty, price: price, totalValue: qty*price, remark: document.getElementById('in-remark').value };
+    let logEntry = { ref: generateID('TRX'), time: now, action: 'รับเข้า', projectId: 'คลังกลาง', project: 'คลังกลาง', itemId: itemId, itemName: name, qty: qty, price: price, totalValue: qty*price, remark: document.getElementById('in-remark').value, returnStatus: 'รับเข้า' };
     db_logs.push(logEntry); saveData(); sendToSheets(logEntry); document.getElementById('form-in').reset();
-    alert('📥 บันทึกรับพัสดุเข้าคลังสำเร็จ!');
+    Swal.fire({ title: 'บันทึกสำเร็จ!', text: 'นำพัสดุเข้าคลังเรียบร้อยแล้ว', icon: 'success', confirmButtonColor: '#2563eb' });
 });
 
 document.getElementById('form-out').addEventListener('submit', (e) => {
     e.preventDefault();
     const projId = document.getElementById('out-project').value;
-    const action = document.getElementById('out-type').value;
-    const itemId = document.getElementById('out-item-id').value; // เอา ID มาจากช่องซ่อนที่เลือก
+    const itemId = document.getElementById('out-item-id').value; 
     const qty = parseInt(document.getElementById('out-qty').value);
+    const remark = document.getElementById('out-remark').value;
     
-    if(!itemId) return alert('❌ กรุณาพิมพ์ค้นหาและเลือกพัสดุก่อนครับ!');
+    if(!itemId) return Swal.fire({ title: 'ผิดพลาด', text: 'กรุณาพิมพ์ค้นหาและเลือกพัสดุก่อนครับ!', icon: 'error', confirmButtonColor: '#ef4444' });
     
     let item = db_items.find(i => i.id === itemId);
     let proj = db_projects.find(p => p.id === projId) || { name: 'คลังกลาง' };
     
-    if(action === 'เบิกจ่าย') {
-        if(item.qty < qty) return alert("❌ พัสดุในสต๊อกมีไม่พอครับ!");
-        item.qty -= qty;
-    } else { item.qty += qty; }
+    if(item.qty < qty) return Swal.fire({ title: 'พัสดุไม่พอ!', text: `เหลือพัสดุแค่ ${item.qty} ชิ้น`, icon: 'warning', confirmButtonColor: '#d97706' });
+    
+    item.qty -= qty; 
 
-    let logEntry = { ref: generateID('TRX'), time: new Date().toLocaleString('th-TH'), action: action, projectId: projId, project: proj.name, itemId: item.id, itemName: item.name, qty: qty, price: item.price, totalValue: qty*item.price, remark: document.getElementById('out-remark').value };
+    // เช็คว่าต้องติดตามสถานะการคืนไหม (เครื่องมือช่าง, เครื่องใช้ไฟฟ้า ต้องคืน)
+    let needsReturn = (item.cat === 'เครื่องมือช่าง' || item.cat === 'เครื่องใช้ไฟฟ้า');
+    let rStatus = needsReturn ? '⏳ ยังไม่คืน' : 'ใช้งานสิ้นเปลือง';
+
+    let logEntry = { ref: generateID('TRX'), time: new Date().toLocaleString('th-TH'), action: 'เบิกจ่าย', projectId: projId, project: proj.name, itemId: item.id, itemName: item.name, qty: qty, price: item.price, totalValue: qty*item.price, remark: remark, returnStatus: rStatus };
     
     db_logs.push(logEntry); saveData(); sendToSheets(logEntry); 
     document.getElementById('form-out').reset();
-    document.getElementById('out-preview-box').style.display = 'none'; // ซ่อนรูปพรีวิวหลังทำรายการเสร็จ
-    alert(`🚀 บันทึกรายการ ${action} สำเร็จ!`);
+    document.getElementById('out-preview-box').style.display = 'none';
+    
+    Swal.fire({ title: 'เบิกจ่ายสำเร็จ!', text: `รหัสอ้างอิง: ${logEntry.ref}`, icon: 'success', confirmButtonColor: '#2563eb' });
 });
 
 function sendToSheets(log) {
     if(GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") return;
-    fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ time: log.time, refId: log.ref, action: log.action, project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: log.price, totalValue: log.totalValue, remark: log.remark, evidence: "อิงจากบราวเซอร์" }) }).catch(err => console.log(err));
+    fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ time: log.time, refId: log.ref, action: log.action, project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: log.price, totalValue: log.totalValue, remark: log.remark, evidence: log.returnStatus }) }).catch(err => console.log(err));
 }
 
 renderAll();
