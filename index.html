@@ -1,239 +1,477 @@
 <!DOCTYPE html>
+
 <html lang="th">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>3DNP CONSTRUCTION - The Future of Design</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     
+
     <style>
+
         /* --- 🌑 DARK THEME & CORE SETUP --- */
+
         body { 
+
             margin: 0; font-family: 'Prompt', sans-serif; 
+
             background: #0f1014; /* พื้นหลังสีดำด้าน */
+
             color: #ffffff; 
+
             -webkit-user-select: none; -moz-user-select: none; user-select: none;
+
             cursor: default; 
+
             overflow-x: hidden;
+
         }
+
+
 
         /* --- 🧭 NAV BAR (Glass Effect) --- */
+
         nav { 
+
             display: flex; justify-content: space-between; align-items: center; 
+
             padding: 15px 5%; 
+
             background: rgba(15, 16, 20, 0.85); /* สีดำโปร่งแสง */
+
             backdrop-filter: blur(10px); /* เบลอพื้นหลัง */
+
             border-bottom: 1px solid rgba(255,255,255,0.1);
+
             position: sticky; top: 0; z-index: 100; 
+
         }
 
+
+
         .logo { 
+
             font-size: 1.8rem; font-weight: 700; color: #ffffff; 
+
             display: flex; align-items: center; gap: 10px;
+
         }
+
         .logo span { color: #4facfe; font-weight: 300; } /* สีฟ้าสว่าง */
+
         .logo img { height: 50px; } /* ปรับขนาดโลโก้ */
+
+
 
         .menu-group { display: flex; gap: 10px; align-items: center; }
 
+
+
    /* =============================================================
+
        ⚙️ ปุ่มไทเทเนียม (Titanium Series) - สำหรับ 3 ปุ่มบนขวา
+
        ============================================================= */
 
+
+
     /* ตั้งค่ารวดเดียว 3 ปุ่ม (ให้เหมือนกันเป๊ะ) */
+
     .btn-shop, .btn-link, .btn-login { 
+
         text-decoration: none;
+
         color: #f0f0f0;             /* ตัวหนังสือสีขาวควันบุหรี่ */
+
         padding: 10px 25px; 
+
         border-radius: 50px;        /* ทรงแคปซูล */
+
         font-weight: 700; 
+
         font-size: 0.9rem;
+
         cursor: pointer;
+
         display: inline-block;
+
         margin-left: 10px;
+
         
+
         /* 🎨 สีเทาไล่เฉด (แบบไทเทเนียม) */
+
         background: linear-gradient(to bottom, #7d828c 0%, #2e3338 100%);
+
         
+
         /* ⛓️ ขอบโลหะ 3 มิติ (บนสว่าง-ล่างมืด) */
+
         border-top: 1px solid rgba(255, 255, 255, 0.4);
+
         border-bottom: 1px solid #000000;
+
         border-left: 1px solid rgba(255, 255, 255, 0.1);
+
         border-right: 1px solid rgba(255, 255, 255, 0.1);
 
+
+
         /* เงาใต้ปุ่ม */
+
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+
         transition: all 0.2s ease;
+
     }
+
+
 
     /* ✨ ตอนเอาเมาส์ชี้ (สว่างขึ้นเหมือนโลหะโดนแสง) */
+
     .btn-shop:hover, .btn-link:hover, .btn-login:hover {
+
         background: linear-gradient(to bottom, #9ea4b0 0%, #4b5259 100%); /* เทาสว่างขึ้น */
+
         transform: translateY(-2px); /* ลอยขึ้น */
+
         box-shadow: 
+
             0 7px 15px rgba(0, 0, 0, 0.6), 
+
             0 0 15px rgba(255, 255, 255, 0.2); /* เรืองแสงสีขาวจางๆ */
+
     }
+
+
 
     /* 👊 ตอนกด (ยุบลง) */
+
     .btn-shop:active, .btn-link:active, .btn-login:active {
+
         transform: scale(0.95);
+
         background: #222529; /* มืดลง */
+
         box-shadow: inset 0 2px 5px rgba(0,0,0,0.7);
+
     }
+
         /* --- 🚀 HERO SECTION (ล้ำสมัย) --- */
+
         .hero { 
+
             text-align: center; padding: 100px 20px; 
+
             background: radial-gradient(circle at center, #1e222b 0%, #0f1014 100%);
+
             position: relative; overflow: hidden;
+
         }
+
         /* แสงพื้นหลังฟุ้งๆ */
+
         .hero::before {
+
             content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+
             width: 600px; height: 600px; background: rgba(0, 86, 179, 0.15); filter: blur(100px); border-radius: 50%; z-index: 0;
+
         }
+
         .hero-content { position: relative; z-index: 1; }
+
         
+
         h1 { 
+
             font-size: 4rem; margin: 0; font-weight: 800; 
+
             background: linear-gradient(to right, #ffffff, #a5b4fc); 
+
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+
             text-shadow: 0 0 30px rgba(165, 180, 252, 0.3);
+
             letter-spacing: -1px;
+
         }
+
         p { color: #a0a0a0; font-size: 1.2rem; margin-top: 20px; font-weight: 300; }
 
+
+
         /* --- 🏗️ PORTFOLIO SECTION (โชว์ผลงาน) --- */
+
         .section-title { 
+
             font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 50px; 
+
             text-transform: uppercase; letter-spacing: 2px;
+
             color: white; border-bottom: 2px solid #0056b3; display: inline-block; padding-bottom: 10px;
+
         }
+
         .center-box { text-align: center; margin-top: 60px; margin-bottom: 20px; }
 
+
+
         .portfolio-grid { 
+
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+
             gap: 20px; padding: 0 10%; 
+
         }
+
         .port-card {
+
             background: rgba(255, 255, 255, 0.03);
+
             border: 1px solid rgba(255, 255, 255, 0.1);
+
             border-radius: 15px; overflow: hidden;
+
             transition: 0.4s; position: relative;
+
         }
+
         .port-card:hover { 
+
             transform: translateY(-10px); 
+
             border-color: #4facfe; 
+
             box-shadow: 0 10px 30px rgba(0, 86, 179, 0.3);
+
         }
+
         .port-card img { width: 100%; height: 200px; object-fit: cover; opacity: 0.8; transition: 0.3s; }
+
         .port-card:hover img { opacity: 1; transform: scale(1.05); }
+
         .port-info { padding: 20px; }
+
         .port-title { font-size: 1.1rem; font-weight: 600; color: white; margin-bottom: 5px; }
+
         .port-desc { font-size: 0.85rem; color: #888; }
 
 
+
+
+
         /* --- 🏆 PRODUCT SPOTLIGHT (สินค้าแนะนำ 2 ตัว) --- */
+
         .spotlight-section { padding: 60px 10%; background: #0b0c0f; }
+
         .spotlight-grid { 
+
             display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+
             gap: 40px; 
+
         }
+
         .product-card {
+
             background: linear-gradient(145deg, #1a1c24, #131419);
+
             border-radius: 20px; padding: 30px;
+
             display: flex; align-items: center; gap: 20px;
+
             border: 1px solid rgba(255,255,255,0.05);
+
             transition: 0.3s;
+
         }
+
         .product-card:hover { border-color: #f57224; box-shadow: 0 0 25px rgba(245, 114, 36, 0.2); }
+
         
+
         .product-img { width: 150px; height: 150px; border-radius: 10px; object-fit: cover; }
+
         .product-info h3 { margin: 0 0 10px 0; font-size: 1.4rem; color: white; }
+
         .product-info p { margin: 0 0 15px 0; color: #888; font-size: 0.9rem; }
+
         .price-tag { color: #f57224; font-size: 1.3rem; font-weight: 700; display: block; margin-bottom: 15px; }
+
         
+
         .btn-buy {
+
             background: transparent; border: 1px solid #f57224; color: #f57224;
+
             padding: 8px 20px; border-radius: 30px; cursor: pointer; text-decoration: none; font-size: 0.9rem; transition: 0.3s;
+
         }
+
         .btn-buy:hover { background: #f57224; color: white; box-shadow: 0 0 15px #f57224; }
 
+
+
     </style>
+
 </head>
+
 <body oncontextmenu="return false">
 
+
+
     <nav>
+
         <div class="logo">
+
             <img src="logo.png" alt="Logo"> 
+
             3DNP <span>CONS.</span>
+
         </div>
+
         <div class="menu-group">
+
             <a href="shop.html" class="btn-shop">SHOP</a>
+
             <a href="portfolio.html" class="btn-link">PORTFOLIO</a>
-            <a href="stock.html" class="btn-login">STOCK / LOGIN</a>
+
+            <a href="login.html" class="btn-login">LOGIN</a>
+
         </div>
+
     </nav>
 
+
+
     <div class="hero">
+
         <div class="hero-content">
+
             <h1>FUTURE OF DESIGN</h1>
+
             <p>นวัตกรรมการก่อสร้างและงานออกแบบ ที่เหนือกว่าจินตนาการ</p>
+
         </div>
+
     </div>
 
+
+
     <div class="center-box"><div class="section-title">ผลงานออกแบบล่าสุด</div></div>
+
     
+
     <div class="portfolio-grid">
+
         <div class="port-card">
+
             <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Project 1">
+
             <div class="port-info">
+
                 <div class="port-title">Modern Luxury House</div>
+
                 <div class="port-desc">งานออกแบบบ้านหรูสไตล์โมเดิร์น ย่านเอกมัย</div>
+
             </div>
+
         </div>
+
         <div class="port-card">
+
             <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c" alt="Project 2">
+
             <div class="port-info">
+
                 <div class="port-title">Loft Office Space</div>
+
                 <div class="port-desc">รีโนเวทออฟฟิศเก่า ให้เป็นสไตล์ลอฟท์ดิบเท่</div>
+
             </div>
+
         </div>
+
         <div class="port-card">
+
             <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6" alt="Project 3">
+
             <div class="port-info">
+
                 <div class="port-title">Minimal Cafe</div>
+
                 <div class="port-desc">งานตกแต่งภายในคาเฟ่ เน้นความมินิมอล</div>
+
             </div>
+
         </div>
+
     </div>
+
+
+
 
 
     <div class="spotlight-section">
+
         <div class="center-box" style="margin-top:0;"><div class="section-title" style="border-color:#f57224;">สินค้าขายดีประจำเดือน</div></div>
+
         
+
         <div class="spotlight-grid">
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a" class="product-img" alt="Product">
-                <div class="product-info">
-                    <h3>กระเบื้องหินอ่อน XL</h3>
-                    <p>กระเบื้องนำเข้า เกรดพรีเมียม ลายหินธรรมชาติ</p>
-                    <span class="price-tag">450.- / ตร.ม.</span>
-                    <a href="shop.html" class="btn-buy">ดูรายละเอียด</a>
-                </div>
-            </div>
 
             <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f" class="product-img" alt="Product">
+
+                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a" class="product-img" alt="Product">
+
                 <div class="product-info">
-                    <h3>โคมไฟระย้า Crystal</h3>
-                    <p>เพิ่มความหรูหราให้ห้องโถง ด้วยคริสตัลแท้</p>
-                    <span class="price-tag">2,500.-</span>
+
+                    <h3>กระเบื้องหินอ่อน XL</h3>
+
+                    <p>กระเบื้องนำเข้า เกรดพรีเมียม ลายหินธรรมชาติ</p>
+
+                    <span class="price-tag">450.- / ตร.ม.</span>
+
                     <a href="shop.html" class="btn-buy">ดูรายละเอียด</a>
+
                 </div>
+
             </div>
+
+
+
+            <div class="product-card">
+
+                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f" class="product-img" alt="Product">
+
+                <div class="product-info">
+
+                    <h3>โคมไฟระย้า Crystal</h3>
+
+                    <p>เพิ่มความหรูหราให้ห้องโถง ด้วยคริสตัลแท้</p>
+
+                    <span class="price-tag">2,500.-</span>
+
+                    <a href="shop.html" class="btn-buy">ดูรายละเอียด</a>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
+
+
 </body>
+
 </html>
