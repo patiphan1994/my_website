@@ -27,7 +27,8 @@
             -webkit-user-select: none; user-select: none;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        /* 🖥️ ปรับเลย์เอาต์ขยายขอบกว้างเต็มหน้าจอคอมพิวเตอร์และบราวเซอร์ */
+        .container { width: 100%; max-width: 100%; margin: 0; padding: 30px 40px; box-sizing: border-box; }
         
         /* --- 🧭 TOP BAR --- */
         .top-bar {
@@ -128,18 +129,31 @@
         .bg-water { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
         .bg-lightning { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
         .bg-consume { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+        .bg-build { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } /* ป้ายหมวดวัสดุก่อสร้าง */
         
         .bg-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         .bg-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
         .bg-warning { background: #fef3c7; color: #9a3412; border: 1px solid #fde68a; }
 
-        /* 🖼️ ปรับขนาดรูปภาพขนาดใหญ่เต็มตาตามคำขอ */
-        .preview-img-large { width: 90px; height: 90px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-color); background: #f8fafc; }
+        /* 🖼️ ขยายรูปภาพสินค้าในตาราง Master List ให้ใหญ่สุดสายตามองชัดเจน */
+        .preview-img-large { width: 95px; height: 90px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-color); background: #f8fafc; }
         .currency { color: var(--accent-blue); font-weight: 700; }
         .text-right { text-align: right; }
+
+        /* --- 🏛️ MODAL OVERLAY (หน้าต่างป็อปอัปดูข้อมูล-แก้ไขพัสดุ) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);
+            display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px);
+        }
+        .modal-box {
+            background: #fff; width: 100%; max-width: 650px; border-radius: 16px; padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15); animation: zoomIn 0.2s ease; max-height: 90vh; overflow-y: auto;
+        }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-footer { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false">
 
 <div class="container">
     <div class="top-bar">
@@ -184,7 +198,7 @@
             </div>
             
             <div class="glass-card">
-                <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-tools"></i> บันทึกสถานะเครื่องมือ (ไม่คืน / ชำรุด / หาย)</div>
+                <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-tools"></i> บันทึกสถานะเครื่องมือค้างสายงาน (ชำรุด / หาย / ยังไม่คืนคลัง)</div>
                 <div class="table-container">
                     <table class="custom-table">
                         <thead><tr><th>สถานะ</th><th>ผู้เบิก/หมายเหตุ</th><th>รายการเครื่องมือ</th><th>จำนวน</th></tr></thead>
@@ -216,7 +230,7 @@
 
     <div id="stock-tab" class="tab-content">
         <div class="glass-card w-100">
-            <div class="card-title" style="color: var(--accent-blue);"><i class="fas fa-warehouse"></i> ทะเบียนควบคุมทรัพย์สินและคลังวัสดุกลาง</div>
+            <div class="card-title" style="color: var(--accent-blue);"><i class="fas fa-warehouse"></i> ทะเบียนควบคุมทรัพย์สินและคลังวัสดุกลาง (คลิกพัสดุเพื่อดูรายละเอียด/แก้ไข/ลบ)</div>
             
             <div class="filter-bar">
                 <div style="flex: 2;">
@@ -230,6 +244,7 @@
                         <option value="ระบบน้ำ">💧 หมวดระบบงานน้ำ / สุขาภิบาล</option>
                         <option value="ระบบไฟฟ้า">🔌 หมวดระบบงานไฟฟ้ากำลัง</option>
                         <option value="วัสดุสิ้นเปลือง">🧱 หมวดวัสดุสิ้นเปลือง</option>
+                        <option value="วัสดุก่อสร้าง">🏗️ หมวดวัสดุก่อสร้าง</option>
                     </select>
                 </div>
             </div>
@@ -238,7 +253,7 @@
                 <table class="custom-table">
                     <thead>
                         <tr>
-                            <th>รหัสสินค้า</th><th>รูปภาพพัสดุ</th><th>ชื่อวัสดุ / อุปกรณ์</th><th>หมวดหมู่โลโก้</th><th style="text-align:right;">ราคา/หน่วย</th><th style="text-align:right;">จำนวนคงเหลือ</th><th style="text-align:right;">มูลค่าสินทรัพย์รวม</th>
+                            <th>รหัสสินค้า</th><th>รูปภาพพัสดุ</th><th>ชื่อวัสดุ / อุปกรณ์</th><th>หมวดหมู่โลโก้</th><th style="text-align:right;">ราคา/หน่วย</th><th style="text-align:right;">จำนวนคงเหลือ</th><th style="text-align:right;">สถานะสภาพ</th><th>จัดการระบบ</th>
                         </tr>
                     </thead>
                     <tbody id="stock-list-body"></tbody>
@@ -305,7 +320,8 @@
             <div class="glass-card">
                 <div class="card-title" style="color: var(--accent-green);"><i class="fas fa-arrow-alt-circle-down"></i> 📥 ระบบลงทะเบียนนำพัสดุเข้าคลังสินค้า (IN)</div>
                 <form id="incoming-form">
-                    <div class="form-group"><label>ชื่อพัสดุวัสดุ / อุปกรณ์ก่อสร้าง</label><input type="text" id="in-name" class="form-control" required placeholder="เช่น ท่อ PVC ตราช้าง 4 หุน"></div>
+                    <div class="form-group"><label>ชื่อพัสดุวัสดุ / อุปกรณ์ก่อสร้าง</label><input type="text" id="in-name" class="form-control" required placeholder="เช่น ปูนซีเมนต์ TPI"></div>
+                    
                     <div style="display:flex; gap:20px;">
                         <div class="form-group" style="flex:1;"><label>หมวดหมู่ระบบงาน</label>
                             <select id="in-cat" class="form-select">
@@ -314,15 +330,39 @@
                                 <option value="ระบบน้ำ">💧 ระบบน้ำ / สุขาภิบาล</option>
                                 <option value="ระบบไฟฟ้า">🔌 ระบบไฟฟ้ากำลัง</option>
                                 <option value="วัสดุสิ้นเปลือง">🧱 วัสดุสิ้นเปลือง</option>
+                                <option value="วัสดุก่อสร้าง">🏗️ วัสดุก่อสร้าง</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex:1;"><label>สถานะสภาพเริ่มต้น</label>
+                            <select id="in-status" class="form-select">
+                                <option value="พร้อมใช้งาน">✅ พร้อมใช้งาน</option>
+                                <option value="ชำรุด">❌ ชำรุด</option>
+                                <option value="ยังไม่คืนคลัง">⏳ ยังไม่คืนคลัง</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:20px;">
+                        <div class="form-group" style="flex:1;"><label>หน่วยนับบรรจุภัณฑ์</label>
+                            <select id="in-unit" class="form-select">
+                                <option value="ชิ้น">ชิ้น</option>
+                                <option value="กล่อง">กล่อง</option>
+                                <option value="แท่ง">แท่ง</option>
+                                <option value="ก้อน">ก้อน</option>
+                                <option value="ลัง">ลัง</option>
+                                <option value="ถุง">ถุง</option>
                             </select>
                         </div>
                         <div class="form-group" style="flex:1;"><label>จำนวนรับเข้าคลัง</label><input type="number" id="in-qty" class="form-control" min="1" value="1" required></div>
                     </div>
+
                     <div style="display:flex; gap:20px;">
                         <div class="form-group" style="flex:1;"><label>ราคาต้นทุนต่อหน่วย (บาท)</label><input type="number" id="in-price" class="form-control" value="0" step="0.01"></div>
-                        <div class="form-group" style="flex:1;"><label>ร้านค้า / ผู้จัดจำหน่าย (Supplier)</label><input type="text" id="in-supplier" class="form-control" placeholder="เช่น ไทวัสดุ"></div>
+                        <div class="form-group" style="flex:1;"><label>ร้านค้า / ผู้จัดจำหน่าย</label><input type="text" id="in-supplier" class="form-control" placeholder="เช่น ไทวัสดุ"></div>
                     </div>
-                    <div class="form-group"><label>บันทึกหมายเหตุเพิ่มเติม / ขนาดสเปค</label><input type="text" id="in-remark" class="form-control" placeholder="ระบุเลขล็อต หรือสเปค"></div>
+                    
+                    <div class="form-group"><label>สเปควัสดุและเครื่องมืออย่างละเอียด</label><input type="text" id="in-spec" class="form-control" placeholder="เช่น ขนาดบรรจุ 50 กก., กำลังไฟ 800W"></div>
+                    <div class="form-group"><label>บันทึกหมายเหตุเพิ่มเติม</label><input type="text" id="in-remark" class="form-control" placeholder="หมายเหตุควบคุมบิล"></div>
                     <div class="form-group"><label>แนบรูปถ่ายตัววัสดุพัสดุ</label><input type="file" id="in-img" class="form-control" accept="image/*"></div>
                     <button type="submit" class="btn-action btn-green">📥 ยืนยันบันทึกรับของเข้าคลัง</button>
                 </form>
@@ -343,7 +383,7 @@
                             <img id="out-preview-img" class="item-preview-img" src="">
                             <div>
                                 <h4 id="out-preview-name" style="margin:0 0 5px 0; color:var(--text-main);">ชื่อพัสดุ</h4>
-                                <p style="margin:0; font-size:0.95rem; color:var(--text-muted);">คงเหลือในคลังจริง: <strong id="out-preview-stock" style="font-size:1.3rem;">0</strong> หน่วย</p>
+                                <p style="margin:0; font-size:0.95rem; color:var(--text-muted);">คงเหลือคลัง: <strong id="out-preview-stock" style="font-size:1.3rem;">0</strong> หน่วย</p>
                             </div>
                         </div>
                     </div>
@@ -361,11 +401,71 @@
             <div class="card-title"><i class="fas fa-database"></i> บันทึกบัญชีธุรกรรมระบบคลังส่วนกลาง (Sync Google Sheets อัตโนมัติ)</div>
             <div class="table-container">
                 <table class="custom-table">
-                    <thead><tr><th>รหัสอ้างอิง (Ref)</th><th>วัน-เวลา บันทึก</th><th>ประเภท</th><th>โครงการหน้างาน</th><th>รายการพัสดุ</th><th style="text-align:right;">จำนวน</th><th style="text-align:right;">มูลค่าสุทธิ</th><th>หมายเหตุ / สถานะคืนพัสดุ</th></tr></thead>
+                    <thead><tr><th>รหัสอ้างอิง (Ref)</th><th>วัน-เวลา บันทึก</th><th>ประเภท</th><th>โครงการหน้างาน</th><th>รายการพัสดุ</th><th style="text-align:right;">จำนวนธุรกรรม</th><th style="text-align:right;">มูลค่าสุทธิ</th><th>หมายเหตุ / สถานะคืนพัสดุ</th></tr></thead>
                     <tbody id="history-list-body"></tbody>
                 </table>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="item-modal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 id="modal-title" style="margin-top:0; color:var(--accent-blue); border-bottom:1px solid #e2e8f0; padding-bottom:10px;"><i class="fas fa-info-circle"></i> รายละเอียดคุมพัสดุวัสดุ</h3>
+        
+        <center><img id="modal-img" src="" style="width:200px; height:180px; object-fit:cover; border-radius:12px; margin-bottom:15px; border:1px solid var(--border-color); background:#f8fafc;"></center>
+        
+        <form id="modal-edit-form">
+            <input type="hidden" id="modal-item-id">
+            <div class="form-group"><label>ชื่อวัสดุ / เครื่องมืออุปกรณ์</label><input type="text" id="modal-name" class="form-control" required></div>
+            <div class="form-group"><label>หมวดหมู่งานระบบ</label>
+                <select id="modal-cat" class="form-select">
+                    <option value="เครื่องมือช่าง">🧰 เครื่องมือช่าง</option>
+                    <option value="เครื่องใช้ไฟฟ้า">⚡ เครื่องใช้ไฟฟ้า</option>
+                    <option value="ระบบน้ำ">💧 ระบบน้ำ / สุขาภิบาล</option>
+                    <option value="ระบบไฟฟ้า">🔌 ระบบไฟฟ้ากำลัง</option>
+                    <option value="วัสดุสิ้นเปลือง">🧱 วัสดุสิ้นเปลือง</option>
+                    <option value="วัสดุก่อสร้าง">🏗️ วัสดุก่อสร้าง</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:15px;">
+                <div class="form-group" style="flex:1;"><label>จำนวนคงเหลือในคลัง</label><input type="number" id="modal-qty" class="form-control" readonly style="background:#f1f5f9;"></div>
+                <div class="form-group" style="flex:1;"><label>หน่วยนับพัสดุ</label>
+                    <select id="modal-unit" class="form-select">
+                        <option value="ชิ้น">ชิ้น</option>
+                        <option value="กล่อง">กล่อง</option>
+                        <option value="แท่ง">แท่ง</option>
+                        <option value="ก้อน">ก้อน</option>
+                        <option value="ลัง">ลัง</option>
+                        <option value="ถุง">ถุง</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:flex; gap:15px;">
+                <div class="form-group" style="flex:1;"><label>ราคาต้นทุน/หน่วย</label><input type="number" id="modal-price" class="form-control" step="0.01"></div>
+                <div class="form-group" style="flex:1;"><label>สถานะความพร้อมปัจจุบัน</label>
+                    <select id="modal-status" class="form-select">
+                        <option value="พร้อมใช้งาน">✅ พร้อมใช้งาน</option>
+                        <option value="ชำรุด">❌ ชำรุด</option>
+                        <option value="ยังไม่คืนคลัง">⏳ ยังไม่คืนคลัง</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group"><label>ข้อมูลสเปคพัสดุและเครื่องมือควบคุม</label><input type="text" id="modal-spec" class="form-control"></div>
+            <div style="display:flex; gap:15px;">
+                <div class="form-group" style="flex:1;"><label>ผู้จัดจำหน่าย</label><input type="text" id="modal-supplier" class="form-control"></div>
+                <div class="form-group" style="flex:1;"><label>หมายเหตุ</label><input type="text" id="modal-remark" class="form-control"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-status btn-status-ok" style="padding:10px 15px;" onclick="modalAddQty()"><i class="fas fa-plus"></i> เพิ่มจำนวนสต๊อก</button>
+                <div>
+                    <button type="button" class="btn-status" style="background:#cbd5e1; color:#0f172a;" onclick="closeModal()">ปิด</button>
+                    <button type="button" class="btn-status btn-status-ok" onclick="saveModalEdit()">บันทึกแก้ไข</button>
+                    <button type="button" class="btn-status btn-status-bad" onclick="deleteModalItem()"><i class="fas fa-trash-alt"></i> ลบพัสดุถาวร</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -378,14 +478,14 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD0mVBmsq1aM
 // =========================================================
 // 🗄️ DATABASE ENGINE 
 // =========================================================
-let stockItems = JSON.parse(localStorage.getItem('db_stock_v3')) || [];
-let projects = JSON.parse(localStorage.getItem('db_projects_v3')) || [];
-let historyLogs = JSON.parse(localStorage.getItem('db_history_v3')) || [];
+let stockItems = JSON.parse(localStorage.getItem('db_stock_v4')) || [];
+let projects = JSON.parse(localStorage.getItem('db_projects_v4')) || [];
+let historyLogs = JSON.parse(localStorage.getItem('db_history_v4')) || [];
 
 function saveData() {
-    localStorage.setItem('db_stock_v3', JSON.stringify(stockItems));
-    localStorage.setItem('db_projects_v3', JSON.stringify(projects));
-    localStorage.setItem('db_history_v3', JSON.stringify(historyLogs));
+    localStorage.setItem('db_stock_v4', JSON.stringify(stockItems));
+    localStorage.setItem('db_projects_v4', JSON.stringify(projects));
+    localStorage.setItem('db_history_v4', JSON.stringify(historyLogs));
     renderAll();
 }
 
@@ -400,15 +500,15 @@ function getCatBadgeHTML(cat) {
     if(cat.includes('เครื่องใช้ไฟฟ้า')) return `<span class="badge bg-elec"><i class="fas fa-bolt"></i> เครื่องใช้ไฟฟ้า</span>`;
     if(cat.includes('ระบบน้ำ')) return `<span class="badge bg-water"><i class="fas fa-faucet"></i> ระบบน้ำ</span>`;
     if(cat.includes('ไฟฟ้า')) return `<span class="badge bg-lightning"><i class="fas fa-plug"></i> ระบบไฟฟ้า</span>`;
+    if(cat.includes('ก่อสร้าง')) return `<span class="badge bg-build"><i class="fas fa-trowel-bricks"></i> วัสดุก่อสร้าง</span>`;
     return `<span class="badge bg-consume"><i class="fas fa-box-open"></i> วัสดุสิ้นเปลือง</span>`;
 }
 
 function getStatusHTML(status) {
-    if(status === '⏳ ยังไม่คืน') return `<span class="badge bg-warning"><i class="fas fa-hourglass-half"></i> ยังไม่คืน</span>`;
-    if(status === '✅ คืนปกติ') return `<span class="badge bg-success"><i class="fas fa-check-circle"></i> คืนปกติ</span>`;
-    if(status === '❌ ชำรุด') return `<span class="badge bg-danger"><i class="fas fa-times-circle"></i> ชำรุด</span>`;
-    if(status === '⚠️ หาย') return `<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5;"><i class="fas fa-exclamation-triangle"></i> หาย</span>`;
-    return `<span class="badge bg-tool"><i class="fas fa-info-circle"></i> เรียบร้อย</span>`;
+    let s = status || 'พร้อมใช้งาน';
+    if(s === 'ยังไม่คืนคลัง' || s === '⏳ ยังไม่คืน') return `<span class="badge bg-warning"><i class="fas fa-hourglass-half"></i> ยังไม่คืนคลัง</span>`;
+    if(s === 'ชำรุด' || s === '❌ ชำรุด') return `<span class="badge bg-danger"><i class="fas fa-times-circle"></i> ชำรุดพัง</span>`;
+    return `<span class="badge bg-success"><i class="fas fa-check-circle"></i> พร้อมใช้งาน</span>`;
 }
 
 function fileToBase64(file) {
@@ -420,20 +520,17 @@ function fileToBase64(file) {
 }
 
 // =========================================================
-// 📑 TAB NAVIGATOR CONTROL (ซ่อมโค้ดล็อกแท็บค้างเรียบร้อย)
+// 📑 TAB NAVIGATOR CONTROL 
 // =========================================================
 function switchTab(e, tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    if (e && e.currentTarget) {
-        e.currentTarget.classList.add('active');
-    }
-    if(tabId === 'project-tab') closeProjectDetail();
+    if (e && e.currentTarget) e.currentTarget.classList.add('active');
 }
 
 // =========================================================
-// 🔍 DROPDOWN SEARCH ENGINE 
+// 🔍 DROPDOWN SEARCH ENGINE
 // =========================================================
 const searchInput = document.getElementById('out-item-search');
 const dropdownList = document.getElementById('out-dropdown-list');
@@ -451,13 +548,13 @@ function renderDropdown(filterText = '') {
     filtered.forEach(item => {
         let div = document.createElement('div');
         div.className = 'dropdown-item';
-        div.innerHTML = `<img src="${item.image || 'https://placehold.co/80'}"> <div><strong>${item.name}</strong><br><small style="color:#64748b;">รหัส: ${item.id} | สต๊อกคงเหลือ: ${item.qty}</small></div>`;
+        div.innerHTML = `<img src="${item.image || 'https://placehold.co/80'}"> <div><strong>${item.name}</strong><br><small style="color:#64748b;">รหัส: ${item.id} | สต๊อกคงเหลือ: ${item.qty} ${item.unit || 'ชิ้น'}</small></div>`;
         div.onclick = () => {
             document.getElementById('out-item-id').value = item.id;
             document.getElementById('out-item-search').value = item.name;
             document.getElementById('out-preview-img').src = item.image || 'https://placehold.co/120';
             document.getElementById('out-preview-name').innerText = item.name;
-            document.getElementById('out-preview-stock').innerText = item.qty;
+            document.getElementById('out-preview-stock').innerText = item.qty + ' ' + (item.unit || 'ชิ้น');
             document.getElementById('out-preview-stock').style.color = item.qty===0 ? '#ef4444' : '#22c55e';
             document.getElementById('out-preview-box').style.display = 'flex';
             dropdownList.style.display = 'none';
@@ -474,8 +571,7 @@ function renderAll() {
 }
 
 function renderDashboard() {
-    let totalValue = 0;
-    let borrowedCount = 0;
+    let totalValue = 0; let borrowedCount = 0;
     const lowStockBody = document.getElementById('dash-low-stock');
     const toolAlertBody = document.getElementById('dash-tool-alert');
     lowStockBody.innerHTML = ''; toolAlertBody.innerHTML = '';
@@ -486,13 +582,16 @@ function renderDashboard() {
             lowStockBody.innerHTML += `<tr>
                 <td><img src="${item.image || 'https://placehold.co/80'}" style="width:45px; height:45px; border-radius:8px; object-fit:cover;"></td>
                 <td><strong>${item.name}</strong></td>
-                <td style="color:#ef4444; font-weight:bold; font-size:1.1rem;">${item.qty} ชิ้น</td>
+                <td style="color:#ef4444; font-weight:bold;">${item.qty} ${item.unit || 'ชิ้น'}</td>
             </tr>`;
+        }
+        if(item.status === 'ชำรุด' || item.status === 'ยังไม่คืนคลัง') {
+            toolAlertBody.innerHTML += `<tr><td>${getStatusHTML(item.status)}</td><td>ในสต๊อกกลาง</td><td><strong>${item.name}</strong></td><td>${item.qty} ${item.unit || 'ชิ้น'}</td></tr>`;
         }
     });
 
     historyLogs.forEach(log => {
-        if(log.returnStatus === '⏳ ยังไม่คืน') borrowedCount += log.qty;
+        if(log.returnStatus === '⏳ ยังไม่คืน' || log.returnStatus === 'ยังไม่คืนคลัง') borrowedCount += log.qty;
         if(log.returnStatus === '⏳ ยังไม่คืน' || log.returnStatus === '❌ ชำรุด' || log.returnStatus === '⚠️ หาย') {
             toolAlertBody.innerHTML += `<tr>
                 <td>${getStatusHTML(log.returnStatus)}</td>
@@ -508,13 +607,11 @@ function renderDashboard() {
     document.getElementById('dash-project-count').innerText = projects.length;
 
     if(lowStockBody.innerHTML === '') lowStockBody.innerHTML = '<tr><td colspan="3" class="text-center" style="color:#22c55e; padding:20px;">✅ คลังวัสดุสิ้นเปลืองทุกรายการปลอดภัย</td></tr>';
-    if(toolAlertBody.innerHTML === '') toolAlertBody.innerHTML = '<tr><td colspan="4" class="text-center" style="color:#22c55e; padding:20px;">✅ เครื่องมืออุปกรณ์อยู่ในคลังครบถ้วน</td></tr>';
+    if(toolAlertBody.innerHTML === '') toolAlertBody.innerHTML = '<tr><td colspan="4" class="text-center" style="color:#22c55e; padding:20px;">✅ ไม่มีเครื่องมืออุปกรณ์ชำรุดค้างสายงาน</td></tr>';
 }
 
 function renderDaily() {
-    const dailyBody = document.getElementById('daily-body');
-    dailyBody.innerHTML = '';
-    
+    const dailyBody = document.getElementById('daily-body'); dailyBody.innerHTML = '';
     let todayStr = new Date().toLocaleDateString('th-TH');
     document.getElementById('daily-date').innerText = todayStr;
     let todayLogs = historyLogs.filter(log => log.time.startsWith(todayStr));
@@ -525,15 +622,13 @@ function renderDaily() {
         let isTool = (log.returnStatus && log.returnStatus !== 'สิ้นเปลือง' && log.returnStatus !== 'รับเข้า');
         let actBtns = '';
         
-        if(isTool && log.returnStatus === '⏳ ยังไม่คืน') {
+        if(isTool && (log.returnStatus === '⏳ ยังไม่คืน' || log.returnStatus === 'ยังไม่คืนคลัง')) {
             actBtns = `
-                <button class="btn-status btn-status-ok" onclick="setToolStatus('${log.ref}', '✅ คืนปกติ')"><i class="fas fa-check"></i> คืนปกติ</button>
+                <button class="btn-status btn-status-ok" onclick="setToolStatus('${log.ref}', '✅ คืนปกติ')"><i class="fas fa-check"></i> คืนคลัง</button>
                 <button class="btn-status btn-status-bad" onclick="setToolStatus('${log.ref}', '❌ ชำรุด')"><i class="fas fa-tools"></i> ชำรุด</button>
                 <button class="btn-status btn-status-bad" style="background:#fef2f2; color:#ef4444; border-color:#fca5a5;" onclick="setToolStatus('${log.ref}', '⚠️ หาย')"><i class="fas fa-times"></i> หาย</button>
             `;
-        } else if (!isTool) {
-            actBtns = `<small style="color:#94a3b8;">(ตัดยอดสิ้นเปลืองถาว)</small>`;
-        }
+        } else if (!isTool) { actBtns = `<small style="color:#94a3b8;">(ตัดยอดวัสดุถาวร)</small>`; }
 
         dailyBody.innerHTML += `
             <tr>
@@ -565,15 +660,16 @@ function renderStock() {
             <tr>
                 <td><span class="badge" style="background:#e2e8f0; color:#334155;">${item.id}</span></td>
                 <td><img src="${item.image || 'https://placehold.co/90'}" class="preview-img-large"></td>
-                <td><strong>${item.name}</strong></td>
+                <td><strong>${item.name}</strong><br><small style="color:var(--text-muted);">${item.spec || 'ไม่มีรายละเอียดสเปค'}</small></td>
                 <td>${getCatBadgeHTML(item.cat)}</td>
                 <td style="text-align:right;">${formatMoney(item.price)}</td>
-                <td style="text-align:right; font-weight:bold; font-size:1.1rem; color:${item.qty<5 && item.cat==='วัสดุสิ้นเปลือง'?'var(--accent-red)':'var(--accent-green)'}">${item.qty}</td>
-                <td style="text-align:right;" class="currency">${formatMoney(item.qty * item.price)}</td>
+                <td style="text-align:right; font-weight:bold; font-size:1.1rem; color:${item.qty<5 && item.cat==='วัสดุสิ้นเปลือง'?'var(--accent-red)':'var(--accent-green)'}">${item.qty} ${item.unit || 'ชิ้น'}</td>
+                <td>${getStatusHTML(item.status)}</td>
+                <td><button class="btn-status btn-status-ok" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;" onclick="openModal('${item.id}')"><i class="fas fa-cog"></i> จัดการพัสดุ</button></td>
             </tr>
         `;
     });
-    if(filtered.length === 0) stockBody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding:30px;">ไม่พบรายการพัสดุ</td></tr>';
+    if(filtered.length === 0) stockBody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:30px;">ไม่พบรายการพัสดุควบคุม</td></tr>';
 }
 
 function renderProjects() {
@@ -582,105 +678,135 @@ function renderProjects() {
     projBody.innerHTML = ''; outProjSelect.innerHTML = '<option value="คลังกลาง">🏢 คลังวัสดุกลางส่วนกลาง</option>';
 
     projects.forEach(p => {
-        projBody.innerHTML += `
-            <tr>
-                <td><span class="badge bg-tool">${p.id}</span></td>
-                <td><strong>${p.name}</strong></td>
-                <td>${p.client}</td>
-                <td style="text-align:right;" class="currency">${formatMoney(p.budget)}</td>
-                <td><button class="btn-back" style="padding:6px 15px; font-size:0.85rem;" onclick="openProjectDetail('${p.id}')">📂 เจาะลึกโครงการ</button></td>
-            </tr>
-        `;
+        projBody.innerHTML += `<tr><td><span class="badge bg-tool">${p.id}</span></td><td><strong>${p.name}</strong></td><td>${p.client}</td><td style="text-align:right;" class="currency">${formatMoney(p.budget)}</td><td><button class="btn-back" style="padding:6px 15px; font-size:0.8rem;" onclick="openProjectDetail('${p.id}')">📂 เจาะลึกโครงการ</button></td></tr>`;
         outProjSelect.innerHTML += `<option value="${p.id}">${p.name} (${p.client})</option>`;
     });
 }
 
 function renderHistory() {
-    const histBody = document.getElementById('history-list-body');
-    histBody.innerHTML = '';
+    const histBody = document.getElementById('history-list-body'); histBody.innerHTML = '';
     [...historyLogs].reverse().forEach(log => {
-        histBody.innerHTML += `
-            <tr>
-                <td><small style="color:#64748b;">${log.ref}</small></td>
-                <td><small>${log.time}</small></td>
-                <td><span class="badge ${log.action==='เบิกจ่าย'?'bg-danger':'bg-success'}">${log.action}</span></td>
-                <td><strong>${log.project}</strong></td>
-                <td>${log.itemName}<br><small style="color:#718096;">รหัส: ${log.itemId}</small></td>
-                <td style="text-align:right; font-weight:600;">${log.qty}</td>
-                <td style="text-align:right;" class="currency">${formatMoney(log.totalValue)}</td>
-                <td>${getStatusHTML(log.returnStatus)} <br><small style="color:#64748b;">${log.remark}</small></td>
-            </tr>
-        `;
+        histBody.innerHTML += `<tr><td><small style="color:#64748b;">${log.ref}</small></td><td><small>${log.time}</small></td><td><span class="badge ${log.action==='เบิกจ่าย'?'bg-danger':'bg-success'}">${log.action}</span></td><td><strong>${log.project}</strong></td><td>${log.itemName}<br><small style="color:#718096;">รหัส: ${log.itemId}</small></td><td style="text-align:right; font-weight:600;">${log.qty}</td><td style="text-align:right;" class="currency">${formatMoney(log.totalValue)}</td><td>${getStatusHTML(log.returnStatus)} <br><small style="color:#64748b;">${log.remark}</small></td></tr>`;
     });
 }
 
-// =========================================================
-// 🏢 PROJECT DETAIL MANAGEMENT SYSTEM
-// =========================================================
 function openProjectDetail(projId) {
-    document.getElementById('project-list-view').style.display = 'none';
-    document.getElementById('project-detail-view').style.display = 'block';
-    
-    let p = projects.find(x => x.id === projId);
-    if(!p) return;
-
-    document.getElementById('det-title').innerText = p.name;
-    document.getElementById('det-id').innerText = p.id;
-    document.getElementById('det-client').innerText = p.client;
-    document.getElementById('det-budget').innerText = formatMoney(p.budget);
+    document.getElementById('project-list-view').style.display = 'none'; document.getElementById('project-detail-view').style.display = 'block';
+    let p = projects.find(x => x.id === projId); if(!p) return;
+    document.getElementById('det-title').innerText = p.name; document.getElementById('det-id').innerText = p.id; document.getElementById('det-client').innerText = p.client; document.getElementById('det-budget').innerText = formatMoney(p.budget);
 
     let projLogs = historyLogs.filter(l => l.projectId === projId && l.action === 'เบิกจ่าย');
-    let totalCost = 0;
-    let histBody = document.getElementById('det-history-body');
-    histBody.innerHTML = '';
+    let totalCost = 0; let histBody = document.getElementById('det-history-body'); histBody.innerHTML = '';
 
     projLogs.forEach(l => {
         totalCost += l.totalValue;
         let itemRef = stockItems.find(i => i.id === l.itemId);
         let imgSrc = itemRef ? itemRef.image : 'https://placehold.co/90';
-
-        histBody.innerHTML += `
-            <tr>
-                <td><small>${l.time}</small></td>
-                <td><img src="${imgSrc}" class="preview-img-large"></td>
-                <td><span class="badge" style="background:#edf2f7; color:#0f172a;">${l.itemId}</span></td>
-                <td><strong>${l.itemName}</strong></td>
-                <td style="text-align:right; font-weight:600;">${l.qty}</td>
-                <td style="text-align:right; color:var(--accent-red);" class="currency">${formatMoney(l.totalValue)}</td>
-                <td><small>${l.remark}</small></td>
-            </tr>
-        `;
+        histBody.innerHTML += `<tr><td><small>${l.time}</small></td><td><img src="${imgSrc}" class="preview-img-large"></td><td><span class="badge" style="background:#edf2f7; color:#0f172a;">${l.itemId}</span></td><td><strong>${l.itemName}</strong></td><td style="text-align:right; font-weight:600;">${l.qty}</td><td style="text-align:right; color:var(--accent-red);" class="currency">${formatMoney(l.totalValue)}</td><td><small>${l.remark}</small></td></tr>`;
     });
-
     if(projLogs.length === 0) histBody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding:30px; color:#64748b;">โครงการนี้ยังไม่มีบันทึกประวัติการเบิกจ่ายสินค้า</td></tr>';
-
-    document.getElementById('det-cost').innerText = formatMoney(totalCost);
-    document.getElementById('det-balance').innerText = formatMoney(p.budget - totalCost);
+    document.getElementById('det-cost').innerText = formatMoney(totalCost); document.getElementById('det-balance').innerText = formatMoney(p.budget - totalCost);
 }
 function closeProjectDetail() { document.getElementById('project-detail-view').style.display = 'none'; document.getElementById('project-list-view').style.display = 'block'; }
 
 // =========================================================
-// 🔄 UPDATE TOOL STATUS INTERACTION 
+// 🔄 UPDATE TOOL RETURN STATUS
 // =========================================================
 window.setToolStatus = function(ref, newStatus) {
-    let log = historyLogs.find(l => l.ref === ref);
-    if(!log) return;
-    
+    let log = historyLogs.find(l => l.ref === ref); if(!log) return;
     if(newStatus === '✅ คืนปกติ') {
         let item = stockItems.find(i => i.id === log.itemId);
         if(item) item.qty += log.qty;
     }
-
     log.returnStatus = newStatus; saveData();
-    
-    let updateLog = { ref: genID('UPD'), time: new Date().toLocaleString('th-TH'), action: 'อัปเดตสถานะ', project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: 0, totalValue: 0, remark: 'เปลี่ยนสถานะบิลยืมเลข ' + log.ref + ' เป็น: ' + newStatus };
+    let updateLog = { ref: genID('UPD'), time: new Date().toLocaleString('th-TH'), action: 'อัปเดตสถานะ', project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: 0, totalValue: 0, remark: 'เปลี่ยนสถานะบิลยืม ' + log.ref + ' เป็น: ' + newStatus };
     sendToSheets(updateLog);
-
-    Swal.fire({ title: 'อัปเดตข้อมูลแล้ว', text: `เปลี่ยนสถานะเป็น "${newStatus}" เรียบร้อย`, icon: 'success', confirmButtonColor: '#0071e3' });
+    Swal.fire({ title: 'อัปเดตสถานะสำเร็จ', text: `สถานะถูกเปลี่ยนเป็น ${newStatus}`, icon: 'success', confirmButtonColor: '#0071e3' });
 }
 
 // =========================================================
-// 📤 SUBMIT FORM ACTIONS 
+// 🏛️ ITEM MODAL MANAGEMENT (ดูข้อมูล / แก้ไข / ลบด้วยรหัสผ่าน)
+// =========================================================
+window.openModal = function(id) {
+    let item = stockItems.find(i => i.id === id); if(!item) return;
+    document.getElementById('modal-item-id').value = item.id;
+    document.getElementById('modal-name').value = item.name;
+    document.getElementById('modal-cat').value = item.cat;
+    document.getElementById('modal-qty').value = item.qty;
+    document.getElementById('modal-unit').value = item.unit || 'ชิ้น';
+    document.getElementById('modal-price').value = item.price || 0;
+    document.getElementById('modal-status').value = item.status || 'พร้อมใช้งาน';
+    document.getElementById('modal-spec').value = item.spec || '';
+    document.getElementById('modal-supplier').value = item.supplier || '';
+    document.getElementById('modal-remark').value = item.remark || '';
+    document.getElementById('modal-img').src = item.image || 'https://placehold.co/200';
+    document.getElementById('item-modal').style.display = 'flex';
+}
+function closeModal() { document.getElementById('item-modal').style.display = 'none'; }
+
+// ฟังก์ชันเพิ่มจำนวนสต๊อกโดยตรงในหน้าต่างโมดอล
+window.modalAddQty = function() {
+    let id = document.getElementById('modal-item-id').value;
+    let item = stockItems.find(i => i.id === id); if(!item) return;
+    
+    Swal.fire({
+        title: 'เพิ่มจำนวนสต๊อก', text: `ระบุจำนวนที่สั่งซื้อรับเข้าเพิ่มสำหรับ ${item.name}`,
+        input: 'number', inputAttributes: { min: 1 }, showCancelButton: true, confirmButtonColor: '#22c55e'
+    }).then((res) => {
+        if(res.isConfirmed && res.value) {
+            let added = parseInt(res.value); item.qty += added;
+            document.getElementById('modal-qty').value = item.qty;
+            let log = { ref: genID('TRX'), time: new Date().toLocaleString('th-TH'), action: 'เพิ่มสต๊อกด่วน', project: 'คลังกลาง', itemId: item.id, itemName: item.name, qty: added, price: item.price, totalValue: added*item.price, remark: 'เติมสต๊อกผ่านระบบจัดการทรัพย์สิน', returnStatus: 'รับเข้า' };
+            historyLogs.push(log); saveData(); sendToSheets(log);
+            Swal.fire('สำเร็จ!', `เพิ่มสต๊อกพัสดุสำเร็จรวมเป็น ${item.qty}`, 'success');
+        }
+    });
+}
+
+// ฟังก์ชันบันทึกการแก้ไขสเปคข้อมูลพัสดุ
+window.saveModalEdit = function() {
+    let id = document.getElementById('modal-item-id').value;
+    let item = stockItems.find(i => i.id === id); if(!item) return;
+    
+    item.name = document.getElementById('modal-name').value;
+    item.cat = document.getElementById('modal-cat').value;
+    item.unit = document.getElementById('modal-unit').value;
+    item.price = parseFloat(document.getElementById('modal-price').value) || 0;
+    item.status = document.getElementById('modal-status').value;
+    item.spec = document.getElementById('modal-spec').value;
+    item.supplier = document.getElementById('modal-supplier').value;
+    item.remark = document.getElementById('modal-remark').value;
+    
+    saveData(); closeModal();
+    Swal.fire('สำเร็จ!', 'แก้ไขสเปคพัสดุเรียบร้อยแล้ว', 'success');
+}
+
+// ฟังก์ชันลบพัสดุถาวรด้วยรหัสผ่านควบคุมความปลอดภัยสูงสุด
+window.deleteModalItem = function() {
+    let id = document.getElementById('modal-item-id').value;
+    let item = stockItems.find(i => i.id === id); if(!item) return;
+
+    Swal.fire({
+        title: '🔒 ป้อนรหัสอนุมัติลบถาวร', text: `ระบบต้องการรหัสผ่านเพื่อสั่งทำลายบิลข้อมูลพัสดุ ${item.name}`,
+        input: 'password', inputPlaceholder: 'ป้อนรหัสผ่านแอดมินสำหรับลบข้อมูล',
+        showCancelButton: true, confirmButtonColor: '#ef4444'
+    }).then((res) => {
+        if(res.isConfirmed) {
+            if(res.value === '08102540') {
+                stockItems = stockItems.filter(i => i.id !== id);
+                let log = { ref: genID('DEL'), time: new Date().toLocaleString('th-TH'), action: 'ลบวัสดุถาวร', project: 'คลังกลาง', itemId: item.id, itemName: item.name, qty: item.qty, price: 0, totalValue: 0, remark: 'แอดมินลบพัสดุออกจากสารบบทะเบียนควบคุม', returnStatus: 'ลบพัสดุ' };
+                historyLogs.push(log); saveData(); sendToSheets(log);
+                closeModal();
+                Swal.fire('ลบสำเร็จ!', 'ลบรายการสิ่งของพัสดุออกจากคลังถาวรแล้ว', 'success');
+            } else {
+                Swal.fire('รหัสผ่านไม่ถูกต้อง!', 'รหัสผ่านลบข้อมูลผิดพลาด ปฏิเสธการอนุมัติครับ', 'error');
+            }
+        }
+    });
+}
+
+// =========================================================
+// 📤 FORMS TRIGGER SUBMISSIONS 
 // =========================================================
 document.getElementById('project-form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -704,49 +830,37 @@ document.getElementById('incoming-form').addEventListener('submit', async (e) =>
     if(item) { 
         item.qty += qty; item.price = price; if(imgBase64) item.image = imgBase64; 
     } else { 
-        stockItems.push({ id: itemId, name, cat, qty, price, supplier: document.getElementById('in-supplier').value, remark: document.getElementById('in-remark').value, image: imgBase64 }); 
+        stockItems.push({ id: itemId, name, cat, qty, price, supplier: document.getElementById('in-supplier').value, remark: document.getElementById('in-remark').value, image: imgBase64, spec: document.getElementById('in-spec').value, unit: document.getElementById('in-unit').value, status: document.getElementById('in-status').value }); 
     }
 
     let logEntry = { ref: genID('TRX'), time: now, action: 'รับเข้าคลัง', projectId: 'คลังกลาง', project: 'คลังกลาง', itemId: itemId, itemName: name, qty: qty, price: price, totalValue: qty*price, remark: document.getElementById('in-remark').value, returnStatus: 'รับเข้า' };
     historyLogs.push(logEntry); saveData(); sendToSheets(logEntry); document.getElementById('incoming-form').reset();
-    
     Swal.fire({ title: 'ลงทะเบียนพัสดุเรียบร้อย!', text: `นำเข้าพัสดุจำนวน ${qty} ชิ้น เข้าสู่คลังสินค้า`, icon: 'success', confirmButtonColor: '#22c55e' });
 });
 
 document.getElementById('out-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const projId = document.getElementById('out-project').value;
-    const itemId = document.getElementById('out-item-id').value;
-    const qty = parseInt(document.getElementById('out-qty').value);
-    const remark = document.getElementById('out-remark').value;
+    const projId = document.getElementById('out-project').value; const itemId = document.getElementById('out-item-id').value;
+    const qty = parseInt(document.getElementById('out-qty').value); const remark = document.getElementById('out-remark').value;
     
     if(!itemId) return Swal.fire({ title: 'ข้อมูลไม่ครบ', text: 'กรุณาพิมพ์ค้นหาและเลือกพัสดุจากรายการครับ', icon: 'error', confirmButtonColor: '#ef4444' });
-    
-    let item = stockItems.find(i => i.id === itemId);
-    let proj = projects.find(p => p.id === projId) || { name: 'คลังกลางส่วนกลาง' };
+    let item = stockItems.find(i => i.id === itemId); let proj = projects.find(p => p.id === projId) || { name: 'คลังกลางส่วนกลาง' };
 
-    if(item.qty < qty) return Swal.fire({ title: 'จำนวนของไม่พอ!', text: `สินค้าในระบบคงเหลือแค่ ${item.qty} ชิ้น ไม่พอต่อการเบิก`, icon: 'warning', confirmButtonColor: '#ef4444' });
+    if(item.qty < qty) return Swal.fire({ title: 'จำนวนของไม่พอ!', text: `สินค้าในระบบคงเหลือแค่ ${item.qty} ${item.unit||'หน่วย'} ไม่พอต่อการเบิก`, icon: 'warning', confirmButtonColor: '#ef4444' });
 
     item.qty -= qty; 
     let needsReturn = (item.cat === 'เครื่องมือช่าง' || item.cat === 'เครื่องใช้ไฟฟ้า');
     let trackingStatus = needsReturn ? '⏳ ยังไม่คืน' : 'สิ้นเปลือง';
 
     let logEntry = { ref: genID('TRX'), time: new Date().toLocaleString('th-TH'), action: 'เบิกจ่าย', projectId: projId, project: proj.name, itemId: item.id, itemName: item.name, qty: qty, price: item.price, totalValue: qty*item.price, remark: remark, returnStatus: trackingStatus };
-    
     historyLogs.push(logEntry); saveData(); sendToSheets(logEntry);
-    document.getElementById('out-form').reset();
-    document.getElementById('out-preview-box').style.display = 'none';
-
+    document.getElementById('out-form').reset(); document.getElementById('out-preview-box').style.display = 'none';
     Swal.fire({ title: 'อนุมัติเบิกจ่ายสำเร็จ!', text: `เลขที่บิลเบิก: ${logEntry.ref}`, icon: 'success', confirmButtonColor: '#22c55e' });
 });
 
 function sendToSheets(log) {
-    if(GOOGLE_SCRIPT_URL.includes("projects/")) return; 
-    fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST", mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ time: log.time, refId: log.ref, action: log.action, project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: log.price, totalValue: log.totalValue, remark: log.remark, evidence: log.returnStatus })
-    }).catch(err => console.log(err));
+    if(GOOGLE_SCRIPT_URL.includes("edit")) return; 
+    fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ time: log.time, refId: log.ref, action: log.action, project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: log.price, totalValue: log.totalValue, remark: log.remark, evidence: log.returnStatus }) }).catch(err => console.log(err));
 }
 
 renderAll();
