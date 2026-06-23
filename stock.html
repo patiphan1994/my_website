@@ -6,7 +6,6 @@
     <title>3DNP OS | Inventory System</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ปลั๊กอินแจ้งเตือนแบบแอนิเมชันติ๊กถูกสวยงาม -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
@@ -28,7 +27,7 @@
             -webkit-user-select: none; user-select: none;
         }
 
-        /* 🖥️ ปรับเลย์เอาต์ขยายขอบกว้างเต็มหน้าจอคอมพิวเตอร์และบราวเซอร์ */
+        /* 🖥️ ปรับเลย์เอาต์ขยายขอบกว้างเต็มหน้าจอคอมพิวเตอร์และบราวเซอร์แบบ 100% */
         .container { width: 100%; max-width: 100%; margin: 0; padding: 30px 40px; box-sizing: border-box; }
         
         /* --- 🧭 TOP BAR --- */
@@ -72,6 +71,7 @@
         .card-title { font-size: 1.3rem; font-weight: 600; margin-top: 0; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; color: var(--text-main); }
 
         /* --- ✍️ FORM STYLES --- */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 0.9rem; color: var(--text-main); margin-bottom: 8px; font-weight: 600; }
         .form-control, .form-select {
@@ -95,7 +95,7 @@
         .dropdown-item:hover { background: #f8fafc; }
         .dropdown-item img { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-color); }
         
-        /* 🖼️ รูปพรีวิวก่อนกดเบิกจ่ายขยายใหญ่เป็น 150px ตามสั่ง */
+        /* 🖼️ รูปพรีวิวก่อนเบิกขยายใหญ่สะใจ 150px ตามสั่ง */
         .item-preview-box { display: none; align-items: center; gap: 20px; margin-top: 15px; padding: 20px; background: #f8fafc; border: 1px dashed var(--accent-blue); border-radius: 12px; }
         .item-preview-img { width: 150px; height: 150px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-color); }
 
@@ -110,7 +110,6 @@
         .btn-red { background: var(--accent-red); }
         .btn-action:hover { transform: translateY(-2px); filter: brightness(0.9); }
 
-        /* ปุ่มในตารางรายวัน */
         .btn-status { border: none; padding: 6px 14px; border-radius: 8px; font-family: 'Prompt'; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-right: 5px; transition: 0.2s; }
         .btn-status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
         .btn-status-ok:hover { background: #16a34a; color: #fff; }
@@ -124,20 +123,20 @@
         .custom-table td { padding: 16px; border-bottom: 1px solid #e2e8f0; color: var(--text-main); vertical-align: middle; }
         .custom-table tr:hover td { background: #f8fafc; }
 
-        /* 🏷️ LOGOS & BADGES หมวดหมู่ */
+        /* 🏷️ BADGES หมวดหมู่ */
         .badge { padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
         .bg-tool { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
         .bg-elec { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
         .bg-water { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
         .bg-lightning { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
         .bg-consume { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
-        .bg-build { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .bg-build { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } 
         
         .bg-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         .bg-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
         .bg-warning { background: #fef3c7; color: #9a3412; border: 1px solid #fde68a; }
 
-        /* 🖼️ รูปคลังสินค้าขยายใหญ่ขึ้นเป็น 120px ตามสั่ง */
+        /* 🖼️ ขยายรูปคลังกลางสินค้าใหญ่เปิ้ม 120px ตามสั่ง */
         .preview-img-large { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-color); background: #f8fafc; }
         .currency { color: var(--accent-blue); font-weight: 700; }
         .text-right { text-align: right; }
@@ -151,22 +150,26 @@
             background: #fff; width: 100%; max-width: 650px; border-radius: 16px; padding: 30px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.15); animation: zoomIn 0.2s ease; max-height: 90vh; overflow-y: auto;
         }
-        /* 🖼️ รูปป็อปอัปใน Modal ใหญ่ขึ้นเป็น 220px ตามคำขอ */
+        /* 🖼️ รูปป็อปอัปขยายใหญ่สุดพรีเมียม 220px ตามสั่ง */
         #modal-img { width: 220px; height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); background:#f8fafc; }
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-footer { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
     </style>
 </head>
-<body oncontextmenu="return false">
+<body>
+
+<div id="loading-layer" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; font-family:'Prompt'; text-align:center;">
+    <i class="fas fa-spinner fa-spin" style="font-size:3.5rem; color:#0071e3; margin-bottom:20px;"></i>
+    <h2>🌐 กำลังเชื่อมต่อฐานข้อมูลคลังออนไลน์สด 100%...</h2>
+    <p style="color:#64748b;">ระบบกำลังซิงค์ข้อมูลกับคอมพิวเตอร์และมือถือเครื่องอื่นร่วมกันผ่าน Google Sheets กรุณารอสักครู่</p>
+</div>
 
 <div class="container">
-    <!-- TOP BAR -->
     <div class="top-bar">
         <h1>📦 คลังระบบสต๊อกอัจฉริยะ <span>3DNP Inventory</span></h1>
         <a href="system.html" class="btn-back"><i class="fas fa-arrow-left"></i> กลับหน้า Workspace</a>
     </div>
 
-    <!-- TABS MENU -->
     <div class="tabs-menu">
         <button class="tab-btn active" onclick="switchTab(event, 'dashboard-tab')"><i class="fas fa-chart-pie"></i> แผงควบคุม (Dashboard)</button>
         <button class="tab-btn" onclick="switchTab(event, 'daily-tab')"><i class="fas fa-calendar-day"></i> ติดตามรายวัน (Daily)</button>
@@ -176,10 +179,8 @@
         <button class="tab-btn" onclick="switchTab(event, 'history-tab')"><i class="fas fa-history"></i> ประวัติ ERP (Sheets)</button>
     </div>
 
-    <!-- TAB 1: DASHBOARD -->
     <div id="dashboard-tab" class="tab-content active">
         <div class="grid-layout">
-            <!-- สรุปผลภาพรวมแยกกระเป๋าเงินซื้อของสิ้นเปลือง -->
             <div class="glass-card" style="grid-column: span 2; display: flex; justify-content: space-around; padding: 25px; background: #ffffff; flex-wrap: wrap; gap: 20px;">
                 <div style="text-align:center;">
                     <h4 style="margin:0; color:var(--text-muted);">มูลค่าคลังพัสดุรวม</h4>
@@ -221,9 +222,7 @@
         </div>
     </div>
 
-    <!-- TAB 2: DAILY TRACKING -->
     <div id="daily-tab" class="tab-content">
-        <!-- ตารางที่ 1: ความเคลื่อนไหวเฉพาะของวันนี้ -->
         <div class="glass-card w-100">
             <div class="card-title" style="color: var(--accent-blue); justify-content: space-between; display: flex;">
                 <div><i class="fas fa-clock"></i> ตารางความเคลื่อนไหววันนี้ (<span id="daily-date"></span>)</div>
@@ -241,9 +240,8 @@
             </div>
         </div>
 
-        <!-- ตารางที่ 2: เครื่องมือค้างส่งคืนทั้งหมด (ล็อกรายชื่อสะสมทุกวัน ตรวจสอบชื่อคนเอาไป+วันเวลาได้ถาวร) -->
         <div class="glass-card w-100" style="margin-top: 30px; border-top: 4px solid var(--accent-red);">
-            <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-exclamation-circle"></i> 📦 รายชื่อผู้เบิกเครื่องมืออุปกรณ์ที่ "ยังไม่คืนคลัง" (สะสมทุกวัน ตรวจสอบชื่อช่างและเวลาเบิกได้ทันที)</div>
+            <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-exclamation-circle"></i> 📦 รายชื่อผู้เบิกเครื่องมืออุปกรณ์ที่ "ยังไม่คืนคลัง" (สะสมตรวจสอบชื่อช่างและเวลาเบิกเดิมได้ถาวร)</div>
             <div class="table-container">
                 <table class="custom-table">
                     <thead>
@@ -257,7 +255,6 @@
         </div>
     </div>
 
-    <!-- TAB 3: INVENTORY -->
     <div id="stock-tab" class="tab-content">
         <div class="glass-card w-100">
             <div class="card-title" style="color: var(--accent-blue);"><i class="fas fa-warehouse"></i> ทะเบียนควบคุมทรัพย์สินและคลังวัสดุกลาง (คลิกพัสดุเพื่อดูรายละเอียด/แก้ไข/ลบ)</div>
@@ -292,7 +289,6 @@
         </div>
     </div>
 
-    <!-- TAB 4: โครงการลูกค้า -->
     <div id="project-tab" class="tab-content">
         <div id="project-list-view">
             <div class="grid-layout">
@@ -346,10 +342,8 @@
         </div>
     </div>
 
-    <!-- TAB 5: เบิกจ่าย / รับเข้า -->
     <div id="action-tab" class="tab-content">
         <div class="grid-layout">
-            <!-- นำของเข้าคลัง -->
             <div class="glass-card">
                 <div class="card-title" style="color: var(--accent-green);"><i class="fas fa-arrow-alt-circle-down"></i> 📥 ระบบลงทะเบียนนำพัสดุเข้าคลังสินค้า (IN)</div>
                 <form id="incoming-form">
@@ -394,7 +388,6 @@
                 </form>
             </div>
 
-            <!-- เบิกจ่ายพัสดุ -->
             <div class="glass-card">
                 <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-arrow-alt-circle-up"></i> 📤 ระบบเบิกจ่ายวัสดุเครื่องมือไปใช้งาน (OUT)</div>
                 <form id="out-form">
@@ -436,7 +429,6 @@
         </div>
     </div>
 
-    <!-- TAB 6: HISTORY LOGS -->
     <div id="history-tab" class="tab-content">
         <div class="glass-card w-100">
             <div class="card-title"><i class="fas fa-database"></i> บันทึกบัญชีธุรกรรมระบบคลังส่วนกลาง (Sync Google Sheets อัตโนมัติ)</div>
@@ -454,7 +446,6 @@
     <option value="ชิ้น"><option value="กล่อง"><option value="แท่ง"><option value="ก้อน"><option value="ลัง"><option value="ถุง"><option value="ม้วน"><option value="ถัง"><option value="แผ่น">
 </datalist>
 
-<!-- 🏛️ MODAL BOX VIEW/EDIT/DELETE INTERACTION -->
 <div id="item-modal" class="modal-overlay">
     <div class="modal-box">
         <h3 id="modal-title" style="margin-top:0; color:var(--accent-blue); border-bottom:1px solid #e2e8f0; padding-bottom:10px;"><i class="fas fa-info-circle"></i> รายละเอียดคุมพัสดุวัสดุ</h3>
@@ -505,57 +496,85 @@
 
 <script>
 // =========================================================
-// 🚀 CONFIGURATION (ลิงก์ Google Script ตัวจริง)
+// 🚀 CONFIGURATION (นำลิงก์ตัวจริงที่ได้จากหน้า Apps Script มาวางแทนที่ตรงนี้ครับ)
 // =========================================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD0mVBmsq1aM2QoP-ZI8-GcSac_hUaUEoSfU1S6jSnkvG88SRKNNnmKl_vV0LF31YdYg/exec"; 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynJtcbu_LKXrjeo16NOgteF3OaSmJXsu9oPz6ZpGu5DJPQXku5gPH72Pfmhz0NhKQ4wQ/exec"; 
 
 // =========================================================
-// 🗄️ DATABASE ENGINE 
+// 🗄️ GLOBAL ONLINE STATES
 // =========================================================
-let stockItems = JSON.parse(localStorage.getItem('db_stock_v4')) || [];
-let projects = JSON.parse(localStorage.getItem('db_projects_v4')) || [];
-let historyLogs = JSON.parse(localStorage.getItem('db_history_v4')) || [];
+let stockItems = [];
+let projects = [];
+let historyLogs = [];
 
-function saveData() {
-    localStorage.setItem('db_stock_v4', JSON.stringify(stockItems));
-    localStorage.setItem('db_projects_v4', JSON.stringify(projects));
-    localStorage.setItem('db_history_v4', JSON.stringify(historyLogs));
-    renderAll();
+function showLoading() { document.getElementById('loading-layer').style.display = 'flex'; }
+function hideLoading() { document.getElementById('loading-layer').style.display = 'none'; }
+
+// ระบบยิงคำสั่งออนไลน์เข้าหาคลาวด์ตรงๆ เพื่อทำงานร่วมกันได้ทุกเครื่อง
+async function sendCloudAction(payload) {
+    if (GOOGLE_SCRIPT_URL.includes("edit") || GOOGLE_SCRIPT_URL === "") {
+        hideLoading();
+        Swal.fire('🚨 ระบบยังไม่ได้ต่อสายออนไลน์', 'กรุณานำ Web App URL ของคุณมาใส่ในสคริปต์บรรทัดที่ 262 ก่อนใช้งานครับ', 'warning');
+        return false;
+    }
+    showLoading();
+    try {
+        let response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+        let data = await response.json();
+        stockItems = data.items || [];
+        projects = data.projects || [];
+        historyLogs = data.historyLogs || [];
+        renderAll();
+        return true;
+    } catch(err) {
+        console.error(err);
+        Swal.fire('❌ ล้มเหลว!', 'เครือข่ายขัดข้อง ไม่สามารถเขียนบันทึกคลาวด์ออนไลน์ได้', 'error');
+        return false;
+    } finally {
+        hideLoading();
+    }
 }
 
-function formatMoney(num) { return '฿' + parseFloat(num).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
-function genID(prefix) { return prefix + '-' + Math.floor(1000 + Math.random() * 9000); }
-
-function getCatBadgeHTML(cat) {
-    if(cat.includes('ช่าง')) return `<span class="badge bg-tool"><i class="fas fa-toolbox"></i> เครื่องมือช่าง</span>`;
-    if(cat.includes('เครื่องใช้ไฟฟ้า')) return `<span class="badge bg-elec"><i class="fas fa-bolt"></i> เครื่องใช้ไฟฟ้า</span>`;
-    if(cat.includes('ระบบน้ำ')) return `<span class="badge bg-water"><i class="fas fa-faucet"></i> ระบบน้ำ</span>`;
-    if(cat.includes('ไฟฟ้า')) return `<span class="badge bg-lightning"><i class="fas fa-plug"></i> ระบบไฟฟ้า</span>`;
-    if(cat.includes('ก่อสร้าง')) return `<span class="badge bg-build"><i class="fas fa-trowel-bricks"></i> วัสดุก่อสร้าง</span>`;
-    return `<span class="badge bg-consume"><i class="fas fa-box-open"></i> วัสดุสิ้นเปลือง</span>`;
+async function fetchCloudData() {
+    if (GOOGLE_SCRIPT_URL.includes("edit") || GOOGLE_SCRIPT_URL === "") { hideLoading(); return; }
+    showLoading();
+    try {
+        let response = await fetch(GOOGLE_SCRIPT_URL);
+        let data = await response.json();
+        stockItems = data.items || [];
+        projects = data.projects || [];
+        historyLogs = data.historyLogs || [];
+        renderAll();
+    } catch(err) {
+        console.error(err);
+    } finally {
+        hideLoading();
+    }
 }
 
-function getStatusHTML(status) {
-    let s = status || 'พร้อมใช้งาน';
-    if(s === 'ยังไม่คืนคลัง' || s === '⏳ ยังไม่คืน') return `<span class="badge bg-warning"><i class="fas fa-hourglass-half"></i> ยังไม่คืนคลัง</span>`;
-    if(s === 'ชำรุด' || s === '❌ ชำรุด') return `<span class="badge bg-danger"><i class="fas fa-times-circle"></i> ชำรุดพัง</span>`;
-    if(s === '⚠️ หาย') return `<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5;"><i class="fas fa-exclamation-triangle"></i> หาย</span>`;
-    return `<span class="badge bg-success"><i class="fas fa-check-circle"></i> พร้อมใช้งาน</span>`;
-}
-
-function fileToBase64(file) {
-    if(!file) return Promise.resolve("");
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader(); reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
-    });
-}
+window.addEventListener('load', () => {
+    fetchCloudData();
+});
 
 function switchTab(e, tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     if (e && e.currentTarget) e.currentTarget.classList.add('active');
+}
+
+function formatMoney(num) { return '฿' + parseFloat(num).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+/* การสร้างรหัสสุ่มในระบบ */
+function genID(prefix) { return prefix + '-' + Math.floor(1000 + Math.random() * 9000); }
+function fileToBase64(file) {
+    if(!file) return Promise.resolve("");
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader(); reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
+    });
 }
 
 // =========================================================
@@ -571,15 +590,12 @@ document.addEventListener('click', (e) => { if (!document.getElementById('dropdo
 function renderDropdown(filterText = '') {
     dropdownList.innerHTML = '';
     let catFilter = document.getElementById('out-cat-filter').value;
-    
     let filtered = stockItems.filter(item => {
         let matchText = item.name.toLowerCase().includes(filterText.toLowerCase()) || item.id.toLowerCase().includes(filterText.toLowerCase());
         let matchCat = catFilter === 'all' || item.cat === catFilter;
         return matchText && matchCat;
     });
-    
     if(filtered.length === 0) { dropdownList.innerHTML = '<div style="padding:15px; color:#64748b; text-align:center;">❌ ไม่พบรายการพัสดุในหมวดนี้</div>'; return; }
-
     filtered.forEach(item => {
         let div = document.createElement('div');
         div.className = 'dropdown-item';
@@ -614,11 +630,7 @@ function renderDashboard() {
     stockItems.forEach(item => {
         totalValue += (item.qty * item.price);
         if(item.cat === 'วัสดุสิ้นเปลือง' && item.qty < 5) {
-            lowStockBody.innerHTML += `<tr>
-                <td><img src="${item.image || 'https://placehold.co/80'}" style="width:45px; height:45px; border-radius:8px; object-fit:cover;"></td>
-                <td><strong>${item.name}</strong></td>
-                <td style="color:#ef4444; font-weight:bold;">${item.qty} ${item.unit || 'ชิ้น'}</td>
-            </tr>`;
+            lowStockBody.innerHTML += `<tr><td><img src="${item.image || 'https://placehold.co/80'}" style="width:45px; height:45px; border-radius:8px; object-fit:cover;"></td><td><strong>${item.name}</strong></td><td style="color:#ef4444; font-weight:bold;">${item.qty} ${item.unit || 'ชิ้น'}</td></tr>`;
         }
         if(item.status === 'ชำรุด' || item.status === 'ยังไม่คืนคลัง') {
             toolAlertBody.innerHTML += `<tr><td>${getStatusHTML(item.status)}</td><td>ในสต๊อกกลาง</td><td><strong>${item.name}</strong></td><td>${item.qty} ${item.unit || 'ชิ้น'}</td></tr>`;
@@ -665,7 +677,6 @@ function renderDaily() {
                     <button class="btn-status btn-status-bad" style="background:#fef2f2; color:#ef4444; border-color:#fca5a5;" onclick="setToolStatus('${log.ref}', '⚠️ หาย')"><i class="fas fa-times"></i> หาย</button>
                 `;
             } else if (!isTool) { actBtns = `<small style="color:#94a3b8;">(ตัดยอดวัสดุถาวร)</small>`; }
-
             dailyBody.innerHTML += `<tr><td><strong>${log.time.split(' ')[1]} น.</strong></td><td><strong>${log.remark}</strong><br><small style="color:var(--accent-blue);">${log.project}</small></td><td>${log.itemName} <br><small style="color:#64748b;">รหัส: ${log.itemId}</small></td><td style="text-align:right; font-weight:600;" class="${log.action==='เบิกจ่าย'?'text-danger':'text-success'}">${log.action==='เบิกจ่าย'?'-':'+'}${log.qty}</td><td>${getStatusHTML(log.returnStatus)}</td><td>${actBtns}</td></tr>`;
         });
     }
@@ -677,9 +688,7 @@ function renderDaily() {
         globalActiveLoans.forEach(log => {
             allBorrowedBody.innerHTML += `
                 <tr>
-                    <!-- แสดงเวลาเบิกเดิมอย่างชัดเจนตามที่สั่ง -->
                     <td><small style="color:var(--text-main); font-weight:700;"><i class="fas fa-clock"></i> ${log.time}</small></td>
-                    <!-- แสดงชื่อช่างผู้เอาของไปอย่างเด่นชัดตามที่สั่ง -->
                     <td style="background: #fffbeb;"><strong>👤 ช่างผู้เบิก: ${log.remark}</strong><br><small style="color:var(--text-muted);">หน้างาน: ${log.project}</small></td>
                     <td><strong>${log.itemName}</strong> <br><small style="color:#64748b;">รหัสพัสดุ: ${log.itemId}</small></td>
                     <td style="text-align:right; font-weight:700; color:var(--accent-red); font-size:1.1rem;">${log.qty}</td>
@@ -700,13 +709,11 @@ function renderStock() {
     const searchVal = document.getElementById('filter-search').value.toLowerCase();
     const catVal = document.getElementById('filter-cat').value;
     stockBody.innerHTML = '';
-
     let filtered = stockItems.filter(item => {
         let mSearch = item.name.toLowerCase().includes(searchVal) || item.id.toLowerCase().includes(searchVal);
         let mCat = catVal === 'all' || item.cat === catVal;
         return mSearch && mCat;
     });
-
     filtered.forEach(item => {
         stockBody.innerHTML += `<tr><td><span class="badge" style="background:#e2e8f0; color:#334155;">${item.id}</span></td><td><img src="${item.image || 'https://placehold.co/120'}" class="preview-img-large"></td><td><strong>${item.name}</strong><br><small style="color:var(--text-muted);">${item.spec || 'ไม่มีรายละเอียดสเปค'}</small></td><td>${getCatBadgeHTML(item.cat)}</td><td style="text-align:right;">${formatMoney(item.price)}</td><td style="text-align:right; font-weight:bold; font-size:1.1rem; color:${item.qty<5 && item.cat==='วัสดุสิ้นเปลือง'?'var(--accent-red)':'var(--accent-green)'}">${item.qty} ${item.unit || 'ชิ้น'}</td><td>${getStatusHTML(item.status)}</td><td><button class="btn-status btn-status-ok" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;" onclick="openModal('${item.id}')"><i class="fas fa-cog"></i> จัดการพัสดุ</button></td></tr>`;
     });
@@ -734,7 +741,6 @@ function openProjectDetail(projId) {
     document.getElementById('project-list-view').style.display = 'none'; document.getElementById('project-detail-view').style.display = 'block';
     let p = projects.find(x => x.id === projId); if(!p) return;
     document.getElementById('det-title').innerText = p.name; document.getElementById('det-id').innerText = p.id; document.getElementById('det-client').innerText = p.client; document.getElementById('det-budget').innerText = formatMoney(p.budget);
-
     let projLogs = historyLogs.filter(l => l.projectId === projId && l.action === 'เบิกจ่าย');
     let totalCost = 0; let histBody = document.getElementById('det-history-body'); histBody.innerHTML = '';
     projLogs.forEach(l => {
@@ -749,43 +755,29 @@ function openProjectDetail(projId) {
 function closeProjectDetail() { document.getElementById('project-detail-view').style.display = 'none'; document.getElementById('project-list-view').style.display = 'block'; }
 
 // =========================================================
-// 🔄 UPDATE TOOL RETURN STATUS (เพิ่มระบบล็อกชื่อ+เวลาเบิกเดิมลงบันทึกตามสั่ง)
+// 🔄 UPDATE TOOL RETURN STATUS WITH LOG DETAILS
 // =========================================================
-window.setToolStatus = function(ref, newStatus) {
+window.setToolStatus = async function(ref, newStatus) {
     let log = historyLogs.find(l => l.ref === ref); if(!log) return;
-    if(newStatus === '✅ คืนปกติ') {
-        let item = stockItems.find(i => i.id === log.itemId);
-        if(item) item.qty += log.qty;
-    }
-    log.returnStatus = newStatus; saveData();
-    
-    // บันทึกหมายเหตุผูกชื่อคนเอาไปและเวลาเบิกเดิมยิงเข้าชีทตามสั่งเป๊ะๆ
-    let updateLog = { 
-        ref: genID('UPD'), 
-        time: new Date().toLocaleString('th-TH'), 
-        action: 'รับคืนพัสดุ', 
-        project: log.project, 
-        itemId: log.itemId, 
-        itemName: log.itemName, 
-        qty: log.qty, 
-        price: 0, 
-        totalValue: 0, 
-        remark: 'ช่าง ' + log.remark + ' นำมาคืน (จากที่ยืมไปเมื่อ ' + log.time + ') สภาพ: ' + newStatus, 
-        returnStatus: newStatus 
-    };
-    historyLogs.push(updateLog); saveData(); sendToSheets(updateLog);
-    
-    // แจ้งเตือนแอนิเมชันติ๊กถูกบอกชื่อและเวลาตามขออย่างละเอียด
-    Swal.fire({ 
-        title: 'รับคืนคลังสำเร็จ!', 
-        html: `รับคืนสิ่งของจากช่าง: <b>${log.remark}</b><br>พัสดุชิ้นที่เบิกไปเมื่อ: <b>${log.time}</b><br>อัปเดตสภาพระบบ: ${newStatus}`, 
-        icon: 'success', 
-        confirmButtonColor: '#0071e3' 
+    let now = new Date().toLocaleString('th-TH');
+    let updateRef = genID('UPD');
+    let remarkMsg = 'ช่าง ' + log.remark + ' นำมาคืน (จากที่ยืมไปเมื่อ ' + log.time + ') สภาพ: ' + newStatus;
+
+    let success = await sendCloudAction({
+        action: "setToolStatus", ref: ref, newStatus: newStatus, itemId: log.itemId, itemName: log.itemName, qty: log.qty, updateRef: updateRef, time: now, remark: remarkMsg
     });
+    
+    if(success) {
+        Swal.fire({ 
+            title: 'รับคืนคลังสำเร็จ!', 
+            html: `รับคืนสิ่งของจากช่าง: <b>${log.remark}</b><br>พัสดุชิ้นที่เบิกไปเมื่อ: <b>${log.time}</b><br>อัปเดตสภาพระบบ: ${newStatus}`, 
+            icon: 'success', confirmButtonColor: '#0071e3' 
+        });
+    }
 }
 
 // =========================================================
-// 🏛️ ITEM MODAL MANAGEMENT 
+// 🏛️ ITEM MODAL MANAGEMENT
 // =========================================================
 window.openModal = function(id) {
     let item = stockItems.find(i => i.id === id); if(!item) return;
@@ -807,82 +799,79 @@ function closeModal() { document.getElementById('item-modal').style.display = 'n
 window.modalAddQty = function() {
     let id = document.getElementById('modal-item-id').value;
     let item = stockItems.find(i => i.id === id); if(!item) return;
-    Swal.fire({ title: 'เพิ่มจำนวนสต๊อก', text: `ระบุจำนวนที่สั่งซื้อรับเข้าเพิ่มสำหรับ ${item.name}`, input: 'number', inputAttributes: { min: 1 }, showCancelButton: true, confirmButtonColor: '#22c55e' }).then((res) => {
+    Swal.fire({ title: 'เพิ่มจำนวนสต๊อก', text: `ระบุจำนวนที่สั่งซื้อรับเข้าเพิ่มสำหรับ ${item.name}`, input: 'number', inputAttributes: { min: 1 }, showCancelButton: true, confirmButtonColor: '#22c55e' }).then(async (res) => {
         if(res.isConfirmed && res.value) {
-            let added = parseInt(res.value); item.qty += added; document.getElementById('modal-qty').value = item.qty;
-            let log = { ref: genID('TRX'), time: new Date().toLocaleString('th-TH'), action: 'เพิ่มสต๊อกด่วน', project: 'คลังกลาง', itemId: item.id, itemName: item.name, qty: added, price: item.price, totalValue: added*item.price, remark: 'เติมสต๊อกผ่านระบบจัดการทรัพย์สิน', returnStatus: 'รับเข้า' };
-            historyLogs.push(log); saveData(); sendToSheets(log); Swal.fire('สำเร็จ!', `เพิ่มสต๊อกพัสดุสำเร็จรวมเป็น ${item.qty}`, 'success');
+            let added = parseInt(res.value); let now = new Date().toLocaleString('th-TH'); let logRef = genID('TRX');
+            let success = await sendCloudAction({ action: "quickAddQty", itemId: item.id, itemName: item.name, added: added, totalValue: added*item.price, time: now, logRef: logRef, remark: 'เติมสต๊อกผ่านระบบจัดการทรัพย์สิน' });
+            if(success) {
+                let updated = stockItems.find(i => i.id === id);
+                if(updated) document.getElementById('modal-qty').value = updated.qty;
+                Swal.fire('สำเร็จ!', `เพิ่มสต๊อกพัสดุสำเร็จรวมเป็น ${updated ? updated.qty : ''}`, 'success');
+            }
         }
     });
 }
 
-window.saveModalEdit = function() {
+window.saveModalEdit = async function() {
     let id = document.getElementById('modal-item-id').value;
-    let item = stockItems.find(i => i.id === id); if(!item) return;
-    item.name = document.getElementById('modal-name').value; item.cat = document.getElementById('modal-cat').value; item.unit = document.getElementById('modal-unit').value; item.price = parseFloat(document.getElementById('modal-price').value) || 0; item.status = document.getElementById('modal-status').value; item.spec = document.getElementById('modal-spec').value; item.supplier = document.getElementById('modal-supplier').value; item.remark = document.getElementById('modal-remark').value;
-    saveData(); closeModal(); Swal.fire('สำเร็จ!', 'แก้ไขสเปคพัสดุเรียบร้อยแล้ว', 'success');
+    let success = await sendCloudAction({
+        action: "saveItemEdit", id: id, name: document.getElementById('modal-name').value, cat: document.getElementById('modal-cat').value, unit: document.getElementById('modal-unit').value, price: parseFloat(document.getElementById('modal-price').value) || 0, status: document.getElementById('modal-status').value, spec: document.getElementById('modal-spec').value, supplier: document.getElementById('modal-supplier').value, remark: document.getElementById('modal-remark').value
+    });
+    if(success) { closeModal(); Swal.fire('สำเร็จ!', 'แก้ไขสเปคพัสดุเรียบร้อยแล้ว', 'success'); }
 }
 
 window.deleteModalItem = function() {
     let id = document.getElementById('modal-item-id').value;
     let item = stockItems.find(i => i.id === id); if(!item) return;
-    Swal.fire({ title: '🔒 ป้อนรหัสอนุมัติลบถาวร', text: `ระบบต้องการรหัสผ่านเพื่อสั่งทำลายบิลข้อมูลพัสดุ ${item.name}`, input: 'password', inputPlaceholder: 'ป้อนรหัสผ่านแอดมินสำหรับลบข้อมูล', showCancelButton: true, confirmButtonColor: '#ef4444' }).then((res) => {
+    Swal.fire({ title: '🔒 ป้อนรหัสอนุมัติลบถาวร', text: `ระบบต้องการรหัสผ่านเพื่อสั่งทำลายบิลข้อมูลพัสดุ ${item.name}`, input: 'password', inputPlaceholder: 'ป้อนรหัสผ่านแอดมินสำหรับลบข้อมูล', showCancelButton: true, confirmButtonColor: '#ef4444' }).then(async (res) => {
         if(res.isConfirmed) {
             if(res.value === '08102540') { 
-                stockItems = stockItems.filter(i => i.id !== id);
-                let log = { ref: genID('DEL'), time: new Date().toLocaleString('th-TH'), action: 'ลบวัสดุถาวร', project: 'คลังกลาง', itemId: item.id, itemName: item.name, qty: item.qty, price: 0, totalValue: 0, remark: 'แอดมินลบพัสดุออกจากสารบบทะเบียนควบคุม', returnStatus: 'ลบพัสดุ' };
-                historyLogs.push(log); saveData(); sendToSheets(log); closeModal(); Swal.fire('ลบสำเร็จ!', 'ลบรายการสิ่งของพัสดุออกจากคลังถาวรแล้ว', 'success');
+                let now = new Date().toLocaleString('th-TH'); let logRef = genID('DEL');
+                let success = await sendCloudAction({ action: "deleteItem", id: id, itemName: item.name, qty: item.qty, logRef: logRef, time: now, remark: 'แอดมินลบพัสดุออกจากสารบบทะเบียนควบคุม' });
+                if(success) { closeModal(); Swal.fire('ลบสำเร็จ!', 'ลบรายการสิ่งของพัสดุออกจากคลังถาวรแล้ว', 'success'); }
             } else { Swal.fire('รหัสผ่านไม่ถูกต้อง!', 'รหัสผ่านลบข้อมูลผิดพลาด ปฏิเสธการอนุมัติครับ', 'error'); }
         }
     });
 }
 
 // =========================================================
-// 📤 FORMS TRIGGER SUBMISSIONS 
+// 📤 FORMS TRIGGER SUBMISSIONS
 // =========================================================
-document.getElementById('project-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    let newProj = { id: genID('PRJ'), name: document.getElementById('project-name').value, client: document.getElementById('project-client').value, budget: parseFloat(document.getElementById('project-budget').value) || 0 };
-    projects.push(newProj); saveData(); document.getElementById('project-form').reset();
-    Swal.fire({ title: 'สร้างโครงการสำเร็จ!', text: `รหัสบิลโครงการ: ${newProj.id}`, icon: 'success', confirmButtonColor: '#0071e3' });
+document.getElementById('project-form').addEventListener('submit', async (e) => {
+    e.preventDefault(); let id = genID('PRJ');
+    let success = await sendCloudAction({
+        action: "createProject", id: id, name: document.getElementById('project-name').value, client: document.getElementById('project-client').value, budget: parseFloat(document.getElementById('project-budget').value) || 0
+    });
+    if(success) { document.getElementById('project-form').reset(); Swal.fire({ title: 'สร้างโครงการสำเร็จ!', text: `รหัสบิลโครงการ: ${id}`, icon: 'success', confirmButtonColor: '#0071e3' }); }
 });
 
 document.getElementById('incoming-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('in-name').value; const cat = document.getElementById('in-cat').value; const qty = parseInt(document.getElementById('in-qty').value); const price = parseFloat(document.getElementById('in-price').value) || 0; const imgBase64 = await fileToBase64(document.getElementById('in-img').files[0]); const now = new Date().toLocaleString('th-TH');
-    let item = stockItems.find(i => i.name.toLowerCase() === name.toLowerCase()); let itemId = item ? item.id : genID('ITM');
+    let existing = stockItems.find(i => i.name.toLowerCase() === name.toLowerCase()); let itemId = existing ? existing.id : genID('ITM');
 
-    if(item) { item.qty += qty; item.price = price; if(imgBase64) item.image = imgBase64; } 
-    else { stockItems.push({ id: itemId, name, cat, qty, price, supplier: document.getElementById('in-supplier').value, remark: document.getElementById('in-remark').value, image: imgBase64, spec: document.getElementById('in-spec').value, unit: document.getElementById('in-unit').value, status: document.getElementById('in-status').value }); }
-
-    let logEntry = { ref: genID('TRX'), time: now, action: 'รับเข้าคลัง', projectId: 'คลังกลาง', project: 'คลังกลาง', itemId: itemId, itemName: name, qty: qty, price: price, totalValue: qty*price, remark: document.getElementById('in-remark').value, returnStatus: 'รับเข้า' };
-    historyLogs.push(logEntry); saveData(); sendToSheets(logEntry); document.getElementById('incoming-form').reset();
-    Swal.fire({ title: 'ลงทะเบียนพัสดุเรียบร้อย!', text: `นำเข้าพัสดุจำนวน ${qty} หน่วย เข้าสู่คลังสินค้า`, icon: 'success', confirmButtonColor: '#22c55e' });
+    let success = await sendCloudAction({
+        action: "addStock", id: itemId, name: name, category: cat, qty: qty, price: price, supplier: document.getElementById('in-supplier').value, remark: document.getElementById('in-remark').value, image: imgBase64 || (existing ? existing.image : ""), spec: document.getElementById('in-spec').value, unit: document.getElementById('in-unit').value, status: document.getElementById('in-status').value, logRef: genID('TRX'), time: now, totalValue: qty*price
+    });
+    if(success) { document.getElementById('incoming-form').reset(); Swal.fire({ title: 'ลงทะเบียนพัสดุเรียบร้อย!', text: `นำเข้าพัสดุจำนวน ${qty} หน่วย เข้าสู่คลังสินค้า`, icon: 'success', confirmButtonColor: '#22c55e' }); }
 });
 
-document.getElementById('out-form').addEventListener('submit', (e) => {
+document.getElementById('out-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const projId = document.getElementById('out-project').value; const itemId = document.getElementById('out-item-id').value; const qty = parseInt(document.getElementById('out-qty').value); const remark = document.getElementById('out-remark').value;
     if(!itemId) return Swal.fire({ title: 'ข้อมูลไม่ครบ', text: 'กรุณาพิมพ์ค้นหาและเลือกพัสดุจากรายการครับ', icon: 'error', confirmButtonColor: '#ef4444' });
     let item = stockItems.find(i => i.id === itemId); let proj = projects.find(p => p.id === projId) || { name: 'คลังกลางส่วนกลาง' };
     if(item.qty < qty) return Swal.fire({ title: 'จำนวนของไม่พอ!', text: `สินค้าในระบบคงเหลือแค่ ${item.qty} ${item.unit||'หน่วย'} ไม่พอต่อการเบิก`, icon: 'warning', confirmButtonColor: '#ef4444' });
 
-    item.qty -= qty; 
     let needsReturn = (item.cat !== 'วัสดุก่อสร้าง' && item.cat !== 'วัสดุสิ้นเปลือง');
     let trackingStatus = needsReturn ? '⏳ ยังไม่คืน' : 'สิ้นเปลือง';
+    let logRef = genID('TRX');
 
-    let logEntry = { ref: genID('TRX'), time: new Date().toLocaleString('th-TH'), action: 'เบิกจ่าย', projectId: projId, project: proj.name, itemId: item.id, itemName: item.name, qty: qty, price: item.price, totalValue: qty*item.price, remark: remark, returnStatus: trackingStatus };
-    historyLogs.push(logEntry); saveData(); sendToSheets(logEntry);
-    document.getElementById('out-form').reset(); document.getElementById('out-preview-box').style.display = 'none';
-    Swal.fire({ title: 'อนุมัติเบิกจ่ายสำเร็จ!', text: `เลขที่บิลเบิก: ${logEntry.ref}`, icon: 'success', confirmButtonColor: '#22c55e' });
+    let success = await sendCloudAction({
+        action: "withdrawStock", projectId: projId, projectName: proj.name, itemId: item.id, itemName: item.name, qty: qty, totalValue: qty*item.price, remark: remark, returnStatus: trackingStatus, logRef: logRef, time: new Date().toLocaleString('th-TH')
+    });
+    if(success) { document.getElementById('out-form').reset(); document.getElementById('out-preview-box').style.display = 'none'; Swal.fire({ title: 'อนุมัติเบิกจ่ายสำเร็จ!', text: `เลขที่บิลเบิก: ${logRef}`, icon: 'success', confirmButtonColor: '#22c55e' }); }
 });
-
-function sendToSheets(log) {
-    if(GOOGLE_SCRIPT_URL.includes("edit")) return; 
-    fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ time: log.time, refId: log.ref, action: log.action, project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: log.price, totalValue: log.totalValue, remark: log.remark, evidence: log.returnStatus }) }).catch(err => console.log(err));
-}
-
-renderAll();
 </script>
 </body>
 </html>
