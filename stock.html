@@ -136,7 +136,7 @@
         .bg-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
         .bg-warning { background: #fef3c7; color: #9a3412; border: 1px solid #fde68a; }
 
-        /* 🖼️ ขยายรูปคลังกลางสินค้าใหญ่เปิ้ม 120px ตามสั่ง */
+        /* 🖼️ รูปคลังสินค้าขยายขนาดใหญ่ขึ้นเป็น 120px มองเห็นของชัดเจนเต็มตา */
         .preview-img-large { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-color); background: #f8fafc; }
         .currency { color: var(--accent-blue); font-weight: 700; }
         .text-right { text-align: right; }
@@ -496,7 +496,7 @@
 
 <script>
 // =========================================================
-// 🚀 CONFIGURATION (นำลิงก์ตัวจริงที่ได้จากหน้า Apps Script มาวางแทนที่ตรงนี้ครับ)
+// 🚀 CONFIGURATION (ลิงก์ Google Script ตัวจริงของคุณ)
 // =========================================================
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynJtcbu_LKXrjeo16NOgteF3OaSmJXsu9oPz6ZpGu5DJPQXku5gPH72Pfmhz0NhKQ4wQ/exec"; 
 
@@ -510,7 +510,7 @@ let historyLogs = [];
 function showLoading() { document.getElementById('loading-layer').style.display = 'flex'; }
 function hideLoading() { document.getElementById('loading-layer').style.display = 'none'; }
 
-// ระบบยิงคำสั่งออนไลน์เข้าหาคลาวด์ตรงๆ เพื่อทำงานร่วมกันได้ทุกเครื่อง
+// 🛠️ ซ่อมกลไกทะลวง CORS บล็อก (เปลี่ยนโหมดเป็น no-cors และดึงข้อมูลใหม่มาซิงค์อัปเดตหน้าจอทันที)
 async function sendCloudAction(payload) {
     if (GOOGLE_SCRIPT_URL.includes("edit") || GOOGLE_SCRIPT_URL === "") {
         hideLoading();
@@ -519,22 +519,22 @@ async function sendCloudAction(payload) {
     }
     showLoading();
     try {
-        let response = await fetch(GOOGLE_SCRIPT_URL, {
+        // ใช้โหมด no-cors เพื่อให้สามารถยิงข้อมูล POST ผ่านกูเกิลคลาวด์ได้เสถียรทุกเครื่อง
+        await fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
-        let data = await response.json();
-        stockItems = data.items || [];
-        projects = data.projects || [];
-        historyLogs = data.historyLogs || [];
-        renderAll();
+        
+        // เมื่อยิงคำสั่งเบิก/เติมของสำเร็จ ให้สั่งดึงข้อมูลล่าสุด (GET) กลับมาอัปเดตหน้าจอทันที
+        await fetchCloudData(); 
         return true;
     } catch(err) {
         console.error(err);
+        hideLoading();
         Swal.fire('❌ ล้มเหลว!', 'เครือข่ายขัดข้อง ไม่สามารถเขียนบันทึกคลาวด์ออนไลน์ได้', 'error');
         return false;
-    } finally {
-        hideLoading();
     }
 }
 
@@ -567,7 +567,6 @@ function switchTab(e, tabId) {
 }
 
 function formatMoney(num) { return '฿' + parseFloat(num).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
-/* การสร้างรหัสสุ่มในระบบ */
 function genID(prefix) { return prefix + '-' + Math.floor(1000 + Math.random() * 9000); }
 function fileToBase64(file) {
     if(!file) return Promise.resolve("");
