@@ -144,6 +144,12 @@
 </head>
 <body oncontextmenu="return false">
 
+<div id="loading-layer" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; font-family:'Prompt'; text-align:center;">
+    <i class="fas fa-spinner fa-spin" style="font-size:3.5rem; color:#0071e3; margin-bottom:20px;"></i>
+    <h2>🌐 กำลังเชื่อมต่อและอัปเดตข้อมูลกับคลาวด์...</h2>
+    <p style="color:#64748b;">รอสักครู่ ระบบกำลังเช็คยอดล่าสุดเพื่อไม่ให้ข้อมูลชนกันครับ</p>
+</div>
+
 <div class="container">
     <div class="top-bar">
         <h1>📦 คลังระบบสต๊อกอัจฉริยะ <span>3DNP Inventory</span></h1>
@@ -478,10 +484,10 @@
 // =========================================================
 // 🚀 CONFIGURATION (นำลิงก์ตัวจริงของคุณมาวางตรงนี้)
 // =========================================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynJtcbu_LKXrjeo16NOgteF3OaSmJXsu9oPz6ZpGu5DJPQXku5gPH72Pfmhz0NhKQ4wQ/exec";
+const GOOGLE_SCRIPT_URL = "เอาลิงก์_exec_มาวางตรงนี้นะครับ";
 
 // =========================================================
-// 🗄️ HYBRID DATABASE ENGINE (เซฟในเครื่อง 0.1 วิ + อัปเดตคลาวด์เนียนๆ)
+// 🗄️ HYBRID DATABASE ENGINE (เซฟในเครื่อง 0.1 วิ + ส่งคลาวด์เนียนๆ)
 // =========================================================
 let stockItems = JSON.parse(localStorage.getItem('db_stock_v6')) || [];
 let projects = JSON.parse(localStorage.getItem('db_projects_v6')) || [];
@@ -494,35 +500,44 @@ function saveLocal() {
     renderAll();
 }
 
-// โหลดข้อมูลจาก Cloud มาทับ Local ตอนเปิดเว็บ
+function showLoading() { document.getElementById('loading-layer').style.display = 'flex'; }
+function hideLoading() { document.getElementById('loading-layer').style.display = 'none'; }
+
+// โหลดข้อมูลล่าสุดจากคลาวด์ตอนเปิดเว็บ
 async function fetchCloudData() {
-    if (!GOOGLE_SCRIPT_URL.includes("/exec")) return;
+    if (!GOOGLE_SCRIPT_URL.includes("/exec")) {
+        hideLoading();
+        return;
+    }
     try {
         let response = await fetch(GOOGLE_SCRIPT_URL);
         let data = await response.json();
-        if(data.items && data.items.length > 0) {
-            stockItems = data.items;
-            projects = data.projects;
-            historyLogs = data.historyLogs;
+        
+        // รับค่ามาแล้วบันทึกลง Local ทันที ป้องกันปัญหาตารางค้าง
+        if(data.items || data.projects || data.historyLogs) {
+            stockItems = data.items || [];
+            projects = data.projects || [];
+            historyLogs = data.historyLogs || [];
             saveLocal();
         }
     } catch(err) {
-        console.log("Cloud sync in background.", err);
+        console.log("Cloud sync error: ทำงานออฟไลน์", err);
+    } finally {
+        hideLoading();
     }
 }
 
-// ยิงข้อมูลแบคกราวนด์ ไม่ให้บราวเซอร์ค้างหน้าขาว
+// ยิงข้อมูลแบคกราวนด์ โดยเลี่ยง CORS Block อัตโนมัติ
 function sendCloudAction(payload) {
     if (!GOOGLE_SCRIPT_URL.includes("/exec")) return;
     fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, // ใช้ text/plain เลี่ยงปัญหา CORS Block ของบราวเซอร์
         body: JSON.stringify(payload)
-    }).catch(err => console.log(err));
+    }).catch(err => console.log("Cloud POST Error:", err));
 }
 
-// โหลดหน้าจอทันที ไม่ต้องรอเน็ต
+// เมื่อโหลดหน้าจอ ให้วาดของเก่าก่อน แล้วค่อยซิงค์ของใหม่มาทับแบบเนียนๆ
 window.addEventListener('load', () => {
     renderAll(); 
     fetchCloudData(); 
@@ -548,11 +563,32 @@ function getStatusHTML(status) {
     return `<span class="badge bg-success"><i class="fas fa-check-circle"></i> พร้อมใช้งาน</span>`;
 }
 
+// 🛠️ ตัวบีบอัดรูปภาพอัจฉริยะ (แก้ปัญหา Google Sheets พังเพราะรูปใหญ่เกิน 50,000 ตัวอักษร)
 function fileToBase64(file) {
     if(!file) return Promise.resolve("");
     return new Promise((resolve, reject) => {
-        const reader = new FileReader(); reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
+        const reader = new FileReader(); 
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            let img = new Image();
+            img.onload = () => {
+                let canvas = document.createElement('canvas');
+                let MAX_WIDTH = 250; // ย่อขนาดเพื่อไม่ให้ Google Sheets พัง
+                let scale = MAX_WIDTH / img.width;
+                if (scale >= 1) {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                } else {
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scale;
+                }
+                let ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.6)); // บีบอัดให้ไฟล์เล็กจิ๋ว
+            };
+            img.src = e.target.result;
+        }; 
+        reader.onerror = error => reject(error);
     });
 }
 
@@ -762,7 +798,7 @@ window.setToolStatus = function(ref, newStatus) {
     let newLog = { ref: updateRef, time: now, action: 'รับคืนพัสดุ', project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: 0, totalValue: 0, remark: remarkMsg, returnStatus: newStatus };
     historyLogs.push(newLog);
     
-    saveLocal(); // อัปเดตหน้าจอทันที ไม่รอโหลด
+    saveLocal(); // อัปเดตหน้าจอทันที ไม่รอคลาวด์โหลด
     
     Swal.fire({ title: 'รับคืนคลังสำเร็จ!', html: `รับคืนสิ่งของจากช่าง: <b>${log.remark}</b><br>พัสดุชิ้นที่เบิกไปเมื่อ: <b>${log.time}</b><br>อัปเดตสภาพระบบ: ${newStatus}`, icon: 'success', confirmButtonColor: '#0071e3' });
 
@@ -869,7 +905,12 @@ document.getElementById('project-form').addEventListener('submit', (e) => {
 
 document.getElementById('incoming-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('in-name').value; const cat = document.getElementById('in-cat').value; const qty = parseInt(document.getElementById('in-qty').value); const price = parseFloat(document.getElementById('in-price').value) || 0; const imgBase64 = await fileToBase64(document.getElementById('in-img').files[0]); const now = new Date().toLocaleString('th-TH');
+    const name = document.getElementById('in-name').value; const cat = document.getElementById('in-cat').value; const qty = parseInt(document.getElementById('in-qty').value); const price = parseFloat(document.getElementById('in-price').value) || 0; 
+    
+    // บีบอัดรูปก่อนส่งป้องกับ Google Sheets พัง
+    const imgBase64 = await fileToBase64(document.getElementById('in-img').files[0]); 
+    const now = new Date().toLocaleString('th-TH');
+    
     let existing = stockItems.find(i => i.name.toLowerCase() === name.toLowerCase()); let itemId = existing ? existing.id : genID('ITM');
 
     if(existing) { 
