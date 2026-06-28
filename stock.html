@@ -141,6 +141,7 @@
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-footer { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
 
+        /* ป๊อปอัปแจ้งเตือนโหลดพื้นหลังขนาดเล็ก */
         #sync-toast {
             position: fixed; top: 20px; right: 20px; background: #ffffff; border-left: 4px solid var(--accent-blue);
             padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 9999;
@@ -231,7 +232,7 @@
         </div>
 
         <div class="glass-card w-100" style="margin-top: 30px; border-top: 4px solid var(--accent-red);">
-            <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-exclamation-circle"></i> 📦 รายชื่อผู้เบิกเครื่องมืออุปกรณ์ที่ "ยังไม่คืนคลัง" (ตรวจสอบชื่อช่างและเวลาเบิกได้ถาวร)</div>
+            <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-exclamation-circle"></i> 📦 รายชื่อผู้เบิกเครื่องมืออุปกรณ์ที่ "ยังไม่คืนคลัง"</div>
             <div class="table-container">
                 <table class="custom-table">
                     <thead>
@@ -491,23 +492,27 @@
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzLVLwbBMriMlty1AoYiCwDoLjNqOmr9VNucXQ7UEoT4Fhp2kFx42G8BdVEO9e8BHEE7A/exec";
 
 // =========================================================
-// 🗄️ HYBRID DATABASE ENGINE (ทุบ Cache เก่าทิ้ง 100%)
+// 🗄️ HYBRID DATABASE ENGINE (มีระบบ Bypass กันเมมโมรี่เต็ม)
 // =========================================================
 let stockItems = JSON.parse(localStorage.getItem('db_stock_v8')) || [];
 let projects = JSON.parse(localStorage.getItem('db_projects_v8')) || [];
 let historyLogs = JSON.parse(localStorage.getItem('db_history_v8')) || [];
 
 function saveLocal() {
-    localStorage.setItem('db_stock_v8', JSON.stringify(stockItems));
-    localStorage.setItem('db_projects_v8', JSON.stringify(projects));
-    localStorage.setItem('db_history_v8', JSON.stringify(historyLogs));
+    try {
+        localStorage.setItem('db_stock_v8', JSON.stringify(stockItems));
+        localStorage.setItem('db_projects_v8', JSON.stringify(projects));
+        localStorage.setItem('db_history_v8', JSON.stringify(historyLogs));
+    } catch(err) {
+        // ถ้ารูปเยอะจนความจำเครื่องทะลุ 5MB จะจับ Error ไว้แล้วข้ามไปเซฟขึ้น Cloud แทน เว็บจะไม่ค้าง
+        console.warn("หน่วยความจำ LocalStorage เต็ม ระบบจะทำงานผ่าน RAM และ Cloud แทน");
+    }
     renderAll();
 }
 
 function showLoading() { document.getElementById('sync-toast').style.display = 'flex'; }
 function hideLoading() { document.getElementById('sync-toast').style.display = 'none'; }
 
-// ดึงข้อมูลสดๆ จาก Cloud ทุกครั้ง ห้ามจำค่าเก่าเด็ดขาด
 async function fetchCloudData() {
     if (!GOOGLE_SCRIPT_URL.includes("/exec")) {
         hideLoading(); return;
@@ -719,7 +724,6 @@ function renderDaily() {
             let isTool = (log.returnStatus && !String(log.returnStatus).includes('สิ้นเปลือง') && !String(log.returnStatus).includes('รับเข้า'));
             let actBtns = '';
             
-            // 🛡️ ป้องกันบัคปุ่มกดไม่ได้ ทุบช่องว่างและเครื่องหมายคำพูดทิ้ง
             let safeRef = String(log.ref).replace(/['"\r\n]/g, '').trim();
             
             if(isTool && String(log.returnStatus).includes('ยังไม่คืน')) {
@@ -828,27 +832,23 @@ function openProjectDetail(projId) {
 function closeProjectDetail() { document.getElementById('project-detail-view').style.display = 'none'; document.getElementById('project-list-view').style.display = 'block'; }
 
 // =========================================================
-// 🔄 UPDATE TOOL RETURN STATUS (มีระบบดักจับ Error และทุบช่องว่างทิ้ง)
+// 🔄 UPDATE TOOL RETURN STATUS
 // =========================================================
 window.setToolStatus = function(ref, newStatus) {
     try {
         let targetRef = String(ref).replace(/['"\r\n]/g, '').trim();
         
         let log = historyLogs.find(l => String(l.ref).replace(/['"\r\n]/g, '').trim() === targetRef && String(l.returnStatus).includes('ยังไม่คืน'));
-        if (!log) {
-            log = historyLogs.find(l => String(l.ref).replace(/['"\r\n]/g, '').trim() === targetRef);
-        }
+        if (!log) log = historyLogs.find(l => String(l.ref).replace(/['"\r\n]/g, '').trim() === targetRef);
 
         if(!log) {
-            Swal.fire('❌ ระบบขัดข้อง', 'ไม่พบข้อมูลบิลเบิกหมายเลขนี้ในระบบ (อาจโดนลบทิ้งไปแล้ว) รหัสอ้างอิง: ' + targetRef, 'error');
+            Swal.fire('❌ ระบบขัดข้อง', 'ไม่พบข้อมูลบิลเบิกหมายเลขนี้ในระบบ (อาจถูกลบทิ้งไปแล้ว) รหัสอ้างอิง: ' + targetRef, 'error');
             return;
         }
         
         if(newStatus === '✅ คืนปกติ') {
             let item = stockItems.find(i => String(i.id).trim() === String(log.itemId).trim());
-            if(item) {
-                item.qty = (parseInt(item.qty) || 0) + (parseInt(log.qty) || 0);
-            }
+            if(item) item.qty = (parseInt(item.qty) || 0) + (parseInt(log.qty) || 0);
         }
         
         log.returnStatus = newStatus; 
@@ -862,12 +862,11 @@ window.setToolStatus = function(ref, newStatus) {
         historyLogs.push(newLog);
         
         saveLocal(); 
-        
         Swal.fire({ title: 'รับคืนคลังสำเร็จ!', html: `รับคืนสิ่งของจากช่าง: <b>${safeRemark}</b><br>อัปเดตสภาพระบบ: ${newStatus}`, icon: 'success', confirmButtonColor: '#0071e3' });
 
         sendCloudAction({ action: "setToolStatus", ref: targetRef, newStatus: newStatus, itemId: log.itemId, itemName: log.itemName, qty: log.qty, updateRef: updateRef, time: now, remark: remarkMsg, project: log.project });
     } catch (err) {
-        Swal.fire('❌ เกิดข้อผิดพลาดในโค้ด', err.message, 'error');
+        Swal.fire('❌ เกิดข้อผิดพลาดในระบบ', err.message, 'error');
     }
 }
 
