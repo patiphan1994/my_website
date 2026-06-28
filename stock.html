@@ -10,12 +10,12 @@
     
     <style>
         :root {
-            --bg-main: #f8fafc; /* พื้นหลังสีขาว-เทาคลีนๆ */
-            --card-bg: #ffffff; /* การ์ดสีขาวบริสุทธิ์ */
-            --border-color: #cbd5e1; /* สีเส้นขอบ */
-            --text-main: #0f172a; /* ตัวอักษรสีเข้มชัดเจน */
-            --text-muted: #64748b; /* ตัวอักษรสีเทา */
-            --accent-blue: #0071e3; /* สีฟ้าสไตล์องค์กร */
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #0071e3;
             --accent-green: #22c55e;
             --accent-red: #ef4444;
         }
@@ -27,10 +27,8 @@
             -webkit-user-select: none; user-select: none;
         }
 
-        /* 🖥️ ปรับเลย์เอาต์ขยายขอบกว้างเต็มหน้าจอคอมพิวเตอร์และบราวเซอร์แบบ 100% */
         .container { width: 100%; max-width: 100%; margin: 0; padding: 30px 40px; box-sizing: border-box; }
         
-        /* --- 🧭 TOP BAR --- */
         .top-bar {
             display: flex; justify-content: space-between; align-items: center;
             padding-bottom: 25px; border-bottom: 2px solid var(--border-color); margin-bottom: 35px;
@@ -45,7 +43,6 @@
         }
         .btn-back:hover { background: var(--text-main); color: #fff; transform: translateY(-2px); }
 
-        /* --- 📑 TABS MENU --- */
         .tabs-menu { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
         .tab-btn {
             background: var(--card-bg); border: 1px solid var(--border-color);
@@ -60,7 +57,6 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- 🗂️ GRID & CARDS --- */
         .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
         @media (max-width: 992px) { .grid-layout { grid-template-columns: 1fr; } }
 
@@ -70,7 +66,6 @@
         }
         .card-title { font-size: 1.3rem; font-weight: 600; margin-top: 0; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; color: var(--text-main); }
 
-        /* --- ✍️ FORM STYLES --- */
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 0.9rem; color: var(--text-main); margin-bottom: 8px; font-weight: 600; }
@@ -81,10 +76,8 @@
         }
         .form-control:focus, .form-select:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1); }
 
-        /* 🔍 Search Filter Bar */
         .filter-bar { display: flex; gap: 15px; margin-bottom: 25px; background: #edf2f7; padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
 
-        /* 🔍 Custom Search Dropdown */
         .searchable-dropdown { position: relative; }
         .dropdown-list {
             position: absolute; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto;
@@ -98,7 +91,6 @@
         .item-preview-box { display: none; align-items: center; gap: 20px; margin-top: 15px; padding: 20px; background: #f8fafc; border: 1px dashed var(--accent-blue); border-radius: 12px; }
         .item-preview-img { width: 150px; height: 150px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-color); }
 
-        /* --- 🔘 BUTTONS --- */
         .btn-action {
             width: 100%; padding: 14px; border: none; border-radius: 50px;
             font-family: 'Prompt', sans-serif; font-weight: 700; font-size: 1rem; color: white;
@@ -115,14 +107,12 @@
         .btn-status-bad { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
         .btn-status-bad:hover { background: #dc2626; color: #fff; }
 
-        /* --- 📊 TABLE STYLES --- */
         .table-container { overflow-x: auto; }
         .custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
         .custom-table th { padding: 16px; background: #f1f5f9; color: var(--text-main); font-weight: 600; border-bottom: 2px solid var(--border-color); white-space: nowrap; }
         .custom-table td { padding: 16px; border-bottom: 1px solid #e2e8f0; color: var(--text-main); vertical-align: middle; }
         .custom-table tr:hover td { background: #f8fafc; }
 
-        /* 🏷️ LOGOS & BADGES หมวดหมู่ */
         .badge { padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
         .bg-tool { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
         .bg-elec { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
@@ -139,7 +129,6 @@
         .currency { color: var(--accent-blue); font-weight: 700; }
         .text-right { text-align: right; }
 
-        /* --- 🏛️ MODAL OVERLAY --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);
             display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px);
@@ -151,14 +140,19 @@
         #modal-img { width: 220px; height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); background:#f8fafc; }
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-footer { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+
+        /* ป๊อปอัปแจ้งเตือนโหลดพื้นหลังขนาดเล็ก */
+        #sync-toast {
+            position: fixed; top: 20px; right: 20px; background: #ffffff; border-left: 4px solid var(--accent-blue);
+            padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 9999;
+            display: none; align-items: center; gap: 10px; font-weight: 500; font-size: 0.9rem;
+        }
     </style>
 </head>
 <body oncontextmenu="return false">
 
-<div id="loading-layer" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; font-family:'Prompt'; text-align:center;">
-    <i class="fas fa-spinner fa-spin" style="font-size:3.5rem; color:#0071e3; margin-bottom:20px;"></i>
-    <h2>🌐 กำลังเชื่อมต่อฐานข้อมูลคลังออนไลน์สด 100%...</h2>
-    <p style="color:#64748b;">ระบบกำลังซิงค์ข้อมูลกับคอมพิวเตอร์และมือถือเครื่องอื่นร่วมกันผ่าน Google Sheets กรุณารอสักครู่</p>
+<div id="sync-toast">
+    <i class="fas fa-sync fa-spin" style="color: var(--accent-blue);"></i> กำลังซิงค์ข้อมูลกับคลาวด์...
 </div>
 
 <div class="container">
@@ -498,7 +492,7 @@
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw2lnFH23l_nR0O6sLOZikT4UUaH36jY4L_3pnRu9FTw9JI8mmVMgXpmMgY7emewDFkmg/exec";
 
 // =========================================================
-// 🗄️ HYBRID DATABASE ENGINE (เซฟในเครื่อง 0.1 วิ + ส่งคลาวด์เนียนๆ)
+// 🗄️ HYBRID DATABASE ENGINE (เซฟลงเครื่องก่อน แล้วอัปคลาวด์พื้นหลัง)
 // =========================================================
 let stockItems = JSON.parse(localStorage.getItem('db_stock_v6')) || [];
 let projects = JSON.parse(localStorage.getItem('db_projects_v6')) || [];
@@ -511,15 +505,13 @@ function saveLocal() {
     renderAll();
 }
 
-function showLoading() { document.getElementById('loading-layer').style.display = 'flex'; }
-function hideLoading() { document.getElementById('loading-layer').style.display = 'none'; }
+function showLoading() { document.getElementById('sync-toast').style.display = 'flex'; }
+function hideLoading() { document.getElementById('sync-toast').style.display = 'none'; }
 
-// โหลดข้อมูลล่าสุดจากคลาวด์ตอนเปิดเว็บ
+// ซิงค์คลาวด์แบบเงียบๆ ไม่บังหน้าจอ
 async function fetchCloudData() {
-    if (!GOOGLE_SCRIPT_URL.includes("/exec")) {
-        hideLoading();
-        return;
-    }
+    if (!GOOGLE_SCRIPT_URL.includes("/exec")) return;
+    showLoading();
     try {
         let response = await fetch(GOOGLE_SCRIPT_URL);
         let data = await response.json();
@@ -528,16 +520,15 @@ async function fetchCloudData() {
             stockItems = data.items || [];
             projects = data.projects || [];
             historyLogs = data.historyLogs || [];
-            saveLocal();
+            saveLocal(); // ดึงมาทับ Local แล้วอัปเดตหน้าจอทันที
         }
     } catch(err) {
-        console.log("Cloud sync error: ทำงานออฟไลน์", err);
+        console.log("Cloud sync error: Offline Mode", err);
     } finally {
         hideLoading();
     }
 }
 
-// ยิงข้อมูลแบคกราวนด์ โดยเลี่ยง CORS Block อัตโนมัติ
 function sendCloudAction(payload) {
     if (!GOOGLE_SCRIPT_URL.includes("/exec")) return;
     fetch(GOOGLE_SCRIPT_URL, {
@@ -548,7 +539,7 @@ function sendCloudAction(payload) {
     }).catch(err => console.log("Cloud POST Error:", err));
 }
 
-// โหลดหน้าจอทันที + รีเซ็ตตัวกรองป้องกันบราวเซอร์จำค่าค้าง
+// วาดของเก่าทันทีก่อน แล้วค่อยดึงของใหม่มาทับเนียนๆ
 window.addEventListener('load', () => {
     document.getElementById('filter-cat').value = 'all';
     document.getElementById('out-cat-filter').value = 'all';
@@ -579,7 +570,7 @@ function getStatusHTML(status) {
     return `<span class="badge bg-success"><i class="fas fa-check-circle"></i> พร้อมใช้งาน</span>`;
 }
 
-// 🛠️ ตัวบีบอัดรูปภาพอัจฉริยะ (แก้ปัญหา Google Sheets พังเพราะรูปใหญ่เกิน 50,000 ตัวอักษร)
+// ตัวบีบอัดรูปภาพอัจฉริยะ (กัน Sheets พัง)
 function fileToBase64(file) {
     if(!file) return Promise.resolve("");
     return new Promise((resolve, reject) => {
@@ -589,7 +580,7 @@ function fileToBase64(file) {
             let img = new Image();
             img.onload = () => {
                 let canvas = document.createElement('canvas');
-                let MAX_WIDTH = 250; // ย่อขนาดเพื่อไม่ให้ Google Sheets พัง
+                let MAX_WIDTH = 250; 
                 let scale = MAX_WIDTH / img.width;
                 if (scale >= 1) {
                     canvas.width = img.width;
@@ -600,7 +591,7 @@ function fileToBase64(file) {
                 }
                 let ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', 0.6)); // บีบอัดให้ไฟล์เล็กลง
+                resolve(canvas.toDataURL('image/jpeg', 0.6)); 
             };
             img.src = e.target.result;
         }; 
@@ -616,7 +607,7 @@ function switchTab(e, tabId) {
 }
 
 // =========================================================
-// 🔍 DROPDOWN SEARCH ENGINE (ปลอดภัยจากข้อมูลว่าง 100%)
+// 🔍 DROPDOWN SEARCH ENGINE 
 // =========================================================
 const searchInput = document.getElementById('out-item-search');
 const dropdownList = document.getElementById('out-dropdown-list');
@@ -629,7 +620,7 @@ function renderDropdown(filterText = '') {
     dropdownList.innerHTML = '';
     let catFilter = document.getElementById('out-cat-filter').value;
     
-    // กรองขยะแถวว่างทิ้งก่อนค้นหา
+    // กันขยะจาก Sheets
     let validItems = stockItems.filter(i => i && i.id && String(i.id).trim() !== "");
     
     let filtered = validItems.filter(item => {
@@ -763,7 +754,6 @@ function renderStock() {
     const catVal = document.getElementById('filter-cat').value;
     stockBody.innerHTML = '';
     
-    // กรองแถวว่างจากชีททิ้ง
     let validItems = stockItems.filter(i => i && i.id && String(i.id).trim() !== "");
     
     let filtered = validItems.filter(item => {
@@ -841,7 +831,7 @@ window.setToolStatus = function(ref, newStatus) {
     let newLog = { ref: updateRef, time: now, action: 'รับคืนพัสดุ', project: log.project, itemId: log.itemId, itemName: log.itemName, qty: log.qty, price: 0, totalValue: 0, remark: remarkMsg, returnStatus: newStatus };
     historyLogs.push(newLog);
     
-    saveLocal(); // อัปเดตหน้าจอทันที ไม่รอคลาวด์โหลด
+    saveLocal(); 
     
     Swal.fire({ title: 'รับคืนคลังสำเร็จ!', html: `รับคืนสิ่งของจากช่าง: <b>${log.remark}</b><br>พัสดุชิ้นที่เบิกไปเมื่อ: <b>${log.time}</b><br>อัปเดตสภาพระบบ: ${newStatus}`, icon: 'success', confirmButtonColor: '#0071e3' });
 
@@ -948,12 +938,9 @@ document.getElementById('project-form').addEventListener('submit', (e) => {
 
 document.getElementById('incoming-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('in-name').value; 
-    const cat = document.getElementById('in-cat').value; 
-    const qty = parseInt(document.getElementById('in-qty').value); 
-    const price = parseFloat(document.getElementById('in-price').value) || 0; 
+    const name = document.getElementById('in-name').value; const cat = document.getElementById('in-cat').value; const qty = parseInt(document.getElementById('in-qty').value); const price = parseFloat(document.getElementById('in-price').value) || 0; 
     
-    // บีบอัดรูปก่อนส่ง ป้องกัน Google Sheets พัง 100%
+    // บีบอัดรูปก่อนส่ง
     const imgBase64 = await fileToBase64(document.getElementById('in-img').files[0]); 
     const now = new Date().toLocaleString('th-TH');
     
