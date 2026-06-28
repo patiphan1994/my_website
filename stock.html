@@ -232,7 +232,7 @@
         </div>
 
         <div class="glass-card w-100" style="margin-top: 30px; border-top: 4px solid var(--accent-red);">
-            <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-exclamation-circle"></i> 📦 รายชื่อผู้เบิกเครื่องมืออุปกรณ์ที่ "ยังไม่คืนคลัง" (สะสมตรวจสอบชื่อช่างและเวลาเบิกเดิมได้ถาวร)</div>
+            <div class="card-title" style="color: var(--accent-red);"><i class="fas fa-exclamation-circle"></i> 📦 รายชื่อผู้เบิกเครื่องมืออุปกรณ์ที่ "ยังไม่คืนคลัง"</div>
             <div class="table-container">
                 <table class="custom-table">
                     <thead>
@@ -492,7 +492,7 @@
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw2lnFH23l_nR0O6sLOZikT4UUaH36jY4L_3pnRu9FTw9JI8mmVMgXpmMgY7emewDFkmg/exec";
 
 // =========================================================
-// 🗄️ HYBRID DATABASE ENGINE (เซฟลงเครื่องก่อน แล้วอัปคลาวด์พื้นหลัง)
+// 🗄️ HYBRID DATABASE ENGINE
 // =========================================================
 let stockItems = JSON.parse(localStorage.getItem('db_stock_v6')) || [];
 let projects = JSON.parse(localStorage.getItem('db_projects_v6')) || [];
@@ -508,27 +508,34 @@ function saveLocal() {
 function showLoading() { document.getElementById('sync-toast').style.display = 'flex'; }
 function hideLoading() { document.getElementById('sync-toast').style.display = 'none'; }
 
-// ซิงค์คลาวด์แบบเงียบๆ ไม่บังหน้าจอ
+// โหลดข้อมูลล่าสุดจากคลาวด์ตอนเปิดเว็บ (เพิ่มตัวกัน Cache ถาวร)
 async function fetchCloudData() {
-    if (!GOOGLE_SCRIPT_URL.includes("/exec")) return;
+    if (!GOOGLE_SCRIPT_URL.includes("/exec")) {
+        hideLoading(); return;
+    }
     showLoading();
     try {
-        let response = await fetch(GOOGLE_SCRIPT_URL);
+        // ใส่พารามิเตอร์เวลาต่อท้าย เพื่อบังคับให้บราวเซอร์ไปดึงข้อมูลใหม่ล่าสุดเสมอ ห้ามใช้ของเดิมที่จำไว้
+        let noCacheUrl = GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime();
+        let response = await fetch(noCacheUrl);
         let data = await response.json();
         
-        if(data.items || data.projects || data.historyLogs) {
-            stockItems = data.items || [];
-            projects = data.projects || [];
-            historyLogs = data.historyLogs || [];
-            saveLocal(); // ดึงมาทับ Local แล้วอัปเดตหน้าจอทันที
+        // ตรวจสอบความถูกต้องของข้อมูลก่อนเอามาทับ
+        if(data && typeof data === 'object') {
+            if(data.items && data.items.length > 0) stockItems = data.items;
+            if(data.projects && data.projects.length > 0) projects = data.projects;
+            if(data.historyLogs && data.historyLogs.length > 0) historyLogs = data.historyLogs;
+            saveLocal();
         }
     } catch(err) {
-        console.log("Cloud sync error: Offline Mode", err);
+        console.log("Cloud sync error: ทำงานออฟไลน์", err);
     } finally {
         hideLoading();
+        renderAll(); // สั่งให้วาดตารางซ้ำอีกรอบหลังจากโหลดข้อมูลเสร็จ
     }
 }
 
+// ยิงข้อมูลแบคกราวนด์ โดยเลี่ยง CORS Block อัตโนมัติ
 function sendCloudAction(payload) {
     if (!GOOGLE_SCRIPT_URL.includes("/exec")) return;
     fetch(GOOGLE_SCRIPT_URL, {
@@ -539,7 +546,7 @@ function sendCloudAction(payload) {
     }).catch(err => console.log("Cloud POST Error:", err));
 }
 
-// วาดของเก่าทันทีก่อน แล้วค่อยดึงของใหม่มาทับเนียนๆ
+// โหลดหน้าจอทันที + รีเซ็ตตัวกรองป้องกันบราวเซอร์จำค่าค้าง
 window.addEventListener('load', () => {
     document.getElementById('filter-cat').value = 'all';
     document.getElementById('out-cat-filter').value = 'all';
@@ -570,7 +577,7 @@ function getStatusHTML(status) {
     return `<span class="badge bg-success"><i class="fas fa-check-circle"></i> พร้อมใช้งาน</span>`;
 }
 
-// ตัวบีบอัดรูปภาพอัจฉริยะ (กัน Sheets พัง)
+// 🛠️ ตัวบีบอัดรูปภาพอัจฉริยะ (แก้ปัญหา Google Sheets พังเพราะรูปใหญ่เกิน 50,000 ตัวอักษร)
 function fileToBase64(file) {
     if(!file) return Promise.resolve("");
     return new Promise((resolve, reject) => {
